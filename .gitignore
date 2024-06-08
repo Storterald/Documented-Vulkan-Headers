@@ -1,0 +1,8 @@
+# build output
+build/
+
+# jetbrains
+.idea/
+
+# vscode
+.vscode/
