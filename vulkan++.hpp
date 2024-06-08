@@ -2037,6 +2037,8 @@ namespace vk {
                 const VkBufferView                  *pTexelBufferView
         );
 
+        //TODO VkAccelerationStructureNV createVkAccelerationStructureNV();
+
         /** <b>Name</b><hr><br>
          *
          * VkBuffer - Opaque handle to a buffer object<br><br><br>
@@ -2058,6 +2060,8 @@ namespace vk {
                  const VkBufferUsageFlags           &usage,
                  const VkAllocationCallbacks        *pAllocator
         );
+
+        //TODO VkBufferView createVkBufferView();
 
         /** <b>Name</b><hr><br>
          *
@@ -2099,6 +2103,10 @@ namespace vk {
                 const VkDevice                     &device,
                 const VkAllocationCallbacks        *pAllocator
         );
+
+        //TODO VkDebugReportCallbackEXT createVkDebugReportCallbackEXT();
+
+        //TODO VkDebugUtilsMessengerEXT createVkDebugUtilsMessengerEXT();
 
         /** <b>Name</b><hr><br>
          *
@@ -2162,6 +2170,8 @@ namespace vk {
                 const VkAllocationCallbacks                            *pAllocator
         );
 
+        //TODO VkDescriptorUpdateTemplate createVkDescriptorUpdateTemplate();
+
         /** <b>Name</b><hr><br>
          *
          * VkDevice - Opaque handle to a device object<br><br><br>
@@ -2181,6 +2191,10 @@ namespace vk {
                 const std::vector<const char *>        &enabledExtensionNames,
                 const VkAllocationCallbacks            *pAllocator
         );
+
+        //TODO VkDisplayModeKHR createVkDisplayModeKHR();
+
+        //TODO VkEvent createVkEvent();
 
         /** <b>Name</b><hr><br>
          *
@@ -2227,6 +2241,8 @@ namespace vk {
                 const VkAllocationCallbacks            *pAllocator
         );
 
+        //TODO VkImage createVkImage();
+
         /** <b>Name</b><hr><br>
          *
          * VkImageView - Opaque handle to an image view object<br><br><br>
@@ -2248,6 +2264,8 @@ namespace vk {
                 const VkDevice                     &device,
                 const VkAllocationCallbacks        *pAllocator
         );
+
+        //TODO VkIndirectCommandsLayoutNV createVkIndirectCommandsLayoutNVX();
 
         /** <b>Name</b><hr><br>
          *
@@ -2271,6 +2289,10 @@ namespace vk {
                 const std::vector<const char *>        &enabledExtensionNames,
                 const VkAllocationCallbacks            *pAllocator
         );
+
+        //TODO VkPerformanceConfigurationINTEL acquireVkPerformanceConfigurationINTEL();
+
+        //TODO VkPhysicalDevice getVkPhysicalDevice();
 
         /** <b>Name</b><hr><br>
          *
@@ -2297,6 +2319,8 @@ namespace vk {
                 const VkAllocationCallbacks                                 *pAllocator
         );
 
+        //TODO VkPipelineCache createVkPipelineCache();
+
         /** <b>Name</b><hr><br>
          *
          * VkPipelineLayout - Opaque handle to a pipeline layout object<br><br><br>
@@ -2319,6 +2343,10 @@ namespace vk {
                 const VkAllocationCallbacks                     *pAllocator
         );
 
+        //TODO VkQueryPool createVkQueryPool();
+
+        //TODO VkQueue getVkQueue();
+
         /** <b>Name</b><hr><br>
          *
          * VkRenderPass - Opaque handle to a render pass object<br><br><br>
@@ -2340,6 +2368,10 @@ namespace vk {
                 const VkSurfaceKHR                 &surface,
                 const VkAllocationCallbacks        *pAllocator
         );
+
+        //TODO VkSampler createVkSampler();
+
+        //TODO VkSamplerYcbcrConversion createVkSamplerYcbcrConversion();
 
         /** <b>Name</b><hr><br>
          *
@@ -2424,6 +2456,8 @@ namespace vk {
                 const VkExtent2D                           &extent,
                 const VkAllocationCallbacks                *pAllocator
         );
+
+        //TODO VkValidationCacheEXT createVkValidationCacheEXT();
 
 }
 

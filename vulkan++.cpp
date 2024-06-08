@@ -789,7 +789,9 @@ std::vector<VkDescriptorSet> vk::createVkDescriptorSets(
         );
 
         std::vector<VkDescriptorSet> descriptorSets(descriptorSetLayouts.size());
-        VkResult result = vkAllocateDescriptorSets(device, &allocateInfo, descriptorSets.data());
+        VkResult result = vkAllocateDescriptorSets(
+                device, &allocateInfo, descriptorSets.data()
+        );
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not allocate descriptor sets!");
