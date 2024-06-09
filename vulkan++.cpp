@@ -707,34 +707,6 @@ VkWriteDescriptorSet vk::createVkWriteDescriptorSet(
         };
 }
 
-VkAccelerationStructureCreateInfoNV vk::createVkAccelerationStructureCreateInfoNV(
-        const VkDeviceSize                         &compactedSize,
-        const VkAccelerationStructureInfoNV        &info
-) {
-        return {
-                .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV,
-                .pNext = nullptr,
-                .compactedSize = compactedSize,
-                .info = info
-        };
-}
-
-VkAccelerationStructureInfoNV vk::createVkAccelerationStructureInfoNV(
-        const VkAccelerationStructureTypeNV              &type,
-        const uint32_t                                   &instanceCount,
-        const std::vector<VkGeometryNV>                  &geometries
-) {
-        return {
-                .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV,
-                .pNext = nullptr,
-                .type = type,
-                .flags = VkBuildAccelerationStructureFlagsNV(),
-                .instanceCount = instanceCount,
-                .geometryCount = static_cast<uint32_t>(geometries.size()),
-                .pGeometries = geometries.data()
-        };
-}
-
 VkBufferViewCreateInfo vk::createVkBufferViewCreateInfo(
         const VkBuffer            &buffer,
         const VkFormat            &format,
@@ -750,34 +722,6 @@ VkBufferViewCreateInfo vk::createVkBufferViewCreateInfo(
                 .offset = offset,
                 .range = range
         };
-}
-
-VkAccelerationStructureNV vk::createVkAccelerationStructureNV(
-        const VkDevice                                   &device,
-        const VkAccelerationStructureTypeKHR             &type,
-        const uint32_t                                   &instanceCount,
-        const std::vector<VkGeometryNV>                  &geometries,
-        const VkDeviceSize                               &compactedSize,
-        const VkAllocationCallbacks                      *pAllocator
-) {
-        auto info = vk::createVkAccelerationStructureInfoNV(
-                type, instanceCount, geometries
-        );
-
-        auto createInfo = vk::createVkAccelerationStructureCreateInfoNV(
-                compactedSize, info
-        );
-
-        VkAccelerationStructureNV accelerationStructure{};
-        VkResult result = vkCreateAccelerationStructureNV(
-                device, &createInfo,
-                pAllocator, &accelerationStructure
-        );
-
-        if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create acceleration structure nv!");
-
-        return accelerationStructure;
 }
 
 VkBuffer vk::createVkBuffer(
@@ -1072,19 +1016,33 @@ VkPipeline vk::createVkPipeline(
         const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
         const VkAllocationCallbacks                                 *pAllocator
 ) {
+        auto vertexInputStateCreateInfo = vk::createVkPipelineVertexInputStateCreateInfo(
+                bindingDescriptions, attributeDescriptions
+        );
+
+        auto inputAssemblyStateCreateInfo = vk::createVkPipelineInputAssemblyStateCreateInfo();
+
+        auto viewportStateCreateInfo = vk::createVkPipelineViewportStateCreateInfo(
+                viewports, scissors
+        );
+
+        auto rasterizationStateCreateInfo = vk::createVkPipelineRasterizationStateCreateInfo();
+
+        auto multisampleStateCreateInfo = vk::createVkPipelineMultisampleStateCreateInfo();
+
+        auto colorBlendAttachmentState = vk::createVkPipelineColorBlendAttachmentState();
+
+        auto colorBlendStateCreateInfo = vk::createVkPipelineColorBlendStateCreateInfo(
+                colorBlendAttachmentState
+        );
+
         VkGraphicsPipelineCreateInfo pipelineCreateInfo = vk::createVkGraphicsPipelineCreateInfo(
-                vk::createVkPipelineVertexInputStateCreateInfo(
-                        bindingDescriptions, attributeDescriptions
-                ),
-                vk::createVkPipelineInputAssemblyStateCreateInfo(),
-                vk::createVkPipelineViewportStateCreateInfo(
-                        viewports, scissors
-                ),
-                vk::createVkPipelineRasterizationStateCreateInfo(),
-                vk::createVkPipelineMultisampleStateCreateInfo(),
-                vk::createVkPipelineColorBlendStateCreateInfo(
-                        vk::createVkPipelineColorBlendAttachmentState()
-                ),
+                vertexInputStateCreateInfo,
+                inputAssemblyStateCreateInfo,
+                viewportStateCreateInfo,
+                rasterizationStateCreateInfo,
+                multisampleStateCreateInfo,
+                colorBlendStateCreateInfo,
                 shaderStages, layout, renderPass
         );
 

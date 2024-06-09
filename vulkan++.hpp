@@ -10,78 +10,6 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
-         * VkAccelerationStructureCreateInfoNV - Structure specifying the parameters of a newly created acceleration structure object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkAccelerationStructureCreateInfoNV structure is defined as:
-         *
-         * @code
-         * // Provided by VK_NV_ray_tracing
-         * typedef struct VkAccelerationStructureCreateInfoNV {
-         *     VkStructureType                  sType;
-         *     const void*                      pNext;
-         *     VkDeviceSize                     compactedSize;
-         *     VkAccelerationStructureInfoNV    info;
-         * } VkAccelerationStructureCreateInfoNV;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>sType is a VkStructureType value identifying this structure.
-         * <li>pNext is NULL or a pointer to a structure extending this structure.
-         * <li>compactedSize is the size from the result of vkCmdWriteAccelerationStructuresPropertiesNV if this acceleration structure is going to be the target of a compacting copy.
-         * <li>info is the VkAccelerationStructureInfoNV structure specifying further parameters of the created acceleration structure.
-         * </ul>
-         */
-        VkAccelerationStructureCreateInfoNV createVkAccelerationStructureCreateInfoNV(
-                const VkDeviceSize                         &compactedSize,
-                const VkAccelerationStructureInfoNV        &info
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkAccelerationStructureInfoNV - Structure specifying the parameters of acceleration structure object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkAccelerationStructureInfoNV structure is defined as:
-         *
-         * @code
-         * // Provided by VK_NV_ray_tracing
-         * typedef struct VkAccelerationStructureInfoNV {
-         *     VkStructureType                        sType;
-         *     const void*                            pNext;
-         *     VkAccelerationStructureTypeNV          type;
-         *     VkBuildAccelerationStructureFlagsNV    flags;
-         *     uint32_t                               instanceCount;
-         *     uint32_t                               geometryCount;
-         *     const VkGeometryNV*                    pGeometries;
-         * } VkAccelerationStructureInfoNV;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>sType is a VkStructureType value identifying this structure.
-         * <li>pNext is NULL or a pointer to a structure extending this structure.
-         * <li>type is a VkAccelerationStructureTypeNV value specifying the type of acceleration structure that will be created.
-         * <li>flags is a bitmask of VkBuildAccelerationStructureFlagBitsNV specifying additional parameters of the acceleration structure.
-         * <li>instanceCount specifies the number of instances that will be in the new acceleration structure.
-         * <li>geometryCount specifies the number of geometries that will be in the new acceleration structure.
-         * <li>pGeometries is a pointer to an array of geometryCount VkGeometryNV structures containing the scene data being passed into the acceleration structure.
-         * </ul>
-         * <b>Description</b><hr><br>
-         *
-         * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
-         */
-        VkAccelerationStructureInfoNV createVkAccelerationStructureInfoNV(
-                const VkAccelerationStructureTypeNV              &type,
-                const uint32_t                                   &instanceCount,
-                const std::vector<VkGeometryNV>                  &geometries
-        );
-
-        /** <b>Name</b><hr><br>
-         *
          * VkApplicationInfo - Structure specifying application information<br><br><br>
          *
          * <b>C Specification</b><hr><br>
@@ -2152,27 +2080,6 @@ namespace vk {
                 const VkBufferView                  *pTexelBufferView
         );
 
-        /** <b>Name</b><hr><br>
-         *
-         * VkAccelerationStructureNV - Opaque handle to an acceleration structure object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Acceleration structures for the VK_NV_ray_tracing extension are represented by the similar VkAccelerationStructureNV handles:
-         *
-         * @code
-         * // Provided by VK_NV_ray_tracing
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureNV)
-         * @endcode
-         */
-        VkAccelerationStructureNV createVkAccelerationStructureNV(
-                const VkDevice                                   &device,
-                const VkAccelerationStructureTypeKHR             &type,
-                const uint32_t                                   &instanceCount,
-                const std::vector<VkGeometryNV>                  &geometries,
-                const VkDeviceSize                               &compactedSize,
-                const VkAllocationCallbacks                      *pAllocator
-        );
 
         /** <b>Name</b><hr><br>
          *
