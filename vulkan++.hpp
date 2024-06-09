@@ -2452,7 +2452,24 @@ namespace vk {
 
         //TODO VkPerformanceConfigurationINTEL acquireVkPerformanceConfigurationINTEL();
 
-        //TODO VkPhysicalDevice getVkPhysicalDevice();
+        /** <b>Name</b><hr><br>
+         *
+         * VkPhysicalDevice - Opaque handle to a physical device object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Vulkan separates the concept of physical and logical devices. A physical device usually represents a single complete implementation of Vulkan (excluding instance-level functionality) available to the host, of which there are a finite number. A logical device represents an instance of that implementation with its own state and resources independent of other logical devices.<br><br>
+         *
+         * Physical devices are represented by VkPhysicalDevice handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkPhysicalDevice)
+         * @endcode
+         */
+        std::vector<VkPhysicalDevice> getVkPhysicalDevice(
+                const VkInstance &instance
+        );
 
         /** <b>Name</b><hr><br>
          *
@@ -2505,7 +2522,26 @@ namespace vk {
 
         //TODO VkQueryPool createVkQueryPool();
 
-        //TODO VkQueue getVkQueue();
+        /** <b>Name</b><hr><br>
+         *
+         * VkQueue - Opaque handle to a queue object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Creating a logical device also creates the queues associated with that device. The queues to create are described by a set of VkDeviceQueueCreateInfo structures that are passed to vkCreateDevice in pQueueCreateInfos.<br><br>
+         *
+         * Queues are represented by VkQueue handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkQueue)
+         * @endcode
+         */
+        VkQueue getVkQueue(
+                const VkDevice        &device,
+                const uint32_t        &queueFamilyIndex,
+                const uint32_t        &queueIndex
+        );
 
         /** <b>Name</b><hr><br>
          *

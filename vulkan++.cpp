@@ -1043,6 +1043,24 @@ VkInstance vk::createVkInstance(
         return instance;
 }
 
+std::vector<VkPhysicalDevice> vk::getVkPhysicalDevice(
+        const VkInstance &instance
+) {
+        uint32_t physicalDevicesCount = 0;
+        VkResult result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr);
+
+        if (result != VK_SUCCESS && result != VK_INCOMPLETE)
+                throw std::runtime_error("Could not get physical devices count!");
+
+        std::vector<VkPhysicalDevice> physicalDevices(physicalDevicesCount);
+        result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, physicalDevices.data());
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not get physical devices!");
+
+        return physicalDevices;
+}
+
 VkPipeline vk::createVkPipeline(
         const VkDevice                                              &device,
         const VkRenderPass                                          &renderPass,
@@ -1054,30 +1072,19 @@ VkPipeline vk::createVkPipeline(
         const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
         const VkAllocationCallbacks                                 *pAllocator
 ) {
-        auto vertexInputStateCreateInfo = vk::createVkPipelineVertexInputStateCreateInfo(
-                bindingDescriptions, attributeDescriptions
-        );
-
-        auto inputAssemblyStateCreateInfo = vk::createVkPipelineInputAssemblyStateCreateInfo();
-
-        auto viewportStateCreateInfo = vk::createVkPipelineViewportStateCreateInfo(
-                viewports, scissors
-        );
-
-        auto rasterizationStateCreateInfo = vk::createVkPipelineRasterizationStateCreateInfo();
-
-        auto multisampleStateCreateInfo = vk::createVkPipelineMultisampleStateCreateInfo();
-
-        auto colorBlendAttachmentState = vk::createVkPipelineColorBlendAttachmentState();
-
-        auto colorBlendStateCreateInfo = vk::createVkPipelineColorBlendStateCreateInfo(
-                colorBlendAttachmentState
-        );
-
         VkGraphicsPipelineCreateInfo pipelineCreateInfo = vk::createVkGraphicsPipelineCreateInfo(
-                vertexInputStateCreateInfo, inputAssemblyStateCreateInfo,
-                viewportStateCreateInfo, rasterizationStateCreateInfo,
-                multisampleStateCreateInfo, colorBlendStateCreateInfo,
+                vk::createVkPipelineVertexInputStateCreateInfo(
+                        bindingDescriptions, attributeDescriptions
+                ),
+                vk::createVkPipelineInputAssemblyStateCreateInfo(),
+                vk::createVkPipelineViewportStateCreateInfo(
+                        viewports, scissors
+                ),
+                vk::createVkPipelineRasterizationStateCreateInfo(),
+                vk::createVkPipelineMultisampleStateCreateInfo(),
+                vk::createVkPipelineColorBlendStateCreateInfo(
+                        vk::createVkPipelineColorBlendAttachmentState()
+                ),
                 shaderStages, layout, renderPass
         );
 
@@ -1114,6 +1121,20 @@ VkPipelineLayout vk::createVkPipelineLayout(
                 throw std::runtime_error("Could not create pipeline layout!");
 
         return layout;
+}
+
+VkQueue vk::getVkQueue(
+        const VkDevice        &device,
+        const uint32_t        &queueFamilyIndex,
+        const uint32_t        &queueIndex
+) {
+        VkQueue queue{};
+        vkGetDeviceQueue(
+                device, queueFamilyIndex,
+                queueIndex, &queue
+        );
+
+        return queue;
 }
 
 VkRenderPass vk::createVkRenderPass(
