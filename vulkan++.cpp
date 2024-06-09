@@ -1043,7 +1043,7 @@ VkInstance vk::createVkInstance(
         return instance;
 }
 
-std::vector<VkPhysicalDevice> vk::getVkPhysicalDevice(
+std::vector<VkPhysicalDevice> vk::getVkPhysicalDevices(
         const VkInstance &instance
 ) {
         uint32_t physicalDevicesCount = 0;

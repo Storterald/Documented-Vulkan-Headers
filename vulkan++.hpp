@@ -2467,7 +2467,7 @@ namespace vk {
          * VK_DEFINE_HANDLE(VkPhysicalDevice)
          * @endcode
          */
-        std::vector<VkPhysicalDevice> getVkPhysicalDevice(
+        std::vector<VkPhysicalDevice> getVkPhysicalDevices(
                 const VkInstance &instance
         );
 
