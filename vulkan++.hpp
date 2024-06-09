@@ -1355,14 +1355,14 @@ namespace vk {
          *
          * Table 1. Image type and image view type compatibility requirements
          *
-         * <pre> <b>   Image View Type</b>               | <b>Compatible Image Types</b></pre><
-         * <pre>    VK_IMAGE_VIEW_TYPE_1D         | VK_IMAGE_TYPE_1D</pre>
-         * <pre>    VK_IMAGE_VIEW_TYPE_1D_ARRAY   | VK_IMAGE_TYPE_1D</pre>
-         * <pre>    VK_IMAGE_VIEW_TYPE_2D         | VK_IMAGE_TYPE_2D , VK_IMAGE_TYPE_3D</pre>
-         * <pre>    VK_IMAGE_VIEW_TYPE_2D_ARRAY   | VK_IMAGE_TYPE_2D , VK_IMAGE_TYPE_3D</pre>
-         * <pre>    VK_IMAGE_VIEW_TYPE_CUBE       | VK_IMAGE_TYPE_2D</pre>
-         * <pre>    VK_IMAGE_VIEW_TYPE_CUBE_ARRAY | VK_IMAGE_TYPE_2D</pre>
-         * <pre>    VK_IMAGE_VIEW_TYPE_3D         | VK_IMAGE_TYPE_3D</pre>
+         * <pre><b>  Image View Type</b>               | <b>Compatible Image Types</b></pre><
+         * <pre>  VK_IMAGE_VIEW_TYPE_1D         | VK_IMAGE_TYPE_1D</pre>
+         * <pre>  VK_IMAGE_VIEW_TYPE_1D_ARRAY   | VK_IMAGE_TYPE_1D</pre>
+         * <pre>  VK_IMAGE_VIEW_TYPE_2D         | VK_IMAGE_TYPE_2D , VK_IMAGE_TYPE_3D</pre>
+         * <pre>  VK_IMAGE_VIEW_TYPE_2D_ARRAY   | VK_IMAGE_TYPE_2D , VK_IMAGE_TYPE_3D</pre>
+         * <pre>  VK_IMAGE_VIEW_TYPE_CUBE       | VK_IMAGE_TYPE_2D</pre>
+         * <pre>  VK_IMAGE_VIEW_TYPE_CUBE_ARRAY | VK_IMAGE_TYPE_2D</pre>
+         * <pre>  VK_IMAGE_VIEW_TYPE_3D         | VK_IMAGE_TYPE_3D</pre>
          *
          *
          */
@@ -1602,6 +1602,7 @@ namespace vk {
          * The VkPipelineLayoutCreateInfo structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkPipelineLayoutCreateInfo {
          *     VkStructureType                 sType;
          *     const void*                     pNext;
@@ -1638,6 +1639,7 @@ namespace vk {
          * The VkRenderPassCreateInfo structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkRenderPassCreateInfo {
          *     VkStructureType                   sType;
          *     const void*                       pNext;
@@ -1681,6 +1683,7 @@ namespace vk {
          * The VkSemaphoreCreateInfo structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkSemaphoreCreateInfo {
          *     VkStructureType           sType;
          *     const void*               pNext;
@@ -1706,6 +1709,7 @@ namespace vk {
          * The VkShaderModuleCreateInfo structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkShaderModuleCreateInfo {
          *     VkStructureType              sType;
          *     const void*                  pNext;
@@ -1737,6 +1741,7 @@ namespace vk {
          * The VkSwapchainCreateInfoKHR structure is defined as:
          *
          * @code
+         * // Provided by VK_KHR_swapchain
          * typedef struct VkSwapchainCreateInfoKHR {
          *     VkStructureType                  sType;
          *     const void*                      pNext;
@@ -1823,6 +1828,7 @@ namespace vk {
          * The VkDescriptorSetLayoutBinding structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkDescriptorSetLayoutBinding {
          *     uint32_t              binding;
          *     VkDescriptorType      descriptorType;
@@ -1863,6 +1869,7 @@ namespace vk {
          * Information about the descriptor set layout is passed in a VkDescriptorSetLayoutCreateInfo structure:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkDescriptorSetLayoutCreateInfo {
          *     VkStructureType                        sType;
          *     const void*                            pNext;
@@ -1894,6 +1901,7 @@ namespace vk {
          * The VkDescriptorPoolSize structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkDescriptorPoolSize {
          *     VkDescriptorType    type;
          *     uint32_t            descriptorCount;
@@ -1923,6 +1931,7 @@ namespace vk {
          * Additional information about the pool is passed in a VkDescriptorPoolCreateInfo structure:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkDescriptorPoolCreateInfo {
          *     VkStructureType                sType;
          *     const void*                    pNext;
@@ -2000,6 +2009,7 @@ namespace vk {
          * The VkDescriptorBufferInfo structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkDescriptorBufferInfo {
          *     VkBuffer        buffer;
          *     VkDeviceSize    offset;
@@ -2034,6 +2044,7 @@ namespace vk {
          * The VkWriteDescriptorSet structure is defined as:
          *
          * @code
+         * // Provided by VK_VERSION_1_0
          * typedef struct VkWriteDescriptorSet {
          *     VkStructureType                  sType;
          *     const void*                      pNext;
@@ -2080,6 +2091,243 @@ namespace vk {
                 const VkBufferView                  *pTexelBufferView
         );
 
+        /** <b>Name</b><hr><br>
+         *
+         * VkPhysicalDeviceMemoryProperties - Structure specifying physical device memory properties<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPhysicalDeviceMemoryProperties structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPhysicalDeviceMemoryProperties {
+         *     uint32_t        memoryTypeCount;
+         *     VkMemoryType    memoryTypes[VK_MAX_MEMORY_TYPES];
+         *     uint32_t        memoryHeapCount;
+         *     VkMemoryHeap    memoryHeaps[VK_MAX_MEMORY_HEAPS];
+         * } VkPhysicalDeviceMemoryProperties;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>memoryTypeCount is the number of valid elements in the memoryTypes array.
+         * <li>memoryTypes is an array of VK_MAX_MEMORY_TYPES VkMemoryType structures describing the memory types that <b>can</b> be used to access memory allocated from the heaps specified by memoryHeaps.
+         * <li>memoryHeapCount is the number of valid elements in the memoryHeaps array.
+         * <li>memoryHeaps is an array of VK_MAX_MEMORY_HEAPS VkMemoryHeap structures describing the memory heaps from which memory <b>can</b> be allocated.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The VkPhysicalDeviceMemoryProperties structure describes a number of memory heaps as well as a number of memory types that <b>can</b> be used to access memory allocated in those heaps. Each heap describes a memory resource of a particular size, and each memory type describes a set of memory properties (e.g. host cached vs. uncached) that <b>can</b> be used with a given memory heap.<br>
+         * Allocations using a particular memory type will consume resources from the heap indicated by that memory type’s heap index. More than one memory type <b>may</b> share each heap, and the heaps and memory types provide a mechanism to advertise an accurate size of the physical memory resources while allowing the memory to be used with a variety of different properties.<br><br>
+         *
+         * The number of memory heaps is given by memoryHeapCount and is less than or equal to VK_MAX_MEMORY_HEAPS. Each heap is described by an element of the memoryHeaps array as a VkMemoryHeap structure. The number of memory types available across all memory heaps is given by memoryTypeCount and is less than or equal to VK_MAX_MEMORY_TYPES. Each memory type is described by an element of the memoryTypes array as a VkMemoryType structure.<br><br
+         *
+         * At least one heap <b>must</b> include VK_MEMORY_HEAP_DEVICE_LOCAL_BIT in VkMemoryHeap::flags. If there are multiple heaps that all have similar performance characteristics, they <b>may</b> all include VK_MEMORY_HEAP_DEVICE_LOCAL_BIT. In a unified memory architecture (UMA) system there is often only a single memory heap which is considered to be equally “local” to the host and to the device, and such an implementation <b>must</b> advertise the heap as device-local.<br><br>
+         *
+         * Each memory type returned by vkGetPhysicalDeviceMemoryProperties <b>must</b> have its propertyFlags set to one of the following values:
+         * <ul>
+         * <li>0
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
+         * <li>VK_MEMORY_PROPERTY_PROTECTED_BIT
+         * <li>VK_MEMORY_PROPERTY_PROTECTED_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV
+         * </ul>
+         * There <b>must</b> be at least one memory type with both the VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT and VK_MEMORY_PROPERTY_HOST_COHERENT_BIT bits set in its propertyFlags. There <b>must</b> be at least one memory type with the VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT bit set in its propertyFlags. If the deviceCoherentMemory feature is enabled, there <b>must</b> be at least one memory type with the VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD bit set in its propertyFlags.<br><br>
+         *
+         * For each pair of elements <b>X</b> and <b>Y</b> returned in memoryTypes, <b>X must</b> be placed at a lower index position than <b>Y</b> if:
+         * <ul>
+         * <li>the set of bit flags returned in the propertyFlags member of <b>X</b> is a strict subset of the set of bit flags returned in the propertyFlags member of <b>Y</b>; or
+         * <li>the propertyFlags members of <b>X</b> and <b>Y</b> are equal, and <b>X</b> belongs to a memory heap with greater performance (as determined in an implementation-specific manner) ; or
+         * <li>the propertyFlags members of <b>Y</b> includes VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD or VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD and <b>X</b> does not
+         * </ul>
+         * @note There is no ordering requirement between <b>X</b> and <b>Y</b> elements for the case their propertyFlags members are not in a subset relation. That potentially allows more than one possible way to order the same set of memory types. Notice that the list of all allowed memory property flag combinations is written in a valid order. But if instead VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT was before VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, the list would still be in a valid order.<br><br>
+         * There may be a performance penalty for using device coherent or uncached device memory types, and using these accidentally is undesirable. In order to avoid this, memory types with these properties always appear at the end of the list; but are subject to the same rules otherwise.<br><br>
+         *
+         * This ordering requirement enables applications to use a simple search loop to select the desired memory type along the lines of:
+         * @code
+         * // Find a memory in `memoryTypeBitsRequirement` that includes all of `requiredProperties`
+         * int32_t findProperties(const VkPhysicalDeviceMemoryProperties* pMemoryProperties,
+         *                       uint32_t memoryTypeBitsRequirement,
+         *                       VkMemoryPropertyFlags requiredProperties) {
+         *     const uint32_t memoryCount = pMemoryProperties->memoryTypeCount;
+         *     for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; ++memoryIndex) {
+         *         const uint32_t memoryTypeBits = (1 << memoryIndex);
+         *         const bool isRequiredMemoryType = memoryTypeBitsRequirement & memoryTypeBits;
+         *
+         *         const VkMemoryPropertyFlags properties =
+         *             pMemoryProperties->memoryTypes[memoryIndex].propertyFlags;
+         *         const bool hasRequiredProperties =
+         *             (properties & requiredProperties) == requiredProperties;
+         *
+         *         if (isRequiredMemoryType && hasRequiredProperties)
+         *             return static_cast<int32_t>(memoryIndex);
+         *     }
+         *
+         *     // failed to find memory type
+         *     return -1;
+         * }
+         *
+         * // Try to find an optimal memory type, or if it does not exist try fallback memory type
+         * // `device` is the VkDevice
+         * // `image` is the VkImage that requires memory to be bound
+         * // `memoryProperties` properties as returned by vkGetPhysicalDeviceMemoryProperties
+         * // `requiredProperties` are the property flags that must be present
+         * // `optimalProperties` are the property flags that are preferred by the application
+         * VkMemoryRequirements memoryRequirements;
+         * vkGetImageMemoryRequirements(device, image, &memoryRequirements);
+         * int32_t memoryType =
+         *     findProperties(&memoryProperties, memoryRequirements.memoryTypeBits, optimalProperties);
+         * if (memoryType == -1) // not found; try fallback properties
+         *     memoryType =
+         *         findProperties(&memoryProperties, memoryRequirements.memoryTypeBits, requiredProperties);
+         * @endcode
+         */
+        VkPhysicalDeviceMemoryProperties getVkPhysicalDeviceMemoryProperties(
+                const VkPhysicalDevice        &physicalDevice
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSurfaceCapabilitiesKHR - Structure describing capabilities of a surface<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSurfaceCapabilitiesKHR structure is defined as:
+         *
+         * @code
+         * // Provided by VK_KHR_surface
+         * typedef struct VkSurfaceCapabilitiesKHR {
+         *     uint32_t                         minImageCount;
+         *     uint32_t                         maxImageCount;
+         *     VkExtent2D                       currentExtent;
+         *     VkExtent2D                       minImageExtent;
+         *     VkExtent2D                       maxImageExtent;
+         *     uint32_t                         maxImageArrayLayers;
+         *     VkSurfaceTransformFlagsKHR       supportedTransforms;
+         *     VkSurfaceTransformFlagBitsKHR    currentTransform;
+         *     VkCompositeAlphaFlagsKHR         supportedCompositeAlpha;
+         *     VkImageUsageFlags                supportedUsageFlags;
+         * } VkSurfaceCapabilitiesKHR;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>minImageCount is the minimum number of images the specified device supports for a swapchain created for the surface, and will be at least one.
+         * <li>maxImageCount is the maximum number of images the specified device supports for a swapchain created for the surface, and will be either 0, or greater than or equal to minImageCount. A value of 0 means that there is no limit on the number of images, though there <b>may</b> be limits related to the total amount of memory used by presentable images.
+         * <li>currentExtent is the current width and height of the surface, or the special value (0xFFFFFFFF, 0xFFFFFFFF) indicating that the surface size will be determined by the extent of a swapchain targeting the surface.
+         * <li>minImageExtent contains the smallest valid swapchain extent for the surface on the specified device. The width and height of the extent will each be less than or equal to the corresponding width and height of currentExtent, unless currentExtent has the special value described above.
+         * <li>maxImageExtent contains the largest valid swapchain extent for the surface on the specified device. The width and height of the extent will each be greater than or equal to the corresponding width and height of minImageExtent. The width and height of the extent will each be greater than or equal to the corresponding width and height of currentExtent, unless currentExtent has the special value described above.
+         * <li>maxImageArrayLayers is the maximum number of layers presentable images <b>can</b> have for a swapchain created for this device and surface, and will be at least one.
+         * <li>supportedTransforms is a bitmask of VkSurfaceTransformFlagBitsKHR indicating the presentation transforms supported for the surface on the specified device. At least one bit will be set.
+         * <li>currentTransform is VkSurfaceTransformFlagBitsKHR value indicating the surface’s current transform relative to the presentation engine’s natural orientation.
+         * <li>supportedCompositeAlpha is a bitmask of VkCompositeAlphaFlagBitsKHR, representing the alpha compositing modes supported by the presentation engine for the surface on the specified device, and at least one bit will be set. Opaque composition <b>can</b> be achieved in any alpha compositing mode by either using an image format that has no alpha component, or by ensuring that all pixels in the presentable images have an alpha value of 1.0.
+         * <li>supportedUsageFlags is a bitmask of VkImageUsageFlagBits representing the ways the application <b>can</b> use the presentable images of a swapchain created with VkPresentModeKHR set to VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR or VK_PRESENT_MODE_FIFO_RELAXED_KHR for the surface on the specified device. VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT <b>must</b> be included in the set. Implementations may support additional usages.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * @note Supported usage flags of a presentable image when using VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR or VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR presentation mode are provided by VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags.
+         *
+         * @note Formulas such as min(N, maxImageCount) are not correct, since maxImageCount <b>may</b> be zero.
+         */
+        VkSurfaceCapabilitiesKHR getVkSurfaceCapabilitiesKHR(
+                const VkPhysicalDevice        &physicalDevice,
+                const VkSurfaceKHR            &surface
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSurfaceFormatKHR - Structure describing a supported swapchain format-color space pair<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSurfaceFormatKHR structure is defined as:
+         *
+         * @code
+         * // Provided by VK_KHR_surface
+         * typedef struct VkSurfaceFormatKHR {
+         *     VkFormat           format;
+         *     VkColorSpaceKHR    colorSpace;
+         * } VkSurfaceFormatKHR;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>format is a VkFormat that is compatible with the specified surface.
+         * <li>colorSpace is a presentation VkColorSpaceKHR that is compatible with the surface.
+         * </ul><br>
+         */
+        std::vector<VkSurfaceFormatKHR> getVkSurfaceFormatKHRs(
+                const VkPhysicalDevice        &physicalDevice,
+                const VkSurfaceKHR            &surface
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPresentModeKHR - Presentation mode supported for a surface<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Possible values of elements of the vkGetPhysicalDeviceSurfacePresentModesKHR::pPresentModes array, indicating the supported presentation modes for a surface, are:
+         *
+         * @code
+         * // Provided by VK_KHR_surface
+         * typedef enum VkPresentModeKHR {
+         *     VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
+         *     VK_PRESENT_MODE_MAILBOX_KHR = 1,
+         *     VK_PRESENT_MODE_FIFO_KHR = 2,
+         *     VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
+         *   // Provided by VK_KHR_shared_presentable_image
+         *     VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = 1000111000,
+         *   // Provided by VK_KHR_shared_presentable_image
+         *     VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = 1000111001,
+         * } VkPresentModeKHR;
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         * <ul>
+         * <li>VK_PRESENT_MODE_IMMEDIATE_KHR specifies that the presentation engine does not wait for a vertical blanking period to update the current image, meaning this mode <b>may</b> result in visible tearing. No internal queuing of presentation requests is needed, as the requests are applied immediately.
+         * <li>VK_PRESENT_MODE_MAILBOX_KHR specifies that the presentation engine waits for the next vertical blanking period to update the current image. Tearing <b>cannot</b> be observed. An internal single-entry queue is used to hold pending presentation requests. If the queue is full when a new presentation request is received, the new request replaces the existing entry, and any images associated with the prior entry become available for reuse by the application. One request is removed from the queue and processed during each vertical blanking period in which the queue is non-empty.
+         * <li>VK_PRESENT_MODE_FIFO_KHR specifies that the presentation engine waits for the next vertical blanking period to update the current image. Tearing <b>cannot</b> be observed. An internal queue is used to hold pending presentation requests. New requests are appended to the end of the queue, and one request is removed from the beginning of the queue and processed during each vertical blanking period in which the queue is non-empty. This is the only value of presentMode that is <b>required</b> to be supported.
+         * <li>VK_PRESENT_MODE_FIFO_RELAXED_KHR specifies that the presentation engine generally waits for the next vertical blanking period to update the current image. If a vertical blanking period has already passed since the last update of the current image then the presentation engine does not wait for another vertical blanking period for the update, meaning this mode <b>may</b> result in visible tearing in this case. This mode is useful for reducing visual stutter with an application that will mostly present a new image before the next vertical blanking period, but may occasionally be late, and present a new image just after the next vertical blanking period. An internal queue is used to hold pending presentation requests. New requests are appended to the end of the queue, and one request is removed from the beginning of the queue and processed during or after each vertical blanking period in which the queue is non-empty.
+         * <li>VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR specifies that the presentation engine and application have concurrent access to a single image, which is referred to as a shared presentable image. The presentation engine is only required to update the current image after a new presentation request is received. Therefore the application <b>must</b> make a presentation request whenever an update is required. However, the presentation engine <b>may</b> update the current image at any point, meaning this mode <b>may</b> result in visible tearing.
+         * <li>VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR specifies that the presentation engine and application have concurrent access to a single image, which is referred to as a shared presentable image. The presentation engine periodically updates the current image on its regular refresh cycle. The application is only required to make one initial presentation request, after which the presentation engine <b>must</b> update the current image without any need for further presentation requests. The application <b>can</b> indicate the image contents have been updated by making a presentation request, but this does not guarantee the timing of when it will be updated. This mode <b>may</b> result in visible tearing if rendering to the image is not timed correctly.
+         * </ul>
+         * The supported VkImageUsageFlagBits of the presentable images of a swapchain created for a surface <b>may</b> differ depending on the presentation mode, and can be determined as per the table below:<br><br>
+         *
+         * Table 1. Presentable image usage queries
+         *
+         * <pre><b>  Presentation mode</b>                             | <b>Image usage flags</b></pre><
+         * <pre>  VK_PRESENT_MODE_IMMEDIATE_KHR                 | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_MAILBOX_KHR                   | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_FIFO_KHR                      | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_FIFO_RELAXED_KHR              | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR     | VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR | VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags</pre>
+         *
+         * @note For reference, the mode indicated by VK_PRESENT_MODE_FIFO_KHR is equivalent to the behavior of {wgl|glX|egl}SwapBuffers with a swap interval of 1, while the mode indicated by VK_PRESENT_MODE_FIFO_RELAXED_KHR is equivalent to the behavior of {wgl|glX}SwapBuffers with a swap interval of -1 (from the {WGL|GLX}_EXT_swap_control_tear extensions).
+         */
+        std::vector<VkPresentModeKHR> getVkPresentModeKHR(
+                const VkPhysicalDevice        &physicalDevice,
+                const VkSurfaceKHR            &surface
+        );
 
         /** <b>Name</b><hr><br>
          *

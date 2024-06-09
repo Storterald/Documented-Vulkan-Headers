@@ -724,6 +724,78 @@ VkBufferViewCreateInfo vk::createVkBufferViewCreateInfo(
         };
 }
 
+VkPhysicalDeviceMemoryProperties vk::getVkPhysicalDeviceMemoryProperties(
+        const VkPhysicalDevice        &physicalDevice
+) {
+        VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties{};
+        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
+
+        return physicalDeviceMemoryProperties;
+}
+
+VkSurfaceCapabilitiesKHR vk::getVkSurfaceCapabilitiesKHR(
+        const VkPhysicalDevice        &physicalDevice,
+        const VkSurfaceKHR            &surface
+) {
+        VkSurfaceCapabilitiesKHR capabilities{};
+        VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not get physical device surface capabilities!");
+
+        return capabilities;
+}
+
+std::vector<VkSurfaceFormatKHR> vk::getVkSurfaceFormatKHRs(
+        const VkPhysicalDevice        &physicalDevice,
+        const VkSurfaceKHR            &surface
+) {
+        uint32_t formatsCount = 0;
+        VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(
+                physicalDevice, surface,
+                &formatsCount, nullptr
+        );
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not get surface formats count!");
+
+        std::vector<VkSurfaceFormatKHR> formats(formatsCount);
+        result = vkGetPhysicalDeviceSurfaceFormatsKHR(
+                physicalDevice, surface,
+                &formatsCount, formats.data()
+        );
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not get surface formats.");
+
+        return formats;
+}
+
+std::vector<VkPresentModeKHR> vk::getVkPresentModeKHR(
+        const VkPhysicalDevice        &physicalDevice,
+        const VkSurfaceKHR            &surface
+) {
+        uint32_t presentModesCount = 0;
+        VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(
+                physicalDevice, surface,
+                &presentModesCount, nullptr
+        );
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not get present mode count.");
+
+        std::vector<VkPresentModeKHR> presentModes(presentModesCount);
+        result = vkGetPhysicalDeviceSurfacePresentModesKHR(
+                physicalDevice, surface,
+                &presentModesCount, presentModes.data()
+        );
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not get present modes.");
+
+        return presentModes;
+}
+
 VkBuffer vk::createVkBuffer(
         const VkDevice                     &device,
         const VkDeviceSize                 &size,
