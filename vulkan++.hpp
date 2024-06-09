@@ -10,6 +10,78 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
+         * VkAccelerationStructureCreateInfoNV - Structure specifying the parameters of a newly created acceleration structure object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkAccelerationStructureCreateInfoNV structure is defined as:
+         *
+         * @code
+         * // Provided by VK_NV_ray_tracing
+         * typedef struct VkAccelerationStructureCreateInfoNV {
+         *     VkStructureType                  sType;
+         *     const void*                      pNext;
+         *     VkDeviceSize                     compactedSize;
+         *     VkAccelerationStructureInfoNV    info;
+         * } VkAccelerationStructureCreateInfoNV;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>compactedSize is the size from the result of vkCmdWriteAccelerationStructuresPropertiesNV if this acceleration structure is going to be the target of a compacting copy.
+         * <li>info is the VkAccelerationStructureInfoNV structure specifying further parameters of the created acceleration structure.
+         * </ul>
+         */
+        VkAccelerationStructureCreateInfoNV createVkAccelerationStructureCreateInfoNV(
+                const VkDeviceSize                         &compactedSize,
+                const VkAccelerationStructureInfoNV        &info
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkAccelerationStructureInfoNV - Structure specifying the parameters of acceleration structure object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkAccelerationStructureInfoNV structure is defined as:
+         *
+         * @code
+         * // Provided by VK_NV_ray_tracing
+         * typedef struct VkAccelerationStructureInfoNV {
+         *     VkStructureType                        sType;
+         *     const void*                            pNext;
+         *     VkAccelerationStructureTypeNV          type;
+         *     VkBuildAccelerationStructureFlagsNV    flags;
+         *     uint32_t                               instanceCount;
+         *     uint32_t                               geometryCount;
+         *     const VkGeometryNV*                    pGeometries;
+         * } VkAccelerationStructureInfoNV;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>type is a VkAccelerationStructureTypeNV value specifying the type of acceleration structure that will be created.
+         * <li>flags is a bitmask of VkBuildAccelerationStructureFlagBitsNV specifying additional parameters of the acceleration structure.
+         * <li>instanceCount specifies the number of instances that will be in the new acceleration structure.
+         * <li>geometryCount specifies the number of geometries that will be in the new acceleration structure.
+         * <li>pGeometries is a pointer to an array of geometryCount VkGeometryNV structures containing the scene data being passed into the acceleration structure.
+         * </ul>
+         * <b>Description</b><hr><br>
+         *
+         * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
+         */
+        VkAccelerationStructureInfoNV createVkAccelerationStructureInfoNV(
+                const VkAccelerationStructureTypeNV              &type,
+                const uint32_t                                   &instanceCount,
+                const std::vector<VkGeometryNV>                  &geometries
+        );
+
+        /** <b>Name</b><hr><br>
+         *
          * VkApplicationInfo - Structure specifying application information<br><br><br>
          *
          * <b>C Specification</b><hr><br>
@@ -62,6 +134,49 @@ namespace vk {
                 const uint32_t        &applicationVersion,
                 const uint32_t        &version
         );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkBufferViewCreateInfo - Structure specifying parameters of a newly created buffer view<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkBufferViewCreateInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkBufferViewCreateInfo {
+         *     VkStructureType            sType;
+         *     const void*                pNext;
+         *     VkBufferViewCreateFlags    flags;
+         *     VkBuffer                   buffer;
+         *     VkFormat                   format;
+         *     VkDeviceSize               offset;
+         *     VkDeviceSize               range;
+         * } VkBufferViewCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is reserved for future use.
+         * <li>buffer is a VkBuffer on which the view will be created.
+         * <li>format is a VkFormat describing the format of the data elements in the buffer.
+         * <li>offset is an offset in bytes from the base address of the buffer. Accesses to the buffer view from shaders use addressing that is relative to this starting offset.
+         * <li>range is a size in bytes of the buffer view. If range is equal to VK_WHOLE_SIZE, the range from offset to the end of the buffer is used. If VK_WHOLE_SIZE is used and the remaining size of the buffer is not a multiple of the texel block size of format, the nearest smaller multiple is used.
+         * </ul>
+         * <b>Description</b><hr><br>
+         *
+         * The buffer view has a buffer view usage identifying which descriptor types <b>can</b> be created from it. This usage can be defined by including the VkBufferUsageFlags2CreateInfoKHR structure in the pNext chain, and specifying the usage value there. If this structure is not included, it is equal to the VkBufferCreateInfo::usage value used to create buffer.
+         */
+        VkBufferViewCreateInfo createVkBufferViewCreateInfo(
+                const VkBuffer            &buffer,
+                const VkFormat            &format,
+                const VkDeviceSize        &offset,
+                const VkDeviceSize        &range
+        );
+
         /** <b>Name</b><hr><br>
          *
          * VkPipelineVertexInputStateCreateInfo - Structure specifying parameters of a newly created pipeline vertex input state<br><br><br>
@@ -2037,7 +2152,27 @@ namespace vk {
                 const VkBufferView                  *pTexelBufferView
         );
 
-        //TODO VkAccelerationStructureNV createVkAccelerationStructureNV();
+        /** <b>Name</b><hr><br>
+         *
+         * VkAccelerationStructureNV - Opaque handle to an acceleration structure object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Acceleration structures for the VK_NV_ray_tracing extension are represented by the similar VkAccelerationStructureNV handles:
+         *
+         * @code
+         * // Provided by VK_NV_ray_tracing
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureNV)
+         * @endcode
+         */
+        VkAccelerationStructureNV createVkAccelerationStructureNV(
+                const VkDevice                                   &device,
+                const VkAccelerationStructureTypeKHR             &type,
+                const uint32_t                                   &instanceCount,
+                const std::vector<VkGeometryNV>                  &geometries,
+                const VkDeviceSize                               &compactedSize,
+                const VkAllocationCallbacks                      *pAllocator
+        );
 
         /** <b>Name</b><hr><br>
          *
@@ -2061,7 +2196,32 @@ namespace vk {
                  const VkAllocationCallbacks        *pAllocator
         );
 
-        //TODO VkBufferView createVkBufferView();
+        /** <b>Name</b><hr><br>
+         *
+         * VkBufferView - Opaque handle to a buffer view object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A buffer view represents a contiguous range of a buffer and a specific format to be used to interpret the data. Buffer views are used to enable shaders to access buffer contents using image operations. In order to create a valid buffer view, the buffer <b>must</b> have been created with at least one of the following usage flags:
+         * <ul>
+         * <li>VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
+         * <li>VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
+         * </ul>
+         * Buffer views are represented by VkBufferView handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
+         * @endcode
+         */
+        VkBufferView createVkBufferView(
+                const VkDevice                     &device,
+                const VkBuffer                     &buffer,
+                const VkFormat                     &format,
+                const VkDeviceSize                 &offset,
+                const VkDeviceSize                 &range,
+                const VkAllocationCallbacks        *pAllocator
+        );
 
         /** <b>Name</b><hr><br>
          *

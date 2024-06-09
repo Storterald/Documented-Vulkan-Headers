@@ -707,6 +707,79 @@ VkWriteDescriptorSet vk::createVkWriteDescriptorSet(
         };
 }
 
+VkAccelerationStructureCreateInfoNV vk::createVkAccelerationStructureCreateInfoNV(
+        const VkDeviceSize                         &compactedSize,
+        const VkAccelerationStructureInfoNV        &info
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV,
+                .pNext = nullptr,
+                .compactedSize = compactedSize,
+                .info = info
+        };
+}
+
+VkAccelerationStructureInfoNV vk::createVkAccelerationStructureInfoNV(
+        const VkAccelerationStructureTypeNV              &type,
+        const uint32_t                                   &instanceCount,
+        const std::vector<VkGeometryNV>                  &geometries
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV,
+                .pNext = nullptr,
+                .type = type,
+                .flags = VkBuildAccelerationStructureFlagsNV(),
+                .instanceCount = instanceCount,
+                .geometryCount = static_cast<uint32_t>(geometries.size()),
+                .pGeometries = geometries.data()
+        };
+}
+
+VkBufferViewCreateInfo vk::createVkBufferViewCreateInfo(
+        const VkBuffer            &buffer,
+        const VkFormat            &format,
+        const VkDeviceSize        &offset,
+        const VkDeviceSize        &range
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = VkBufferViewCreateFlags(),
+                .buffer = buffer,
+                .format = format,
+                .offset = offset,
+                .range = range
+        };
+}
+
+VkAccelerationStructureNV vk::createVkAccelerationStructureNV(
+        const VkDevice                                   &device,
+        const VkAccelerationStructureTypeKHR             &type,
+        const uint32_t                                   &instanceCount,
+        const std::vector<VkGeometryNV>                  &geometries,
+        const VkDeviceSize                               &compactedSize,
+        const VkAllocationCallbacks                      *pAllocator
+) {
+        auto info = vk::createVkAccelerationStructureInfoNV(
+                type, instanceCount, geometries
+        );
+
+        auto createInfo = vk::createVkAccelerationStructureCreateInfoNV(
+                compactedSize, info
+        );
+
+        VkAccelerationStructureNV accelerationStructure{};
+        VkResult result = vkCreateAccelerationStructureNV(
+                device, &createInfo,
+                pAllocator, &accelerationStructure
+        );
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not create acceleration structure nv!");
+
+        return accelerationStructure;
+}
+
 VkBuffer vk::createVkBuffer(
         const VkDevice                     &device,
         const VkDeviceSize                 &size,
@@ -724,6 +797,27 @@ VkBuffer vk::createVkBuffer(
         return buffer;
 }
 
+VkBufferView vk::createVkBufferView(
+        const VkDevice                     &device,
+        const VkBuffer                     &buffer,
+        const VkFormat                     &format,
+        const VkDeviceSize                 &offset,
+        const VkDeviceSize                 &range,
+        const VkAllocationCallbacks        *pAllocator
+) {
+        auto createInfo = vk::createVkBufferViewCreateInfo(
+                buffer, format, offset, range
+        );
+
+        VkBufferView bufferView{};
+        VkResult result = vkCreateBufferView(device, &createInfo, pAllocator, &bufferView);
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not allocate command buffer view!");
+
+        return bufferView;
+}
+
 VkCommandBuffer vk::createVkCommandBuffer(
         const VkCommandPool        &commandPool,
         const VkDevice             &device
@@ -731,7 +825,9 @@ VkCommandBuffer vk::createVkCommandBuffer(
         auto commandBufferAllocateInfo = vk::createVkCommandBufferAllocateInfo(commandPool);
 
         VkCommandBuffer commandBuffer{};
-        VkResult result = vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &commandBuffer);
+        VkResult result = vkAllocateCommandBuffers(
+                device, &commandBufferAllocateInfo, &commandBuffer
+        );
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not allocate command buffer!");
