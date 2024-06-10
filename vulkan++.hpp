@@ -306,6 +306,7 @@ namespace vk {
          * </ul>
          */
         VkRect2D createVkRect2D(
+                const VkOffset2D        &offset,
                 const VkExtent2D        &extent
         );
 
@@ -1218,7 +1219,8 @@ namespace vk {
          */
         VkDeviceCreateInfo createVkDeviceCreateInfo(
                 const std::vector<VkDeviceQueueCreateInfo>        &queueCreateInfos,
-                const std::vector<const char *>                   &enabledExtensionNames
+                const std::vector<const char *>                   &enabledExtensionNames,
+                const VkPhysicalDeviceFeatures                    *pEnabledFeatures
         );
 
         /** <b>Name</b><hr><br>
@@ -1842,7 +1844,7 @@ namespace vk {
          * <ul>
          * <li>binding is the binding number of this entry and corresponds to a resource of the same binding number in the shader stages.
          * <li>descriptorType is a VkDescriptorType specifying which type of resource descriptors are used for this binding.
-         * <li>descriptorCount is the number of descriptors contained in the binding, accessed in a shader as an array , except if descriptorType is VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT in which case descriptorCount is the size in bytes of the inline uniform block . If descriptorCount is zero this binding entry is reserved and the resource <b>must</b> not be accessed from any stage via this binding within any pipeline using the set layout.
+         * <li>descriptorCount is the number of descriptors contained in the binding, accessed in a shader as an array , except if descriptorType is VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT in which case descriptorCount is the size in bytes of the uniform block . If descriptorCount is zero this binding entry is reserved and the resource <b>must</b> not be accessed from any stage via this binding within any pipeline using the set layout.
          * <li>stageFlags member is a bitmask of VkShaderStageFlagBits specifying which pipeline shader stages <b>can</b> access a resource for this binding. VK_SHADER_STAGE_ALL is a shorthand specifying that all defined shader stages, including any additional stages defined by extensions, <b>can</b> access the resource.
          * <li>If a shader stage is not included in stageFlags, then a resource <b>must</b> not be accessed from that stage via this binding within any pipeline using the set layout. Other than input attachments which are limited to the fragment shader, there are no limitations on what combinations of stages <b>can</b> use a descriptor binding, and in particular a binding <b>can</b> be used by both graphics stages and the compute stage.
          * </ul><br>
@@ -2089,6 +2091,574 @@ namespace vk {
                 const VkDescriptorImageInfo         *pImageInfo,
                 const VkDescriptorBufferInfo        *pBufferInfo,
                 const VkBufferView                  *pTexelBufferView
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImageCreateInfo - Structure specifying the parameters of a newly created image object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkImageCreateInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkImageCreateInfo {
+         *     VkStructureType          sType;
+         *     const void*              pNext;
+         *     VkImageCreateFlags       flags;
+         *     VkImageType              imageType;
+         *     VkFormat                 format;
+         *     VkExtent3D               extent;
+         *     uint32_t                 mipLevels;
+         *     uint32_t                 arrayLayers;
+         *     VkSampleCountFlagBits    samples;
+         *     VkImageTiling            tiling;
+         *     VkImageUsageFlags        usage;
+         *     VkSharingMode            sharingMode;
+         *     uint32_t                 queueFamilyIndexCount;
+         *     const uint32_t*          pQueueFamilyIndices;
+         *     VkImageLayout            initialLayout;
+         * } VkImageCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is a bitmask of VkImageCreateFlagBits describing additional parameters of the image.
+         * <li>imageType is a VkImageType value specifying the basic dimensionality of the image. Layers in array textures do not count as a dimension for the purposes of the image type.
+         * <li>format is a VkFormat describing the format and type of the texel blocks that will be contained in the image.
+         * <li>extent is a VkExtent3D describing the number of data elements in each dimension of the base level.
+         * <li>mipLevels describes the number of levels of detail available for minified sampling of the image.
+         * <li>arrayLayers is the number of layers in the image.
+         * <li>samples is a VkSampleCountFlagBits value specifying the number of samples per texel.
+         * <li>tiling is a VkImageTiling value specifying the tiling arrangement of the texel blocks in memory.
+         * <li>usage is a bitmask of VkImageUsageFlagBits describing the intended usage of the image.
+         * <li>sharingMode is a VkSharingMode value specifying the sharing mode of the image when it will be accessed by multiple queue families.
+         * <li>queueFamilyIndexCount is the number of entries in the pQueueFamilyIndices array.
+         * <li>pQueueFamilyIndices is a pointer to an array of queue families that will access this image. It is ignored if sharingMode is not VK_SHARING_MODE_CONCURRENT.
+         * <li>initialLayout is a VkImageLayout value specifying the initial VkImageLayout of all image subresources of the image. See Image Layouts.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * Images created with tiling equal to VK_IMAGE_TILING_LINEAR have further restrictions on their limits and capabilities compared to images created with tiling equal to VK_IMAGE_TILING_OPTIMAL. Creation of images with tiling VK_IMAGE_TILING_LINEAR <b>may</b> not be supported unless other parameters meet all of the constraints:
+         * <ul>
+         * <li>imageType is VK_IMAGE_TYPE_2D
+         * <li>format is not a depth/stencil format
+         * <li>mipLevels is 1
+         * <li>arrayLayers is 1
+         * <li>samples is VK_SAMPLE_COUNT_1_BIT
+         * <li>usage only includes VK_IMAGE_USAGE_TRANSFER_SRC_BIT and/or VK_IMAGE_USAGE_TRANSFER_DST_BIT
+         * </ul>
+         * Images created with one of the formats that require a sampler Y′CBCR conversion, have further restrictions on their limits and capabilities compared to images created with other formats. Creation of images with a format requiring Y′CBCR conversion <b>may</b> not be supported unless other parameters meet all of the constraints:
+         * <ul>
+         * imageType is VK_IMAGE_TYPE_2D
+         * mipLevels is 1
+         * arrayLayers is 1, unless the ycbcrImageArrays feature is enabled, or otherwise indicated by VkImageFormatProperties::maxArrayLayers, as returned by vkGetPhysicalDeviceImageFormatProperties
+         * samples is VK_SAMPLE_COUNT_1_BI
+         * </ul>
+         * Implementations <b>may</b> support additional limits and capabilities beyond those listed above.<br><br>
+         *
+         * To determine the set of valid usage bits for a given format, call vkGetPhysicalDeviceFormatProperties.<br><br>
+         *
+         * If the size of the resultant image would exceed maxResourceSize, then vkCreateImage <b>must</b> fail and return VK_ERROR_OUT_OF_DEVICE_MEMORY. This failure <b>may</b> occur even when all image creation parameters satisfy their valid usage requirements.<br><br>
+         *
+         * If the implementation reports VK_TRUE in VkPhysicalDeviceHostImageCopyPropertiesEXT::identicalMemoryTypeRequirements, usage of VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT <b>must</b> not affect the memory type requirements of the image as described in Sparse Resource Memory Requirements and Resource Memory Association.
+         *
+         * @note For images created without VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for the format the image is created with.<br><br>
+         * For images created with VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for at least one of the formats a VkImageView created from the image <b>can</b> have (see Image Views for more detail).
+         */
+        VkImageCreateInfo createVkImageCreateInfo(
+                const VkImageType                  &imageType,
+                const VkFormat                     &format,
+                const VkExtent3D                   &extent,
+                const VkImageUsageFlags            &usage,
+                const std::vector<uint32_t>        &queueFamilyIndices
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImageMemoryBarrier - Structure specifying the parameters of an image memory barrier<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkImageMemoryBarrier structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkImageMemoryBarrier {
+         *     VkStructureType            sType;
+         *     const void*                pNext;
+         *     VkAccessFlags              srcAccessMask;
+         *     VkAccessFlags              dstAccessMask;
+         *     VkImageLayout              oldLayout;
+         *     VkImageLayout              newLayout;
+         *     uint32_t                   srcQueueFamilyIndex;
+         *     uint32_t                   dstQueueFamilyIndex;
+         *     VkImage                    image;
+         *     VkImageSubresourceRange    subresourceRange;
+         * } VkImageMemoryBarrier;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>srcAccessMask is a bitmask of VkAccessFlagBits specifying a source access mask.
+         * <li>dstAccessMask is a bitmask of VkAccessFlagBits specifying a destination access mask.
+         * <li>oldLayout is the old layout in an image layout transition.
+         * <li>newLayout is the new layout in an image layout transition.
+         * <li>srcQueueFamilyIndex is the source queue family for a queue family ownership transfer.
+         * <li>dstQueueFamilyIndex is the destination queue family for a queue family ownership transfer.
+         * <li>image is a handle to the image affected by this barrier.
+         * <li>subresourceRange describes the image subresource range within image that is affected by this barrier.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The first access scope is limited to access to memory through the specified image subresource range, via access types in the source access mask specified by srcAccessMask. If srcAccessMask includes VK_ACCESS_HOST_WRITE_BIT, memory writes performed by that access type are also made visible, as that access type is not performed through a resource.<br><br>
+         *
+         * The second access scope is limited to access to memory through the specified image subresource range, via access types in the destination access mask specified by dstAccessMask. If dstAccessMask includes VK_ACCESS_HOST_WRITE_BIT or VK_ACCESS_HOST_READ_BIT, available memory writes are also made visible to accesses of those types, as those access types are not performed through a resource.<br><br>
+         *
+         * If srcQueueFamilyIndex is not equal to dstQueueFamilyIndex, and srcQueueFamilyIndex is equal to the current queue family, then the memory barrier defines a queue family release operation for the specified image subresource range, and the second synchronization scope of the calling command does not apply to this operation.<br><br>
+         *
+         * If dstQueueFamilyIndex is not equal to srcQueueFamilyIndex, and dstQueueFamilyIndex is equal to the current queue family, then the memory barrier defines a queue family acquire operation for the specified image subresource range, and the first synchronization scope of the calling command does not apply to this operation.<br><br>
+         *
+         * If the synchronization2 feature is not enabled or oldLayout is not equal to newLayout, oldLayout and newLayout define an image layout transition for the specified image subresource range.<br><br>
+         *
+         * @note If the synchronization2 feature is enabled, when the old and new layout are equal, the layout values are ignored - data is preserved no matter what values are specified, or what layout the image is currently in.
+         *
+         * If image has a multi-planar format and the image is disjoint, then including VK_IMAGE_ASPECT_COLOR_BIT in the aspectMask member of subresourceRange is equivalent to including VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, and (for three-plane formats only) VK_IMAGE_ASPECT_PLANE_2_BIT.
+         */
+        VkImageMemoryBarrier createVkImageMemoryBarrier(
+                const VkAccessFlags              &srcAccessMask,
+                const VkAccessFlags              &dstAccessMask,
+                const VkImageLayout              &oldLayout,
+                const VkImageLayout              &newLayout,
+                const uint32_t                   &srcQueueFamilyIndex,
+                const uint32_t                   &dstQueueFamilyIndex,
+                const VkImage                    &image
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImageSubresourceRange - Structure specifying an image subresource range<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkImageSubresourceRange structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkImageSubresourceRange {
+         *     VkImageAspectFlags    aspectMask;
+         *     uint32_t              baseMipLevel;
+         *     uint32_t              levelCount;
+         *     uint32_t              baseArrayLayer;
+         *     uint32_t              layerCount;
+         * } VkImageSubresourceRange;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>aspectMask is a bitmask of VkImageAspectFlagBits specifying which aspect(s) of the image are included in the view.
+         * <li>baseMipLevel is the first mipmap level accessible to the view.
+         * <li>levelCount is the number of mipmap levels (starting from baseMipLevel) accessible to the view.
+         * <li>baseArrayLayer is the first array layer accessible to the view.
+         * <li>layerCount is the number of array layers (starting from baseArrayLayer) accessible to the view.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The number of mipmap levels and array layers <b>must</b> be a subset of the image subresources in the image. If an application wants to use all mip levels or layers in an image after the baseMipLevel or baseArrayLayer, it <b>can</b> set levelCount and layerCount to the special values VK_REMAINING_MIP_LEVELS and VK_REMAINING_ARRAY_LAYERS without knowing the exact number of mip levels or layers.<br><br>
+         *
+         * For cube and cube array image views, the layers of the image view starting at baseArrayLayer correspond to faces in the order +X, -X, +Y, -Y, +Z, -Z. For cube arrays, each set of six sequential layers is a single cube, so the number of cube maps in a cube map array view is layerCount / 6, and image array layer (baseArrayLayer + i) is face index (i mod 6) of cube i / 6. If the number of layers in the view, whether set explicitly in layerCount or implied by VK_REMAINING_ARRAY_LAYERS, is not a multiple of 6, the last cube map in the array <b>must</b> not be accessed.<br><br>
+         *
+         * aspectMask <b>must</b> be only VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_ASPECT_DEPTH_BIT or VK_IMAGE_ASPECT_STENCIL_BIT if format is a color, depth-only or stencil-only format, respectively, except if format is a multi-planar format. If using a depth/stencil format with both depth and stencil components, aspectMask <b>must</b> include at least one of VK_IMAGE_ASPECT_DEPTH_BIT and VK_IMAGE_ASPECT_STENCIL_BIT, and <b>can</b> include both.<br><br>
+         *
+         * When the VkImageSubresourceRange structure is used to select a subset of the slices of a 3D image’s mip level in order to create a 2D or 2D array image view of a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT, baseArrayLayer and layerCount specify the first slice index and the number of slices to include in the created image view. Such an image view <b>can</b> be used as a framebuffer attachment that refers only to the specified range of slices of the selected mip level. However, any layout transitions performed on such an attachment view during a render pass instance still apply to the entire subresource referenced which includes all the slices of the selected mip level.<br><br>
+         *
+         * When using an image view of a depth/stencil image to populate a descriptor set (e.g. for sampling in the shader, or for use as an input attachment), the aspectMask <b>must</b> only include one bit, which selects whether the image view is used for depth reads (i.e. using a floating-point sampler or input attachment in the shader) or stencil reads (i.e. using an unsigned integer sampler or input attachment in the shader). When an image view of a depth/stencil image is used as a depth/stencil framebuffer attachment, the aspectMask is ignored and both depth and stencil image subresources are used.<br><br>
+         *
+         * When creating a VkImageView, if sampler Y′CBCR conversion is enabled in the sampler, the aspectMask of a subresourceRange used by the VkImageView <b>must</b> be VK_IMAGE_ASPECT_COLOR_BIT.<br><br>
+         *
+         * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
+         */
+        VkImageSubresourceRange createVkImageSubresourceRange(
+                const VkImageAspectFlags        &aspectMask,
+                const uint32_t                  &baseMipLevel,
+                const uint32_t                  &levelCount,
+                const uint32_t                  &baseArrayLayer,
+                const uint32_t                  &layerCount
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkBufferImageCopy - Structure specifying a buffer image copy operation<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * For both vkCmdCopyBufferToImage and vkCmdCopyImageToBuffer, each element of pRegions is a structure defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkBufferImageCopy {
+         *     VkDeviceSize                bufferOffset;
+         *     uint32_t                    bufferRowLength;
+         *     uint32_t                    bufferImageHeight;
+         *     VkImageSubresourceLayers    imageSubresource;
+         *     VkOffset3D                  imageOffset;
+         *     VkExtent3D                  imageExtent;
+         * } VkBufferImageCopy;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>bufferOffset is the offset in bytes from the start of the buffer object where the image data is copied from or to.
+         * <li>bufferRowLength and bufferImageHeight specify in texels a subregion of a larger two- or three-dimensional image in buffer memory, and control the addressing calculations. If either of these values is zero, that aspect of the buffer memory is considered to be tightly packed according to the imageExtent.
+         * <li>imageSubresource is a VkImageSubresourceLayers used to specify the specific image subresources of the image used for the source or destination image data.
+         * <li>imageOffset selects the initial x, y, z offsets in texels of the sub-region of the source or destination image data.
+         * <li>imageExtent is the size in texels of the image to copy in width, height and depth.
+         * </ul>
+         */
+        VkBufferImageCopy createVkBufferImageCopy(
+                const VkDeviceSize                    &bufferOffset,
+                const uint32_t                        &bufferRowLength,
+                const uint32_t                        &bufferImageHeight,
+                const VkExtent3D                      &imageExtent
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImageSubresourceLayers - Structure specifying an image subresource layers<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkImageSubresourceLayers structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkImageSubresourceLayers {
+         *     VkImageAspectFlags    aspectMask;
+         *     uint32_t              mipLevel;
+         *     uint32_t              baseArrayLayer;
+         *     uint32_t              layerCount;
+         * } VkImageSubresourceLayers;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>aspectMask is a combination of VkImageAspectFlagBits, selecting the color, depth and/or stencil aspects to be copied.
+         * <li>mipLevel is the mipmap level to copy
+         * <li>baseArrayLayer and layerCount are the starting layer and number of layers to copy.
+         * </ul>
+         */
+        VkImageSubresourceLayers createVkImageSubresourceLayers(
+                const VkImageAspectFlags        &aspectMask,
+                const uint32_t                  &mipLevel,
+                const uint32_t                  &baseArrayLayer,
+                const uint32_t                  &layerCount
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkExtent3D - Structure specifying a three-dimensional extent<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A three-dimensional extent is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkExtent3D {
+         *     uint32_t    width;
+         *     uint32_t    height;
+         *     uint32_t    depth;
+         * } VkExtent3D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>width is the width of the extent.
+         * <li>height is the height of the extent.
+         * <li>depth is the depth of the extent.
+         * </ul>
+         */
+        VkExtent3D createVkExtent3D(
+                const uint32_t        &width,
+                const uint32_t        &height,
+                const uint32_t        &depth
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkOffset2D - Structure specifying a two-dimensional offset<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A two-dimensional offset is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkOffset2D {
+         *     int32_t    x;
+         *     int32_t    y;
+         * } VkOffset2D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>x is the x offset.
+         * <li>y is the y offset.
+         * </ul>
+         */
+        VkOffset2D createVkOffset2D(
+                const int32_t        &x,
+                const int32_t        &y
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkOffset3D - Structure specifying a three-dimensional offset<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A three-dimensional offset is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkOffset2D {
+         *     int32_t    x;
+         *     int32_t    y;
+         *     int32_t    z;
+         * } VkOffset2D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>x is the x offset.
+         * <li>y is the y offset.
+         * <li>z is the z offset.
+         * </ul>
+         */
+        VkOffset3D createVkOffset3D(
+                const int32_t        &x,
+                const int32_t        &y,
+                const int32_t        &z
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkComponentMapping - Structure specifying a color component mapping<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkComponentMapping structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkComponentMapping {
+         *     VkComponentSwizzle    r;
+         *     VkComponentSwizzle    g;
+         *     VkComponentSwizzle    b;
+         *     VkComponentSwizzle    a;
+         *} VkComponentMapping;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>r is a VkComponentSwizzle specifying the component value placed in the R component of the output vector.
+         * <li>g is a VkComponentSwizzle specifying the component value placed in the G component of the output vector.
+         * <li>b is a VkComponentSwizzle specifying the component value placed in the B component of the output vector.
+         * <li>a is a VkComponentSwizzle specifying the component value placed in the A component of the output vector.
+         * </ul>
+         */
+        VkComponentMapping createVkComponentMapping(
+                const VkComponentSwizzle        &r,
+                const VkComponentSwizzle        &g,
+                const VkComponentSwizzle        &b,
+                const VkComponentSwizzle        &a
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSamplerCreateInfo - Structure specifying parameters of a newly created sampler<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSamplerCreateInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkSamplerCreateInfo {
+         *     VkStructureType         sType;
+         *     const void*             pNext;
+         *     VkSamplerCreateFlags    flags;
+         *     VkFilter                magFilter;
+         *     VkFilter                minFilter;
+         *     VkSamplerMipmapMode     mipmapMode;
+         *     VkSamplerAddressMode    addressModeU;
+         *     VkSamplerAddressMode    addressModeV;
+         *     VkSamplerAddressMode    addressModeW;
+         *     float                   mipLodBias;
+         *     VkBool32                anisotropyEnable;
+         *     float                   maxAnisotropy;
+         *     VkBool32                compareEnable;
+         *     VkCompareOp             compareOp;
+         *     float                   minLod;
+         *     float                   maxLod;
+         *     VkBorderColor           borderColor;
+         *     VkBool32                unnormalizedCoordinates;
+         * } VkSamplerCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is a bitmask of VkSamplerCreateFlagBits describing additional parameters of the sampler.
+         * <li>magFilter is a VkFilter value specifying the magnification filter to apply to lookups.
+         * <li>minFilter is a VkFilter value specifying the minification filter to apply to lookups.
+         * <li>mipmapMode is a VkSamplerMipmapMode value specifying the mipmap filter to apply to lookups.
+         * <li>addressModeU is a VkSamplerAddressMode value specifying the addressing mode for U coordinates outside [0,1).
+         * <li>addressModeV is a VkSamplerAddressMode value specifying the addressing mode for V coordinates outside [0,1).
+         * <li>addressModeW is a VkSamplerAddressMode value specifying the addressing mode for W coordinates outside [0,1).
+         * <li>mipLodBias is the bias to be added to mipmap LOD calculation and bias provided by image sampling functions in SPIR-V, as described in the LOD Operation section.
+         * <li>anisotropyEnable is VK_TRUE to enable anisotropic filtering, as described in the Texel Anisotropic Filtering section, or VK_FALSE otherwise.
+         * <li>maxAnisotropy is the anisotropy value clamp used by the sampler when anisotropyEnable is VK_TRUE. If anisotropyEnable is VK_FALSE, maxAnisotropy is ignored.
+         * <li>compareEnable is VK_TRUE to enable comparison against a reference value during lookups, or VK_FALSE otherwise.
+         *     <ul>
+         *     <li>Note: Some implementations will default to shader state if this member does not match.
+         *     </ul>
+         * <li>compareOp is a VkCompareOp value specifying the comparison operator to apply to fetched data before filtering as described in the Depth Compare Operation section.
+         * <li>minLod is used to clamp the minimum of the computed LOD value.
+         * <li>maxLod is used to clamp the maximum of the computed LOD value. To avoid clamping the maximum value, set maxLod to the constant VK_LOD_CLAMP_NONE.
+         * <li>borderColor is a VkBorderColor value specifying the predefined border color to use.
+         * <li>unnormalizedCoordinates controls whether to use unnormalized or normalized texel coordinates to address texels of the image. When set to VK_TRUE, the range of the image coordinates used to lookup the texel is in the range of zero to the image size in each dimension. When set to VK_FALSE the range of image coordinates is zero to one.<br>
+         * When unnormalizedCoordinates is VK_TRUE, images the sampler is used with in the shader have the following requirements:
+         * <ul>
+         * <li>The viewType <b>must</b> be either VK_IMAGE_VIEW_TYPE_1D or VK_IMAGE_VIEW_TYPE_2D.
+         * <li>The image view <b>must</b> have a single layer and a single mip level.
+         * </ul>
+         * When unnormalizedCoordinates is VK_TRUE, image built-in functions in the shader that use the sampler have the following requirements:
+         * <ul>
+         * <li>The functions <b>must</b> not use projection.
+         * <li>The functions <b>must</b> not use offsets.
+         * </ul>
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * @note Mapping of OpenGL to Vulkan filter modes<br><br>
+         * magFilter values of VK_FILTER_NEAREST and VK_FILTER_LINEAR directly correspond to GL_NEAREST and GL_LINEAR magnification filters. minFilter and mipmapMode combine to correspond to the similarly named OpenGL minification filter of GL_minFilter_MIPMAP_mipmapMode (e.g. minFilter of VK_FILTER_LINEAR and mipmapMode of VK_SAMPLER_MIPMAP_MODE_NEAREST correspond to GL_LINEAR_MIPMAP_NEAREST).<br><br>
+         * There are no Vulkan filter modes that directly correspond to OpenGL minification filters of GL_LINEAR or GL_NEAREST, but they <b>can</b> be emulated using VK_SAMPLER_MIPMAP_MODE_NEAREST, minLod = 0, and maxLod = 0.25, and using minFilter = VK_FILTER_LINEAR or minFilter = VK_FILTER_NEAREST, respectively.<br><br>
+         * Note that using a maxLod of zero would cause magnification to always be performed, and the magFilter to always be used. This is valid, just not an exact match for OpenGL behavior. Clamping the maximum LOD to 0.25 allows the λ value to be non-zero and minification to be performed, while still always rounding down to the base level. If the minFilter and magFilter are equal, then using a maxLod of zero also works.
+         *
+         * The maximum number of sampler objects which <b>can</b> be simultaneously created on a device is implementation-dependent and specified by the maxSamplerAllocationCount member of the VkPhysicalDeviceLimits structure.
+         *
+         * @note For historical reasons, if maxSamplerAllocationCount is exceeded, some implementations may return VK_ERROR_TOO_MANY_OBJECTS. Exceeding this limit will result in undefined behavior, and an application should not rely on the use of the returned error code in order to identify when the limit is reached.
+         *
+         * Since VkSampler is a non-dispatchable handle type, implementations <b>may</b> return the same handle for sampler state vectors that are identical. In such cases, all such objects would only count once against the maxSamplerAllocationCount limit.
+         */
+        VkSamplerCreateInfo createVkSamplerCreateInfo(
+                const VkFilter                    &filter,
+                const VkSamplerAddressMode        &addressMode,
+                const VkBool32                    &anisotropyEnable,
+                const float                       &maxAnisotropy,
+                const VkBool32                    &compareEnable,
+                const VkCompareOp                 &compareOp
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorImageInfo - Structure specifying descriptor image information<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkDescriptorImageInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkDescriptorImageInfo {
+         *     VkSampler        sampler;
+         *     VkImageView      imageView;
+         *     VkImageLayout    imageLayout;
+         * } VkDescriptorImageInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sampler is a sampler handle, and is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLER and VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER if the binding being updated does not use immutable samplers.
+         * <li>imageView is VK_NULL_HANDLE or an image view handle, and is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, and VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT.
+         * <li>imageLayout is the layout that the image subresources accessible from imageView will be in at the time this descriptor is accessed. imageLayout is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, and VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT.
+         * </ul><<br>
+         * <b>Description</b><hr><br>
+         * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
+         */
+        VkDescriptorImageInfo createVkDescriptorImageInfo(
+                const VkSampler            &sampler,
+                const VkImageView          &imageView,
+                const VkImageLayout        &imageLayout
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPhysicalDeviceProperties - Structure specifying physical device properties<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPhysicalDeviceProperties structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPhysicalDeviceProperties {
+         *     uint32_t                            apiVersion;
+         *     uint32_t                            driverVersion;
+         *     uint32_t                            vendorID;
+         *     uint32_t                            deviceID;
+         *     VkPhysicalDeviceType                deviceType;
+         *     char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+         *     uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
+         *     VkPhysicalDeviceLimits              limits;
+         *     VkPhysicalDeviceSparseProperties    sparseProperties;
+         * } VkPhysicalDeviceProperties;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>apiVersion is the version of Vulkan supported by the device, encoded as described in https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#extendingvulkan-coreversions-versionnumbers.
+         * <li>driverVersion is the vendor-specified version of the driver.
+         * <li>vendorID is a unique identifier for the vendor (see below) of the physical device.
+         * <li>deviceID is a unique identifier for the physical device among devices available from the vendor.
+         * <li>deviceType is a VkPhysicalDeviceType specifying the type of device.
+         * <li>deviceName is an array of VK_MAX_PHYSICAL_DEVICE_NAME_SIZE char containing a null-terminated UTF-8 string which is the name of the device.
+         * <li>pipelineCacheUUID is an array of VK_UUID_SIZE uint8_t values representing a universally unique identifier for the device.
+         * <li>limits is the VkPhysicalDeviceLimits structure specifying device-specific limits of the physical device. See Limits for details.
+         * <li>sparseProperties is the VkPhysicalDeviceSparseProperties structure specifying various sparse related properties of the physical device. See Sparse Properties for details.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * @note The value of apiVersion <b>may</b> be different than the version returned by vkEnumerateInstanceVersion; either higher or lower. In such cases, the application <b>must</b> not use functionality that exceeds the version of Vulkan associated with a given object. The pApiVersion parameter returned by vkEnumerateInstanceVersion is the version associated with a VkInstance and its children, except for a VkPhysicalDevice and its children.<br>
+         * VkPhysicalDeviceProperties::apiVersion is the version associated with a VkPhysicalDevice and its children.
+         *
+         * @note The encoding of driverVersion is implementation-defined. It <b>may</b> not use the same encoding as apiVersion. Applications should follow information from the vendor on how to extract the version information from driverVersion.
+         *
+         * On implementations that claim support for the Roadmap 2022 profile, the major and minor version expressed by apiVersion <b>must</b> be at least Vulkan 1.3.<br><br>
+         *
+         * The vendorID and deviceID fields are provided to allow applications to adapt to device characteristics that are not adequately exposed by other Vulkan queries.
+         *
+         * @note These <b>may</b> include performance profiles, hardware errata, or other characteristics.
+         *
+         * The vendor identified by vendorID is the entity responsible for the most salient characteristics of the underlying implementation of the VkPhysicalDevice being queried.
+         *
+         * @note For example, in the case of a discrete GPU implementation, this <b>should</b> be the GPU chipset vendor. In the case of a hardware accelerator integrated into a system-on-chip (SoC), this <b>should</b> be the supplier of the silicon IP used to create the accelerator.
+         *
+         * If the vendor has a PCI vendor ID, the low 16 bits of vendorID <b>must</b> contain that PCI vendor ID, and the remaining bits <b>must</b> be set to zero. Otherwise, the value returned <b>must</b> be a valid Khronos vendor ID, obtained as described in the Vulkan Documentation and Extensions: Procedures and Conventions document in the section “Registering a Vendor ID with Khronos”. Khronos vendor IDs are allocated starting at 0x10000, to distinguish them from the PCI vendor ID namespace. Khronos vendor IDs are symbolically defined in the VkVendorId type.<br><br>
+         *
+         * The vendor is also responsible for the value returned in deviceID. If the implementation is driven primarily by a PCI device with a PCI device ID, the low 16 bits of deviceID <b>must</b> contain that PCI device ID, and the remaining bits <b>must</b> be set to zero. Otherwise, the choice of what values to return <b>may</b> be dictated by operating system or platform policies - but <b>should</b> uniquely identify both the device version and any major configuration options (for example, core count in the case of multicore devices).
+         *
+         * @note The same device ID <b>should</b> be used for all physical implementations of that device version and configuration. For example, all uses of a specific silicon IP GPU version and configuration <b>should</b> use the same device ID, even if those uses occur in different SoCs.
+         */
+        VkPhysicalDeviceProperties getVkPhysicalDeviceProperties(
+                const VkPhysicalDevice        &physicalDevice
         );
 
         /** <b>Name</b><hr><br>
@@ -2504,6 +3074,7 @@ namespace vk {
                 const VkPhysicalDevice                 &physicalDevice,
                 const std::vector<uint32_t>            &queueFamilyIndices,
                 const std::vector<const char *>        &enabledExtensionNames,
+                const VkPhysicalDeviceFeatures         *pEnabledFeatures,
                 const VkAllocationCallbacks            *pAllocator
         );
 
@@ -2556,7 +3127,30 @@ namespace vk {
                 const VkAllocationCallbacks            *pAllocator
         );
 
-        //TODO VkImage createVkImage();
+        /** <b>Name</b><hr><br>
+         *
+         * VkImage - Opaque handle to an image object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Images represent multidimensional - up to 3 - arrays of data which <b>can</b> be used for various purposes (e.g. attachments, textures), by binding them to a graphics or compute pipeline via descriptor sets, or by directly specifying them as parameters to certain commands.<br><br>
+         *
+         * mages are represented by VkImage handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+         * @endcode
+         */
+        VkImage createVkImage(
+                const VkDevice                     &device,
+                const VkImageType                  &imageType,
+                const VkFormat                     &format,
+                const VkExtent3D                   &extent,
+                const VkImageUsageFlags            &usage,
+                const std::vector<uint32_t>        &queueFamilyIndices,
+                const VkAllocationCallbacks        *pAllocator
+        );
 
         /** <b>Name</b><hr><br>
          *
@@ -2717,10 +3311,34 @@ namespace vk {
                 const VkPhysicalDevice             &physicalDevice,
                 const VkDevice                     &device,
                 const VkSurfaceKHR                 &surface,
+                const VkSurfaceFormatKHR           &requiredFormat,
                 const VkAllocationCallbacks        *pAllocator
         );
 
-        //TODO VkSampler createVkSampler();
+        /** <b>Name</b><hr><br>
+         *
+         * VkSampler - Opaque handle to a sampler object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * VkSampler objects represent the state of an image sampler which is used by the implementation to read image data and apply filtering and other transformations for the shader.<br><br>
+         *
+         * Samplers are represented by VkSampler handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
+         * @endcode
+         */
+        VkSampler createVkSampler(
+                const VkDevice                    &device,
+                const VkFilter                    &filter,
+                const VkSamplerAddressMode        &addressMode,
+                const VkBool32                    &anisotropyEnable,
+                const float                       &maxAnisotropy,
+                const VkBool32                    &compareEnable,
+                const VkCompareOp                 &compareOp
+        );
 
         //TODO VkSamplerYcbcrConversion createVkSamplerYcbcrConversion();
 

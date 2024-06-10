@@ -74,10 +74,11 @@ VkViewport vk::createVkViewport(
 }
 
 VkRect2D vk::createVkRect2D(
+        const VkOffset2D        &offset,
         const VkExtent2D        &extent
 ) {
         return {
-                .offset = {.x = 0, .y = 0},
+                .offset = offset,
                 .extent = extent
         };
 }
@@ -229,10 +230,9 @@ VkRenderPassBeginInfo vk::createVkRenderPassBeginInfo(
                 .pNext = nullptr,
                 .renderPass = renderPass,
                 .framebuffer = framebuffer,
-                .renderArea = {
-                        .offset = {0, 0},
-                        .extent = extent
-                },
+                .renderArea = vk::createVkRect2D(
+                        vk::createVkOffset2D(0, 0), extent
+                ),
                 .clearValueCount = static_cast<uint32_t>(clearValues.size()),
                 .pClearValues = clearValues.data()
         };
@@ -399,7 +399,8 @@ VkDeviceQueueCreateInfo vk::createVkDeviceQueueCreateInfo(
 
 VkDeviceCreateInfo vk::createVkDeviceCreateInfo(
         const std::vector<VkDeviceQueueCreateInfo>        &queueCreateInfos,
-        const std::vector<const char *>                   &enabledExtensionNames
+        const std::vector<const char *>                   &enabledExtensionNames,
+        const VkPhysicalDeviceFeatures                    *pEnabledFeatures
 ) {
         return {
                 .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
@@ -411,7 +412,7 @@ VkDeviceCreateInfo vk::createVkDeviceCreateInfo(
                 .ppEnabledLayerNames = nullptr,        /* Deprecated */
                 .enabledExtensionCount = static_cast<uint32_t>(enabledExtensionNames.size()),
                 .ppEnabledExtensionNames = enabledExtensionNames.data(),
-                .pEnabledFeatures = nullptr
+                .pEnabledFeatures = pEnabledFeatures
         };
 }
 
@@ -453,19 +454,13 @@ VkImageViewCreateInfo vk::createVkImageViewCreateInfo(
                 .image = image,
                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
                 .format = format,
-                .components = {
-                        .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                        .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-                        .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-                        .a = VK_COMPONENT_SWIZZLE_IDENTITY
-                },
-                .subresourceRange = {
-                        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                        .baseMipLevel = 0,
-                        .levelCount = 1,
-                        .baseArrayLayer = 0,
-                        .layerCount = 1
-                },
+                .components = vk::createVkComponentMapping(
+                        VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY
+                ),
+                .subresourceRange = vk::createVkImageSubresourceRange(
+                        VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+                ),
         };
 }
 
@@ -724,6 +719,204 @@ VkBufferViewCreateInfo vk::createVkBufferViewCreateInfo(
         };
 }
 
+VkImageCreateInfo vk::createVkImageCreateInfo(
+        const VkImageType                  &imageType,
+        const VkFormat                     &format,
+        const VkExtent3D                   &extent,
+        const VkImageUsageFlags            &usage,
+        const std::vector<uint32_t>        &queueFamilyIndices
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = VkImageCreateFlags(),
+                .imageType = imageType,
+                .format = format,
+                .extent = extent,
+                .mipLevels = 1,
+                .arrayLayers = 1,
+                .samples = VK_SAMPLE_COUNT_1_BIT,
+                .tiling = VK_IMAGE_TILING_OPTIMAL,
+                .usage = usage,
+                .sharingMode = queueFamilyIndices.size() == 1 ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT,
+                .queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size()),
+                .pQueueFamilyIndices = queueFamilyIndices.data(),
+                .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+        };
+}
+
+VkImageMemoryBarrier vk::createVkImageMemoryBarrier(
+        const VkAccessFlags              &srcAccessMask,
+        const VkAccessFlags              &dstAccessMask,
+        const VkImageLayout              &oldLayout,
+        const VkImageLayout              &newLayout,
+        const uint32_t                   &srcQueueFamilyIndex,
+        const uint32_t                   &dstQueueFamilyIndex,
+        const VkImage                    &image
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .pNext = nullptr,
+                .srcAccessMask = srcAccessMask,
+                .dstAccessMask = dstAccessMask,
+                .oldLayout = oldLayout,
+                .newLayout = newLayout,
+                .srcQueueFamilyIndex = srcQueueFamilyIndex,
+                .dstQueueFamilyIndex = dstQueueFamilyIndex,
+                .image = image,
+                .subresourceRange = vk::createVkImageSubresourceRange(
+                        VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+                )
+        };
+}
+
+VkImageSubresourceRange vk::createVkImageSubresourceRange(
+        const VkImageAspectFlags        &aspectMask,
+        const uint32_t                  &baseMipLevel,
+        const uint32_t                  &levelCount,
+        const uint32_t                  &baseArrayLayer,
+        const uint32_t                  &layerCount
+) {
+        return {
+                .aspectMask = aspectMask,
+                .baseMipLevel = baseMipLevel,
+                .levelCount = levelCount,
+                .baseArrayLayer = baseArrayLayer,
+                .layerCount = layerCount
+        };
+}
+
+VkImageSubresourceLayers vk::createVkImageSubresourceLayers(
+        const VkImageAspectFlags        &aspectMask,
+        const uint32_t                  &mipLevel,
+        const uint32_t                  &baseArrayLayer,
+        const uint32_t                  &layerCount
+) {
+        return {
+                .aspectMask = aspectMask,
+                .mipLevel = mipLevel,
+                .baseArrayLayer = baseArrayLayer,
+                .layerCount = layerCount
+        };
+}
+
+VkBufferImageCopy vk::createVkBufferImageCopy(
+        const VkDeviceSize                    &bufferOffset,
+        const uint32_t                        &bufferRowLength,
+        const uint32_t                        &bufferImageHeight,
+        const VkExtent3D                      &imageExtent
+) {
+        return {
+                .bufferOffset = bufferOffset,
+                .bufferRowLength = bufferRowLength,
+                .bufferImageHeight = bufferImageHeight,
+                .imageSubresource = vk::createVkImageSubresourceLayers(
+                        VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1
+                ),
+                .imageOffset = vk::createVkOffset3D(0, 0, 0),
+                .imageExtent = imageExtent
+        };
+}
+
+VkExtent3D vk::createVkExtent3D(
+        const uint32_t        &width,
+        const uint32_t        &height,
+        const uint32_t        &depth
+) {
+        return {
+                .width = width,
+                .height = height,
+                .depth = depth
+        };
+}
+
+VkOffset2D vk::createVkOffset2D(
+        const int32_t &x,
+        const int32_t &y
+) {
+        return {
+                .x = x,
+                .y = y
+        };
+}
+
+VkOffset3D vk::createVkOffset3D(
+        const int32_t &x,
+        const int32_t &y,
+        const int32_t &z
+) {
+        return {
+                .x = x,
+                .y = y,
+                .z = z
+        };
+}
+
+VkComponentMapping vk::createVkComponentMapping(
+        const VkComponentSwizzle        &r,
+        const VkComponentSwizzle        &g,
+        const VkComponentSwizzle        &b,
+        const VkComponentSwizzle        &a
+) {
+        return {
+                .r = r,
+                .g = g,
+                .b = b,
+                .a = a
+        };
+}
+
+VkSamplerCreateInfo vk::createVkSamplerCreateInfo(
+        const VkFilter                    &filter,
+        const VkSamplerAddressMode        &addressMode,
+        const VkBool32                    &anisotropyEnable,
+        const float                       &maxAnisotropy,
+        const VkBool32                    &compareEnable,
+        const VkCompareOp                 &compareOp
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = VkSamplerCreateFlags(),
+                .magFilter = filter,
+                .minFilter = filter,
+                .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+                .addressModeU = addressMode,
+                .addressModeV = addressMode,
+                .addressModeW = addressMode,
+                .mipLodBias = 0.0f,
+                .anisotropyEnable = anisotropyEnable,
+                .maxAnisotropy = maxAnisotropy,
+                .compareEnable = compareEnable,
+                .compareOp = compareOp,
+                .minLod = 0.0f,
+                .maxLod = 0.0f,
+                .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+                .unnormalizedCoordinates = VK_FALSE
+        };
+}
+
+VkDescriptorImageInfo vk::createVkDescriptorImageInfo(
+        const VkSampler            &sampler,
+        const VkImageView          &imageView,
+        const VkImageLayout        &imageLayout
+) {
+        return {
+                .sampler = sampler,
+                .imageView = imageView,
+                .imageLayout = imageLayout
+        };
+}
+
+VkPhysicalDeviceProperties vk::getVkPhysicalDeviceProperties(
+        const VkPhysicalDevice        &physicalDevice
+) {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+
+        return properties;
+}
+
 VkPhysicalDeviceMemoryProperties vk::getVkPhysicalDeviceMemoryProperties(
         const VkPhysicalDevice        &physicalDevice
 ) {
@@ -802,10 +995,10 @@ VkBuffer vk::createVkBuffer(
         const VkBufferUsageFlags           &usage,
         const VkAllocationCallbacks        *pAllocator
 ) {
-        auto bufferCreateInfo = vk::createVkBufferCreateInfo(size, usage);
+        auto createInfo = vk::createVkBufferCreateInfo(size, usage);
 
         VkBuffer buffer{};
-        VkResult result = vkCreateBuffer(device, &bufferCreateInfo, pAllocator, &buffer);
+        VkResult result = vkCreateBuffer(device, &createInfo, pAllocator, &buffer);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not create buffer!");
@@ -838,11 +1031,11 @@ VkCommandBuffer vk::createVkCommandBuffer(
         const VkCommandPool        &commandPool,
         const VkDevice             &device
 ) {
-        auto commandBufferAllocateInfo = vk::createVkCommandBufferAllocateInfo(commandPool);
+        auto allocateInfo = vk::createVkCommandBufferAllocateInfo(commandPool);
 
         VkCommandBuffer commandBuffer{};
         VkResult result = vkAllocateCommandBuffers(
-                device, &commandBufferAllocateInfo, &commandBuffer
+                device, &allocateInfo, &commandBuffer
         );
 
         if (result != VK_SUCCESS)
@@ -856,12 +1049,12 @@ VkCommandPool vk::createVkCommandPool(
         const VkDevice                     &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
-        auto commandPoolCreateInfo = vk::createVkCommandPoolCreateInfo(
+        auto createInfo = vk::createVkCommandPoolCreateInfo(
                 queueFamilyIndex
         );
 
         VkCommandPool commandPool{};
-        VkResult result = vkCreateCommandPool(device, &commandPoolCreateInfo, pAllocator, &commandPool);
+        VkResult result = vkCreateCommandPool(device, &createInfo, pAllocator, &commandPool);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not create command pool!");
@@ -875,13 +1068,13 @@ VkDescriptorPool vk::createVkDescriptorPool(
         const std::vector<VkDescriptorPoolSize>        &poolSizes,
         const VkAllocationCallbacks                    *pAllocator
 ) {
-        auto poolInfo = vk::createVkDescriptorPoolCreateInfo(
+        auto createInfo = vk::createVkDescriptorPoolCreateInfo(
                 descriptorCount, poolSizes
         );
 
         VkDescriptorPool descriptorPool;
         VkResult result = vkCreateDescriptorPool(
-                device, &poolInfo,
+                device, &createInfo,
                 pAllocator, &descriptorPool
         );
 
@@ -916,13 +1109,13 @@ VkDescriptorSetLayout vk::createVkDescriptorSetLayout(
         const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
         const VkAllocationCallbacks                            *pAllocator
 ) {
-        auto setLayoutCreateInfo = vk::createVkDescriptorSetLayoutCreateInfo(
+        auto createInfo = vk::createVkDescriptorSetLayoutCreateInfo(
                 bindings
         );
 
         VkDescriptorSetLayout descriptorSetLayout;
         VkResult result = vkCreateDescriptorSetLayout(
-                device, &setLayoutCreateInfo,
+                device, &createInfo,
                 pAllocator, &descriptorSetLayout
         );
 
@@ -937,6 +1130,7 @@ VkDevice vk::createVkDevice(
         const VkPhysicalDevice                 &physicalDevice,
         const std::vector<uint32_t>            &queueFamilyIndices,
         const std::vector<const char *>        &enabledExtensionNames,
+        const VkPhysicalDeviceFeatures         *pEnabledFeatures,
         const VkAllocationCallbacks            *pAllocator
 ) {
         float queuePriority = 1.0f;
@@ -950,13 +1144,13 @@ VkDevice vk::createVkDevice(
                         familyIndex, &queuePriority
                 ));
 
-        auto deviceCreateInfo = vk::createVkDeviceCreateInfo(
-                queueCreateInfos, enabledExtensionNames
+        auto createInfo = vk::createVkDeviceCreateInfo(
+                queueCreateInfos, enabledExtensionNames, pEnabledFeatures
         );
 
         VkDevice device{};
         VkResult result = vkCreateDevice(
-                physicalDevice, &deviceCreateInfo,
+                physicalDevice, &createInfo,
                 pAllocator, &device
         );
 
@@ -970,11 +1164,11 @@ VkFence vk::createVkFence(
         const VkDevice                     &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
-        auto fenceCreateInfo = vk::createVkFenceCreateInfo();
+        auto createInfo = vk::createVkFenceCreateInfo();
 
         VkFence fence{};
         VkResult result = vkCreateFence(
-                device, &fenceCreateInfo,
+                device, &createInfo,
                 pAllocator, &fence
         );
 
@@ -991,13 +1185,13 @@ VkFramebuffer vk::createVkFramebuffer(
         const VkDevice                         &device,
         const VkAllocationCallbacks            *pAllocator
 ) {
-        auto framebufferCreateInfo = vk::createVkFramebufferCreateInfo(
+        auto createInfo = vk::createVkFramebufferCreateInfo(
                 renderPass, extent, imageViews
         );
 
         VkFramebuffer framebuffer{};
         VkResult result = vkCreateFramebuffer(
-                device, &framebufferCreateInfo,
+                device, &createInfo,
                 pAllocator, &framebuffer
         );
 
@@ -1007,19 +1201,41 @@ VkFramebuffer vk::createVkFramebuffer(
         return framebuffer;
 }
 
+VkImage vk::createVkImage(
+        const VkDevice                     &device,
+        const VkImageType                  &imageType,
+        const VkFormat                     &format,
+        const VkExtent3D                   &extent,
+        const VkImageUsageFlags            &usage,
+        const std::vector<uint32_t>        &queueFamilyIndices,
+        const VkAllocationCallbacks        *pAllocator
+) {
+        auto createInfo = vk::createVkImageCreateInfo(
+                imageType, format, extent, usage, queueFamilyIndices
+        );
+
+        VkImage image{};
+        VkResult result = vkCreateImage(device, &createInfo, pAllocator, &image);
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not create image!");
+
+        return image;
+}
+
 VkImageView vk::createVkImageView(
         const VkImage                      &image,
         const VkFormat                     &format,
         const VkDevice                     &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
-        auto imageCreateInfo = vk::createVkImageViewCreateInfo(
+        auto createInfo = vk::createVkImageViewCreateInfo(
                 image, format
         );
 
         VkImageView imageView{};
         VkResult result = vkCreateImageView(
-                device, &imageCreateInfo,
+                device, &createInfo,
                 pAllocator, &imageView
         );
 
@@ -1046,12 +1262,12 @@ VkInstance vk::createVkInstance(
                 name, version, apiVersion
         );
 
-        VkInstanceCreateInfo instanceInfo = vk::createVkInstanceCreateInfo(
+        VkInstanceCreateInfo createInfo = vk::createVkInstanceCreateInfo(
                 appInfo, enabledLayerNames, enabledExtensionNames
         );
 
         VkInstance instance{};
-        result = vkCreateInstance(&instanceInfo, pAllocator, &instance);
+        result = vkCreateInstance(&createInfo, pAllocator, &instance);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not create vulkan instance!");
@@ -1108,7 +1324,7 @@ VkPipeline vk::createVkPipeline(
                 colorBlendAttachmentState
         );
 
-        VkGraphicsPipelineCreateInfo pipelineCreateInfo = vk::createVkGraphicsPipelineCreateInfo(
+        VkGraphicsPipelineCreateInfo createInfo = vk::createVkGraphicsPipelineCreateInfo(
                 vertexInputStateCreateInfo,
                 inputAssemblyStateCreateInfo,
                 viewportStateCreateInfo,
@@ -1121,7 +1337,7 @@ VkPipeline vk::createVkPipeline(
         VkPipeline pipeline{};
         VkResult result = vkCreateGraphicsPipelines(
                 device, nullptr,
-                1, &pipelineCreateInfo,
+                1, &createInfo,
                 pAllocator, &pipeline
         );
 
@@ -1137,13 +1353,13 @@ VkPipelineLayout vk::createVkPipelineLayout(
         const std::vector<VkPushConstantRange>          &pushConstantRanges,
         const VkAllocationCallbacks                     *pAllocator
 ) {
-        auto layoutCreateInfo = vk::createVkPipelineLayoutCreateInfo(
+        auto createInfo = vk::createVkPipelineLayoutCreateInfo(
                 setLayouts, pushConstantRanges
         );
 
         VkPipelineLayout layout{};
         VkResult result = vkCreatePipelineLayout(
-                device, &layoutCreateInfo,
+                device, &createInfo,
                 pAllocator, &layout
         );
 
@@ -1171,6 +1387,7 @@ VkRenderPass vk::createVkRenderPass(
         const VkPhysicalDevice             &physicalDevice,
         const VkDevice                     &device,
         const VkSurfaceKHR                 &surface,
+        const VkSurfaceFormatKHR           &requiredFormat,
         const VkAllocationCallbacks        *pAllocator
 ) {
         uint32_t formatsCount = 0;
@@ -1193,7 +1410,7 @@ VkRenderPass vk::createVkRenderPass(
 
         VkFormat format = formats[0].format;
         for (const VkSurfaceFormatKHR &f : formats)
-                if (f.format == VK_FORMAT_R8G8B8A8_UNORM && f.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                if (f.format == requiredFormat.format && f.colorSpace == requiredFormat.colorSpace) {
                         format = f.format;
                         break;
                 }
@@ -1209,13 +1426,13 @@ VkRenderPass vk::createVkRenderPass(
                 {}, attachmentReferences,
                 {}, {}, {}
         );
-        auto renderPassCreateInfo = vk::createVkRenderPassCreateInfo(
+        auto createInfo = vk::createVkRenderPassCreateInfo(
                 attachmentDescription, subpassDescription
         );
 
         VkRenderPass renderPass{};
         result = vkCreateRenderPass(
-                device, &renderPassCreateInfo,
+                device, &createInfo,
                 pAllocator, &renderPass
         );
 
@@ -1225,15 +1442,41 @@ VkRenderPass vk::createVkRenderPass(
         return renderPass;
 }
 
+VkSampler vk::createVkSampler(
+        const VkDevice                    &device,
+        const VkFilter                    &filter,
+        const VkSamplerAddressMode        &addressMode,
+        const VkBool32                    &anisotropyEnable,
+        const float                       &maxAnisotropy,
+        const VkBool32                    &compareEnable,
+        const VkCompareOp                 &compareOp
+) {
+        auto createInfo = vk::createVkSamplerCreateInfo(
+                filter, addressMode, anisotropyEnable,
+                maxAnisotropy, compareEnable, compareOp
+        );
+
+        VkSampler sampler{};
+        VkResult result = vkCreateSampler(
+                device, &createInfo,
+                nullptr, &sampler
+        );
+
+        if (result != VK_SUCCESS)
+                throw std::runtime_error("Could not create sampler!");
+
+        return sampler;
+}
+
 VkSemaphore vk::createVkSemaphore(
         const VkDevice                     &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
-        auto semaphoreCreateInfo = vk::createVkSemaphoreCreateInfo();
+        auto createInfo = vk::createVkSemaphoreCreateInfo();
 
         VkSemaphore semaphore{};
         VkResult result = vkCreateSemaphore(
-                device, &semaphoreCreateInfo,
+                device, &createInfo,
                 pAllocator, &semaphore
         );
 
@@ -1248,13 +1491,13 @@ VkShaderModule vk::createVkShaderModule(
         const VkDevice                     &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
-        auto shaderModuleCreateInfo = vk::createVkShaderModuleCreateInfo(
+        auto createInfo = vk::createVkShaderModuleCreateInfo(
                 code
         );
 
         VkShaderModule shaderModule{};
         VkResult result = vkCreateShaderModule(
-                device, &shaderModuleCreateInfo,
+                device, &createInfo,
                 pAllocator, &shaderModule
         );
 
