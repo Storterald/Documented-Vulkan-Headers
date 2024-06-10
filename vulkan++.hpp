@@ -10,6 +10,29 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
+         * VkBool32 - Vulkan boolean type<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * VkBool32 represents boolean True and False values, since C does not have a sufficiently portable built-in boolean type:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef uint32_t VkBool32;
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         *
+         * VK_TRUE represents a boolean <b>True</b> (unsigned integer 1) value, and VK_FALSE a boolean <b>False</b> (unsigned integer 0) value.<br><br>
+         *
+         * All values returned from a Vulkan implementation in a VkBool32 will be either VK_TRUE or VK_FALSE.<br><br>
+         *
+         * Applications <b>must</b> not pass any other values than VK_TRUE or VK_FALSE into a Vulkan implementation where a VkBool32 is expected.
+         */
+        using Bool32 = VkBool32;
+
+        /** <b>Name</b><hr><br>
+         *
          * VkDescriptorPoolSize - Structure specifying descriptor pool size<br><br><br>
          *
          * <b>C Specification</b><hr><br>
@@ -1138,9 +1161,9 @@ namespace vk {
                 const Device                      &device,
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
-                const VkBool32                    &anisotropyEnable,
+                const Bool32                    &anisotropyEnable,
                 const float                       &maxAnisotropy,
-                const VkBool32                    &compareEnable,
+                const Bool32                    &compareEnable,
                 const VkCompareOp                 &compareOp
         );
 
@@ -4368,9 +4391,9 @@ namespace vk {
         constexpr SamplerCreateInfo createSamplerCreateInfo(
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
-                const VkBool32                    &anisotropyEnable,
+                const Bool32                    &anisotropyEnable,
                 const float                       &maxAnisotropy,
-                const VkBool32                    &compareEnable,
+                const Bool32                    &compareEnable,
                 const VkCompareOp                 &compareOp
         ) {
                 return {
@@ -4445,8 +4468,8 @@ namespace vk {
          * @code
          * // Provided by VK_VERSION_1_0
          * typedef struct VkPhysicalDeviceFeatures {
-         *     VkBool32    robustBufferAccess;
-         *     VkBool32    fullDrawIndexUint32;
+         *     Bool32    robustBufferAccess;
+         *     Bool32    fullDrawIndexUint32;
          *     VkBool32    imageCubeArray;
          *     VkBool32    independentBlend;
          *     VkBool32    geometryShader;
@@ -4726,7 +4749,7 @@ namespace vk {
          */
         using PhysicalDeviceFeatures = VkPhysicalDeviceFeatures;
         constexpr PhysicalDeviceFeatures createPhysicalDeviceFeatures(
-                const VkBool32 values[55]
+                const Bool32 values[55]
         ) {
                 return {
                         values[0], values[1], values[2], values[3], values[4],
