@@ -8,6 +8,717 @@
 
 namespace vk {
 
+        /*
+         *  -------------------------------------
+         *  |              HANDLES              |
+         *  -------------------------------------
+         */
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkAccelerationStructureNV - Opaque handle to an acceleration structure object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Acceleration structures for the VK_NV_ray_tracing extension are represented by the similar VkAccelerationStructureNV handles:
+         *
+         * @code
+         * // Provided by VK_NV_ray_tracing
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureNV)
+         * @endcode
+         */
+        using AccelerationStructureNV = VkAccelerationStructureNV;
+
+        // TODO doc
+        using DebugReportCallbackEXT = VkDebugReportCallbackEXT;
+        // TODO create
+
+        // TODO doc
+        using DebugUtilsMessengerEXT = VkDebugUtilsMessengerEXT;
+        // TODO create
+
+        // TODO doc
+        using DescriptorUpdateTemplate = VkDescriptorUpdateTemplate;
+        // TODO create
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkInstance - Opaque handle to an instance object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * There is no global state in Vulkan and all per-application state is stored in a VkInstance object. Creating a VkInstance object initializes the Vulkan library and allows the application to pass information about itself to the implementation.<br><br>
+         *
+         * Instances are represented by VkInstance handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkInstance)
+         * @endcode
+         */
+        using Instance = VkInstance;
+        Instance createVkInstance(
+                const char                             *name,
+                const uint32_t                         &version,
+                const std::vector<const char *>        &enabledLayerNames,
+                const std::vector<const char *>        &enabledExtensionNames,
+                const VkAllocationCallbacks            *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPhysicalDevice - Opaque handle to a physical device object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Vulkan separates the concept of physical and logical devices. A physical device usually represents a single complete implementation of Vulkan (excluding instance-level functionality) available to the host, of which there are a finite number. A logical device represents an instance of that implementation with its own state and resources independent of other logical devices.<br><br>
+         *
+         * Physical devices are represented by VkPhysicalDevice handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkPhysicalDevice)
+         * @endcode
+         */
+        using PhysicalDevice = VkPhysicalDevice;
+        std::vector<PhysicalDevice> getVkPhysicalDevices(
+                const Instance        &instance
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDevice - Opaque handle to a device object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Logical devices are represented by VkDevice handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkDevice)
+         * @endcode
+         */
+        using Device = VkDevice;
+        Device createVkDevice(
+                const PhysicalDevice                   &physicalDevice,
+                const std::vector<uint32_t>            &queueFamilyIndices,
+                const std::vector<const char *>        &enabledExtensionNames,
+                const VkPhysicalDeviceFeatures         *pEnabledFeatures,
+                const VkAllocationCallbacks            *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkCommandPool - Opaque handle to a command pool object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Command pools are opaque objects that command buffer memory is allocated from, and which allow the implementation to amortize the cost of resource creation across multiple command buffers. Command pools are externally synchronized, meaning that a command pool <b>must</b> not be used concurrently in multiple threads. That includes use via recording commands on any command buffers allocated from the pool, as well as operations that allocate, free, and reset command buffers or the pool itself.<br><br>
+         *
+         * Command pools are represented by VkCommandPool handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
+         * @endcode
+         */
+        using CommandPool = VkCommandPool;
+        CommandPool createVkCommandPool(
+                const uint32_t                     &queueFamilyIndex,
+                const Device                       &device,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkCommandBuffer - Opaque handle to a command buffer object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Command buffers are objects used to record commands which <b>can</b> be subsequently submitted to a device queue for execution. There are two levels of command buffers - primary command buffers, which <b>can</b> execute secondary command buffers, and which are submitted to queues, and secondary command buffers, which <b>can</b> be executed by primary command buffers, and which are not directly submitted to queues.<br><br>
+         *
+         * Command buffers are represented by VkCommandBuffer handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkCommandBuffer)
+         * @endcode
+         */
+        using CommandBuffer = VkCommandBuffer;
+        CommandBuffer createVkCommandBuffer(
+                const CommandPool          &commandPool,
+                const Device               &device
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkBuffer - Opaque handle to a buffer object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Buffers represent linear arrays of data which are used for various purposes by binding them to a graphics or compute pipeline via descriptor sets or certain commands, or by directly specifying them as parameters to certain commands.<br><br>
+         *
+         * Buffers are represented by VkBuffer handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
+         * @endcode
+         */
+        using Buffer = VkBuffer;
+        Buffer createVkBuffer(
+                const Device                       &device,
+                const VkDeviceSize                 &size,
+                const VkBufferUsageFlags           &usage,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkBufferView - Opaque handle to a buffer view object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A buffer view represents a contiguous range of a buffer and a specific format to be used to interpret the data. Buffer views are used to enable shaders to access buffer contents using image operations. In order to create a valid buffer view, the buffer <b>must</b> have been created with at least one of the following usage flags:
+         * <ul>
+         * <li>VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
+         * <li>VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
+         * </ul>
+         * Buffer views are represented by VkBufferView handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
+         * @endcode
+         */
+        using BufferView = VkBufferView;
+        BufferView createVkBufferView(
+                const Device                       &device,
+                const Buffer                       &buffer,
+                const VkFormat                     &format,
+                const VkDeviceSize                 &offset,
+                const VkDeviceSize                 &range,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+ *
+ * VkDescriptorPool - Opaque handle to a descriptor pool object<br><br><br>
+ *
+ * <b>C Specification</b><hr><br>
+ *
+ * A descriptor pool maintains a pool of descriptors, from which descriptor sets are allocated. Descriptor pools are externally synchronized, meaning that the application <b>must</b> not allocate and/or free descriptor sets from the same pool in multiple threads simultaneously.<br><br>
+ *
+ * Descriptor pools are represented by VkDescriptorPool handles:
+ *
+ * @code
+ * // Provided by VK_VERSION_1_0
+ * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
+ * @endcode
+ */
+        using DescriptorPool = VkDescriptorPool;
+        DescriptorPool createVkDescriptorPool(
+                const Device                                   &device,
+                const uint32_t                                 &descriptorCount,
+                const std::vector<VkDescriptorPoolSize>        &poolSizes,
+                const VkAllocationCallbacks                    *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorSet - Opaque handle to a descriptor set object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Descriptor sets are allocated from descriptor pool objects, and are represented by VkDescriptorSet handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
+         * @endcode
+         */
+        using DescriptorSet = VkDescriptorSet;
+        std::vector<DescriptorSet> createVkDescriptorSets(
+                const Device                                    &device,
+                const DescriptorPool                            &pool,
+                const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorSetLayout - Opaque handle to a descriptor set layout object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A descriptor set layout object is defined by an array of zero or more descriptor bindings. Each individual descriptor binding is specified by a descriptor type, a count (array size) of the number of descriptors in the binding, a set of shader stages that <b>can</b> access the binding, and (if using immutable samplers) an array of sampler descriptors.<br><br>
+         *
+         * Descriptor set layout objects are represented by VkDescriptorSetLayout handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSetLayout)
+         * @endcode
+         */
+        using DescriptorSetLayout = VkDescriptorSetLayout;
+        DescriptorSetLayout createVkDescriptorSetLayout(
+                const Device                                           &device,
+                const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
+                const VkAllocationCallbacks                            *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDeviceMemory - Opaque handle to a device memory object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A Vulkan device operates on data in device memory via memory objects that are represented in the API by a VkDeviceMemory handle:<br><br>
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeviceMemory)
+         * @endcode
+         */
+        using DeviceMemory = VkDeviceMemory;
+
+        // TODO doc
+        using DisplayKHR = VkDisplayKHR;
+        // TODO create
+
+        // TODO doc
+        using DisplayModeKHR = VkDisplayModeKHR;
+        // TODO create
+
+        // TODO doc
+        using Event = VkEvent;
+        // TODO create
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkFence - Opaque handle to a fence object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Fences are a synchronization primitive that <b>can</b> be used to insert a dependency from a queue to the host. Fences have two states - signaled and unsignaled. A fence <b>can</b> be signaled as part of the execution of a queue submission command. Fences <b>can</b> be unsignaled on the host with vkResetFences. Fences <b>can</b> be waited on by the host with the vkWaitForFences command, and the current state <b>can</b> be queried with vkGetFenceStatus.<br><br>
+         *
+         * The internal data of a fence <b>may</b> include a reference to any resources and pending work associated with signal or unsignal operations performed on that fence object, collectively referred to as the fence’s payload. Mechanisms to import and export that internal data to and from fences are provided below. These mechanisms indirectly enable applications to share fence state between two or more fences and other synchronization primitives across process and API boundaries.<br><br>
+         *
+         * Fences are represented by VkFence handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
+         * @endcode
+         */
+        using Fence = VkFence;
+        Fence createVkFence(
+                const Device                       &device,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImage - Opaque handle to an image object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Images represent multidimensional - up to 3 - arrays of data which <b>can</b> be used for various purposes (e.g. attachments, textures), by binding them to a graphics or compute pipeline via descriptor sets, or by directly specifying them as parameters to certain commands.<br><br>
+         *
+         * mages are represented by VkImage handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+         * @endcode
+         */
+        using Image = VkImage;
+        Image createVkImage(
+                const Device                       &device,
+                const VkImageType                  &imageType,
+                const VkFormat                     &format,
+                const VkExtent3D                   &extent,
+                const VkImageUsageFlags            &usage,
+                const std::vector<uint32_t>        &queueFamilyIndices,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImageView - Opaque handle to an image view object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Image objects are not directly accessed by pipeline shaders for reading or writing image data. Instead, image views representing contiguous ranges of the image subresources and containing additional metadata are used for that purpose. Views <b>must</b> be created on images of compatible types, and <b>must</b> represent a valid subset of image subresources.<br><br>
+         *
+         * Image views are represented by VkImageView handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
+         * @endcode
+         */
+        using ImageView = VkImageView;
+        ImageView createVkImageView(
+                const Image                        &image,
+                const VkFormat                     &format,
+                const Device                       &device,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        // TODO doc
+        using IndirectCommandsLayoutNV = VkIndirectCommandsLayoutNV;
+        // TODO create
+
+        // TODO doc
+        using PerformanceConfigurationTypeINTEL = VkPerformanceConfigurationTypeINTEL;
+        // TODO create
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipelineLayout - Opaque handle to a pipeline layout object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Access to descriptor sets from a pipeline is accomplished through a pipeline layout. Zero or more descriptor set layouts and zero or more push constant ranges are combined to form a pipeline layout object describing the complete set of resources that <b>can</b> be accessed by a pipeline. The pipeline layout represents a sequence of descriptor sets with each having a specific layout. This sequence of layouts is used to determine the interface between shader stages and shader resources. Each pipeline is created using a pipeline layout.<br><br>
+         *
+         * Pipeline layout objects are represented by VkPipelineLayout handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineLayout)
+         * @endcode
+         */
+        using PipelineLayout = VkPipelineLayout;
+        PipelineLayout createVkPipelineLayout(
+                const Device                                    &device,
+                const std::vector<VkDescriptorSetLayout>        &setLayouts,
+                const std::vector<VkPushConstantRange>          &pushConstantRanges,
+                const VkAllocationCallbacks                     *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSurfaceKHR - Opaque handle to a surface object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Native platform surface or window objects are abstracted by surface objects, which are represented by VkSurfaceKHR handles:<br><br>
+         *
+         * @code
+         * // Provided by VK_KHR_surface
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSurfaceKHR)
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         * The VK_KHR_surface extension declares the VkSurfaceKHR object, and provides a function for destroying VkSurfaceKHR objects. Separate platform-specific extensions each provide a function for creating a VkSurfaceKHR object for the respective platform. From the application’s perspective this is an opaque handle, just like the handles of other Vulkan objects.
+         *
+         * @note On certain platforms, the Vulkan loader and ICDs <b>may</b> have conventions that treat the handle as a pointer to a structure containing the platform-specific information about the surface. This will be described in the documentation for the loader-ICD interface, and in the vk_icd.h header file of the LoaderAndTools source-code repository. This does not affect the loader-layer interface; layers <b>may</b> wrap VkSurfaceKHR objects.
+         */
+        using SurfaceKHR = VkSurfaceKHR;
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkRenderPass - Opaque handle to a render pass object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A render pass object represents a collection of attachments, subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses.<br><br>
+         *
+         * Render passes are represented by VkRenderPass handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkRenderPass)
+         * @endcode
+         */
+        using RenderPass = VkRenderPass;
+        RenderPass createVkRenderPass(
+                const PhysicalDevice               &physicalDevice,
+                const Device                       &device,
+                const SurfaceKHR                   &surface,
+                const VkSurfaceFormatKHR           &requiredFormat,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkFramebuffer - Opaque handle to a framebuffer object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Render passes operate in conjunction with framebuffers. Framebuffers represent a collection of specific memory attachments that a render pass instance uses.<br><br>
+         *
+         * Framebuffers are represented by VkFramebuffer handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
+         * @endcode
+         */
+        using Framebuffer = VkFramebuffer;
+        Framebuffer createVkFramebuffer(
+                const RenderPass                      &renderPass,
+                const VkExtent2D                      &extent,
+                const std::vector<VkImageView>        &imageViews,
+                const Device                          &device,
+                const VkAllocationCallbacks           *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipeline - Opaque handle to a pipeline object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Compute, ray tracing, and graphics pipelines are each represented by VkPipeline handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
+         * @endcode
+         */
+        using Pipeline = VkPipeline;
+        Pipeline createVkPipeline(
+                const Device                                                &device,
+                const RenderPass                                            &renderPass,
+                const std::vector<VkViewport>                               &viewports,
+                const std::vector<VkRect2D>                                 &scissors,
+                const PipelineLayout                                        &layout,
+                const std::vector<VkPipelineShaderStageCreateInfo>          &shaderStages,
+                const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
+                const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
+                const VkAllocationCallbacks                                 *pAllocator
+        );
+
+        // TODO doc
+        using PipelineCache = VkPipelineCache;
+        // TODO create
+
+        // TODO doc
+        using QueryPool = VkQueryPool;
+        // TODO create
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkQueue - Opaque handle to a queue object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Creating a logical device also creates the queues associated with that device. The queues to create are described by a set of VkDeviceQueueCreateInfo structures that are passed to vkCreateDevice in pQueueCreateInfos.<br><br>
+         *
+         * Queues are represented by VkQueue handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_HANDLE(VkQueue)
+         * @endcode
+         */
+        using Queue = VkQueue;
+        Queue getVkQueue(
+                const Device          &device,
+                const uint32_t        &queueFamilyIndex,
+                const uint32_t        &queueIndex
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSampler - Opaque handle to a sampler object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * VkSampler objects represent the state of an image sampler which is used by the implementation to read image data and apply filtering and other transformations for the shader.<br><br>
+         *
+         * Samplers are represented by VkSampler handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
+         * @endcode
+         */
+        using Sampler = VkSampler;
+        Sampler createVkSampler(
+                const Device                      &device,
+                const VkFilter                    &filter,
+                const VkSamplerAddressMode        &addressMode,
+                const VkBool32                    &anisotropyEnable,
+                const float                       &maxAnisotropy,
+                const VkBool32                    &compareEnable,
+                const VkCompareOp                 &compareOp
+        );
+
+        // TODO doc
+        using SamplerYcbcrConversion = VkSamplerYcbcrConversion;
+        // TODO create
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSemaphore - Opaque handle to a semaphore object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Semaphores are a synchronization primitive that <b>can</b> be used to insert a dependency between queue operations or between a queue operation and the host. Binary semaphores have two states - signaled and unsignaled. Timeline semaphores have a strictly increasing 64-bit unsigned integer payload and are signaled with respect to a particular reference value. A semaphore <b>can</b> be signaled after execution of a queue operation is completed, and a queue operation <b>can</b> wait for a semaphore to become signaled before it begins execution. A timeline semaphore <b>can</b> additionally be signaled from the host with the vkSignalSemaphore command and waited on from the host with the vkWaitSemaphores command.<br><br>
+         *
+         * The internal data of a semaphore <b>may</b> include a reference to any resources and pending work associated with signal or unsignal operations performed on that semaphore object, collectively referred to as the semaphore’s payload. Mechanisms to import and export that internal data to and from semaphores are provided below. These mechanisms indirectly enable applications to share semaphore state between two or more semaphores and other synchronization primitives across process and API boundaries.<br><br>
+         *
+         * Semaphores are represented by VkSemaphore handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
+         * @endcode
+         */
+        using Semaphore = VkSemaphore;
+        Semaphore createVkSemaphore(
+                const Device                       &device,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkShaderModule - Opaque handle to a shader module object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Shader modules contain shader code and one or more entry points. Shaders are selected from a shader module by specifying an entry point as part of pipeline creation. The stages of a pipeline <b>can</b> use shaders that come from different modules. The shader code defining a shader module <b>must</b> be in the SPIR-V format, as described by the Vulkan Environment for SPIR-V appendix.<br><br>
+         *
+         * Shader modules are represented by VkShaderModule handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+         * @endcode
+         */
+        using ShaderModule = VkShaderModule;
+        ShaderModule createVkShaderModule(
+                const std::vector<uint8_t>         &code,
+                const Device                       &device,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSwapchainKHR - Opaque handle to a swapchain object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A swapchain object (a.k.a. swapchain) provides the ability to present rendering results to a surface. Swapchain objects are represented by VkSwapchainKHR handles:
+         *
+         * @code
+         * // Provided by VK_KHR_swapchain
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSwapchainKHR)
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         * A swapchain is an abstraction for an array of presentable images that are associated with a surface. The presentable images are represented by VkImage objects created by the platform. One image (which <b>can</b> be an array image for multiview/stereoscopic-3D surfaces) is displayed at a time, but multiple images <b>can</b> be queued for presentation. An application renders to the image, and then queues the image for presentation to the surface.<br><br>
+         *
+         * A native window <b>cannot</b> be associated with more than one non-retired swapchain at a time. Further, swapchains <b>cannot</b> be created for native windows that have a non-Vulkan graphics API surface associated with them.
+         *
+         * @note The presentation engine is an abstraction for the platform’s compositor or display engine.<br><br>
+         * The presentation engine <b>may</b> be synchronous or asynchronous with respect to the application and/or logical device.<br><br>
+         * Some implementations <b>may</b> use the device’s graphics queue or dedicated presentation hardware to perform presentation.
+         *
+         * The presentable images of a swapchain are owned by the presentation engine. An application <b>can</b> acquire use of a presentable image from the presentation engine. Use of a presentable image <b>must</b> occur only after the image is returned by vkAcquireNextImageKHR, and before it is released by vkQueuePresentKHR. This includes transitioning the image layout and rendering commands.<br><br>
+         *
+         * An application <b>can</b> acquire use of a presentable image with vkAcquireNextImageKHR. After acquiring a presentable image and before modifying it, the application <b>must</b> use a synchronization primitive to ensure that the presentation engine has finished reading from the image. The application <b>can</b> then transition the image’s layout, queue rendering commands to it, etc. Finally, the application presents the image with vkQueuePresentKHR, which releases the acquisition of the image. The application <b>can</b> also release the acquisition of the image through vkReleaseSwapchainImagesEXT, if the image is not in use by the device, and skip the present operation.<br><br>
+         *
+         * The presentation engine controls the order in which presentable images are acquired for use by the application.
+         *
+         * @note This allows the platform to handle situations which require out-of-order return of images after presentation. At the same time, it allows the application to generate command buffers referencing all of the images in the swapchain at initialization time, rather than in its main loop.
+         */
+        using SwapchainKHR = VkSwapchainKHR;
+        SwapchainKHR createVkSwapchainKHR(
+                const Device                               &device,
+                const SurfaceKHR                           &surface,
+                const std::vector<VkPresentModeKHR>        &presentModes,
+                const VkSurfaceCapabilitiesKHR             &capabilities,
+                const std::vector<uint32_t>                &queueFamilyIndices,
+                const VkSurfaceFormatKHR                   &format,
+                const VkExtent2D                           &extent,
+                const VkAllocationCallbacks                *pAllocator
+        );
+
+        // TODO doc
+        using ValidationCacheEXT = VkValidationCacheEXT;
+        // TODO create
+
+        /*
+         *  --------------------------------------
+         *  |             STRUCTURES             |
+         *  --------------------------------------
+         */
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkAccelerationStructureInfoNV - Structure specifying the parameters of acceleration structure object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkAccelerationStructureInfoNV structure is defined as:
+         *
+         * @code
+         * // Provided by VK_NV_ray_tracing
+         * typedef struct VkAccelerationStructureInfoNV {
+         *     VkStructureType                        sType;
+         *     const void*                            pNext;
+         *     VkAccelerationStructureTypeNV          type;
+         *     VkBuildAccelerationStructureFlagsNV    flags;
+         *     uint32_t                               instanceCount;
+         *     uint32_t                               geometryCount;
+         *     const VkGeometryNV*                    pGeometries;
+         * } VkAccelerationStructureInfoNV;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>type is a VkAccelerationStructureTypeNV value specifying the type of acceleration structure that will be created.
+         * <li>flags is a bitmask of VkBuildAccelerationStructureFlagBitsNV specifying additional parameters of the acceleration structure.
+         * <li>instanceCount specifies the number of instances that will be in the new acceleration structure.
+         * <li>geometryCount specifies the number of geometries that will be in the new acceleration structure.
+         * <li>pGeometries is a pointer to an array of geometryCount VkGeometryNV structures containing the scene data being passed into the acceleration structure.
+         * </ul>
+         * <b>Description</b><hr><br>
+         *
+         * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
+         */
+        VkAccelerationStructureInfoNV createVkAccelerationStructureInfoNV(
+                const VkAccelerationStructureTypeNV              &type,
+                const uint32_t                                   &instanceCount,
+                const std::vector<VkGeometryNV>                  &geometries
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkAccelerationStructureCreateInfoNV - Structure specifying the parameters of a newly created acceleration structure object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkAccelerationStructureCreateInfoNV structure is defined as:
+         *
+         * @code
+         * // Provided by VK_NV_ray_tracing
+         * typedef struct VkAccelerationStructureCreateInfoNV {
+         *     VkStructureType                  sType;
+         *     const void*                      pNext;
+         *     VkDeviceSize                     compactedSize;
+         *     VkAccelerationStructureInfoNV    info;
+         * } VkAccelerationStructureCreateInfoNV;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>compactedSize is the size from the result of vkCmdWriteAccelerationStructuresPropertiesNV if this acceleration structure is going to be the target of a compacting copy.
+         * <li>info is the VkAccelerationStructureInfoNV structure specifying further parameters of the created acceleration structure.
+         * </ul>
+         */
+        VkAccelerationStructureCreateInfoNV createVkAccelerationStructureCreateInfoNV(
+                const VkDeviceSize                         &compactedSize,
+                const VkAccelerationStructureInfoNV        &info
+        );
+
         /** <b>Name</b><hr><br>
          *
          * VkApplicationInfo - Structure specifying application information<br><br><br>
@@ -2898,535 +3609,6 @@ namespace vk {
                 const VkPhysicalDevice        &physicalDevice,
                 const VkSurfaceKHR            &surface
         );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkBuffer - Opaque handle to a buffer object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Buffers represent linear arrays of data which are used for various purposes by binding them to a graphics or compute pipeline via descriptor sets or certain commands, or by directly specifying them as parameters to certain commands.<br><br>
-         *
-         * Buffers are represented by VkBuffer handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
-         * @endcode
-         */
-        VkBuffer createVkBuffer(
-                 const VkDevice                     &device,
-                 const VkDeviceSize                 &size,
-                 const VkBufferUsageFlags           &usage,
-                 const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkBufferView - Opaque handle to a buffer view object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A buffer view represents a contiguous range of a buffer and a specific format to be used to interpret the data. Buffer views are used to enable shaders to access buffer contents using image operations. In order to create a valid buffer view, the buffer <b>must</b> have been created with at least one of the following usage flags:
-         * <ul>
-         * <li>VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
-         * <li>VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
-         * </ul>
-         * Buffer views are represented by VkBufferView handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
-         * @endcode
-         */
-        VkBufferView createVkBufferView(
-                const VkDevice                     &device,
-                const VkBuffer                     &buffer,
-                const VkFormat                     &format,
-                const VkDeviceSize                 &offset,
-                const VkDeviceSize                 &range,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkCommandBuffer - Opaque handle to a command buffer object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Command buffers are objects used to record commands which <b>can</b> be subsequently submitted to a device queue for execution. There are two levels of command buffers - primary command buffers, which <b>can</b> execute secondary command buffers, and which are submitted to queues, and secondary command buffers, which <b>can</b> be executed by primary command buffers, and which are not directly submitted to queues.<br><br>
-         *
-         * Command buffers are represented by VkCommandBuffer handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_HANDLE(VkCommandBuffer)
-         * @endcode
-         */
-        VkCommandBuffer createVkCommandBuffer(
-                const VkCommandPool        &commandPool,
-                const VkDevice             &device
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkCommandPool - Opaque handle to a command pool object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Command pools are opaque objects that command buffer memory is allocated from, and which allow the implementation to amortize the cost of resource creation across multiple command buffers. Command pools are externally synchronized, meaning that a command pool <b>must</b> not be used concurrently in multiple threads. That includes use via recording commands on any command buffers allocated from the pool, as well as operations that allocate, free, and reset command buffers or the pool itself.<br><br>
-         *
-         * Command pools are represented by VkCommandPool handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
-         * @endcode
-         */
-        VkCommandPool createVkCommandPool(
-                const uint32_t                     &queueFamilyIndex,
-                const VkDevice                     &device,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        //TODO VkDebugReportCallbackEXT createVkDebugReportCallbackEXT();
-
-        //TODO VkDebugUtilsMessengerEXT createVkDebugUtilsMessengerEXT();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkDescriptorPool - Opaque handle to a descriptor pool object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A descriptor pool maintains a pool of descriptors, from which descriptor sets are allocated. Descriptor pools are externally synchronized, meaning that the application <b>must</b> not allocate and/or free descriptor sets from the same pool in multiple threads simultaneously.<br><br>
-         *
-         * Descriptor pools are represented by VkDescriptorPool handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
-         * @endcode
-         */
-        VkDescriptorPool createVkDescriptorPool(
-                const VkDevice                                 &device,
-                const uint32_t                                 &descriptorCount,
-                const std::vector<VkDescriptorPoolSize>        &poolSizes,
-                const VkAllocationCallbacks                    *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkDescriptorSet - Opaque handle to a descriptor set object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Descriptor sets are allocated from descriptor pool objects, and are represented by VkDescriptorSet handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
-         * @endcode
-         */
-        std::vector<VkDescriptorSet> createVkDescriptorSets(
-                const VkDevice                                  &device,
-                const VkDescriptorPool                          &pool,
-                const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkDescriptorSetLayout - Opaque handle to a descriptor set layout object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A descriptor set layout object is defined by an array of zero or more descriptor bindings. Each individual descriptor binding is specified by a descriptor type, a count (array size) of the number of descriptors in the binding, a set of shader stages that <b>can</b> access the binding, and (if using immutable samplers) an array of sampler descriptors.<br><br>
-         *
-         * Descriptor set layout objects are represented by VkDescriptorSetLayout handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSetLayout)
-         * @endcode
-         */
-        VkDescriptorSetLayout createVkDescriptorSetLayout(
-                const VkDevice                                         &device,
-                const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
-                const VkAllocationCallbacks                            *pAllocator
-        );
-
-        //TODO VkDescriptorUpdateTemplate createVkDescriptorUpdateTemplate();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkDevice - Opaque handle to a device object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Logical devices are represented by VkDevice handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_HANDLE(VkDevice)
-         * @endcode
-         */
-        VkDevice createVkDevice(
-                const VkPhysicalDevice                 &physicalDevice,
-                const std::vector<uint32_t>            &queueFamilyIndices,
-                const std::vector<const char *>        &enabledExtensionNames,
-                const VkPhysicalDeviceFeatures         *pEnabledFeatures,
-                const VkAllocationCallbacks            *pAllocator
-        );
-
-        //TODO VkDisplayModeKHR createVkDisplayModeKHR();
-
-        //TODO VkEvent createVkEvent();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkFence - Opaque handle to a fence object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Fences are a synchronization primitive that <b>can</b> be used to insert a dependency from a queue to the host. Fences have two states - signaled and unsignaled. A fence <b>can</b> be signaled as part of the execution of a queue submission command. Fences <b>can</b> be unsignaled on the host with vkResetFences. Fences <b>can</b> be waited on by the host with the vkWaitForFences command, and the current state <b>can</b> be queried with vkGetFenceStatus.<br><br>
-         *
-         * The internal data of a fence <b>may</b> include a reference to any resources and pending work associated with signal or unsignal operations performed on that fence object, collectively referred to as the fence’s payload. Mechanisms to import and export that internal data to and from fences are provided below. These mechanisms indirectly enable applications to share fence state between two or more fences and other synchronization primitives across process and API boundaries.<br><br>
-         *
-         * Fences are represented by VkFence handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
-         * @endcode
-         */
-        VkFence createVkFence(
-                const VkDevice                     &device,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkFramebuffer - Opaque handle to a framebuffer object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Render passes operate in conjunction with framebuffers. Framebuffers represent a collection of specific memory attachments that a render pass instance uses.<br><br>
-         *
-         * Framebuffers are represented by VkFramebuffer handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
-         * @endcode
-         */
-        VkFramebuffer createVkFramebuffer(
-                const VkRenderPass                     &renderPass,
-                const VkExtent2D                       &extent,
-                const std::vector<VkImageView>         &imageViews,
-                const VkDevice                         &device,
-                const VkAllocationCallbacks            *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkImage - Opaque handle to an image object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Images represent multidimensional - up to 3 - arrays of data which <b>can</b> be used for various purposes (e.g. attachments, textures), by binding them to a graphics or compute pipeline via descriptor sets, or by directly specifying them as parameters to certain commands.<br><br>
-         *
-         * mages are represented by VkImage handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
-         * @endcode
-         */
-        VkImage createVkImage(
-                const VkDevice                     &device,
-                const VkImageType                  &imageType,
-                const VkFormat                     &format,
-                const VkExtent3D                   &extent,
-                const VkImageUsageFlags            &usage,
-                const std::vector<uint32_t>        &queueFamilyIndices,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkImageView - Opaque handle to an image view object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Image objects are not directly accessed by pipeline shaders for reading or writing image data. Instead, image views representing contiguous ranges of the image subresources and containing additional metadata are used for that purpose. Views <b>must</b> be created on images of compatible types, and <b>must</b> represent a valid subset of image subresources.<br><br>
-         *
-         * Image views are represented by VkImageView handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
-         * @endcode
-         */
-        VkImageView createVkImageView(
-                const VkImage                      &image,
-                const VkFormat                     &format,
-                const VkDevice                     &device,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        //TODO VkIndirectCommandsLayoutNV createVkIndirectCommandsLayoutNVX();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkInstance - Opaque handle to an instance object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * There is no global state in Vulkan and all per-application state is stored in a VkInstance object. Creating a VkInstance object initializes the Vulkan library and allows the application to pass information about itself to the implementation.<br><br>
-         *
-         * Instances are represented by VkInstance handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_HANDLE(VkInstance)
-         * @endcode
-         */
-        VkInstance createVkInstance(
-                const char                             *name,
-                const uint32_t                         &version,
-                const std::vector<const char *>        &enabledLayerNames,
-                const std::vector<const char *>        &enabledExtensionNames,
-                const VkAllocationCallbacks            *pAllocator
-        );
-
-        //TODO VkPerformanceConfigurationINTEL acquireVkPerformanceConfigurationINTEL();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPhysicalDevice - Opaque handle to a physical device object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Vulkan separates the concept of physical and logical devices. A physical device usually represents a single complete implementation of Vulkan (excluding instance-level functionality) available to the host, of which there are a finite number. A logical device represents an instance of that implementation with its own state and resources independent of other logical devices.<br><br>
-         *
-         * Physical devices are represented by VkPhysicalDevice handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_HANDLE(VkPhysicalDevice)
-         * @endcode
-         */
-        std::vector<VkPhysicalDevice> getVkPhysicalDevices(
-                const VkInstance &instance
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPipeline - Opaque handle to a pipeline object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Compute, ray tracing, and graphics pipelines are each represented by VkPipeline handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
-         * @endcode
-         */
-        VkPipeline createVkPipeline(
-                const VkDevice                                              &device,
-                const VkRenderPass                                          &renderPass,
-                const std::vector<VkViewport>                               &viewports,
-                const std::vector<VkRect2D>                                 &scissors,
-                const VkPipelineLayout                                      &layout,
-                const std::vector<VkPipelineShaderStageCreateInfo>          &shaderStages,
-                const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
-                const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
-                const VkAllocationCallbacks                                 *pAllocator
-        );
-
-        //TODO VkPipelineCache createVkPipelineCache();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPipelineLayout - Opaque handle to a pipeline layout object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Access to descriptor sets from a pipeline is accomplished through a pipeline layout. Zero or more descriptor set layouts and zero or more push constant ranges are combined to form a pipeline layout object describing the complete set of resources that <b>can</b> be accessed by a pipeline. The pipeline layout represents a sequence of descriptor sets with each having a specific layout. This sequence of layouts is used to determine the interface between shader stages and shader resources. Each pipeline is created using a pipeline layout.<br><br>
-         *
-         * Pipeline layout objects are represented by VkPipelineLayout handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineLayout)
-         * @endcode
-         */
-        VkPipelineLayout createVkPipelineLayout(
-                const VkDevice                                  &device,
-                const std::vector<VkDescriptorSetLayout>        &setLayouts,
-                const std::vector<VkPushConstantRange>          &pushConstantRanges,
-                const VkAllocationCallbacks                     *pAllocator
-        );
-
-        //TODO VkQueryPool createVkQueryPool();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkQueue - Opaque handle to a queue object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Creating a logical device also creates the queues associated with that device. The queues to create are described by a set of VkDeviceQueueCreateInfo structures that are passed to vkCreateDevice in pQueueCreateInfos.<br><br>
-         *
-         * Queues are represented by VkQueue handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_HANDLE(VkQueue)
-         * @endcode
-         */
-        VkQueue getVkQueue(
-                const VkDevice        &device,
-                const uint32_t        &queueFamilyIndex,
-                const uint32_t        &queueIndex
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkRenderPass - Opaque handle to a render pass object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A render pass object represents a collection of attachments, subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses.<br><br>
-         *
-         * Render passes are represented by VkRenderPass handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkRenderPass)
-         * @endcode
-         */
-        VkRenderPass createVkRenderPass(
-                const VkPhysicalDevice             &physicalDevice,
-                const VkDevice                     &device,
-                const VkSurfaceKHR                 &surface,
-                const VkSurfaceFormatKHR           &requiredFormat,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkSampler - Opaque handle to a sampler object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * VkSampler objects represent the state of an image sampler which is used by the implementation to read image data and apply filtering and other transformations for the shader.<br><br>
-         *
-         * Samplers are represented by VkSampler handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
-         * @endcode
-         */
-        VkSampler createVkSampler(
-                const VkDevice                    &device,
-                const VkFilter                    &filter,
-                const VkSamplerAddressMode        &addressMode,
-                const VkBool32                    &anisotropyEnable,
-                const float                       &maxAnisotropy,
-                const VkBool32                    &compareEnable,
-                const VkCompareOp                 &compareOp
-        );
-
-        //TODO VkSamplerYcbcrConversion createVkSamplerYcbcrConversion();
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkSemaphore - Opaque handle to a semaphore object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Semaphores are a synchronization primitive that <b>can</b> be used to insert a dependency between queue operations or between a queue operation and the host. Binary semaphores have two states - signaled and unsignaled. Timeline semaphores have a strictly increasing 64-bit unsigned integer payload and are signaled with respect to a particular reference value. A semaphore <b>can</b> be signaled after execution of a queue operation is completed, and a queue operation <b>can</b> wait for a semaphore to become signaled before it begins execution. A timeline semaphore <b>can</b> additionally be signaled from the host with the vkSignalSemaphore command and waited on from the host with the vkWaitSemaphores command.<br><br>
-         *
-         * The internal data of a semaphore <b>may</b> include a reference to any resources and pending work associated with signal or unsignal operations performed on that semaphore object, collectively referred to as the semaphore’s payload. Mechanisms to import and export that internal data to and from semaphores are provided below. These mechanisms indirectly enable applications to share semaphore state between two or more semaphores and other synchronization primitives across process and API boundaries.<br><br>
-         *
-         * Semaphores are represented by VkSemaphore handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
-         * @endcode
-         */
-        VkSemaphore createVkSemaphore(
-                const VkDevice                     &device,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkShaderModule - Opaque handle to a shader module object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Shader modules contain shader code and one or more entry points. Shaders are selected from a shader module by specifying an entry point as part of pipeline creation. The stages of a pipeline <b>can</b> use shaders that come from different modules. The shader code defining a shader module <b>must</b> be in the SPIR-V format, as described by the Vulkan Environment for SPIR-V appendix.<br><br>
-         *
-         * Shader modules are represented by VkShaderModule handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
-         * @endcode
-         */
-        VkShaderModule createVkShaderModule(
-                const std::vector<uint8_t>         &code,
-                const VkDevice                     &device,
-                const VkAllocationCallbacks        *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkSwapchainKHR - Opaque handle to a swapchain object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A swapchain object (a.k.a. swapchain) provides the ability to present rendering results to a surface. Swapchain objects are represented by VkSwapchainKHR handles:
-         *
-         * @code
-         * // Provided by VK_KHR_swapchain
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSwapchainKHR)
-         * @endcode
-         *
-         * <b>Description</b><hr><br>
-         * A swapchain is an abstraction for an array of presentable images that are associated with a surface. The presentable images are represented by VkImage objects created by the platform. One image (which <b>can</b> be an array image for multiview/stereoscopic-3D surfaces) is displayed at a time, but multiple images <b>can</b> be queued for presentation. An application renders to the image, and then queues the image for presentation to the surface.<br><br>
-         *
-         * A native window <b>cannot</b> be associated with more than one non-retired swapchain at a time. Further, swapchains <b>cannot</b> be created for native windows that have a non-Vulkan graphics API surface associated with them.
-         *
-         * @note The presentation engine is an abstraction for the platform’s compositor or display engine.<br><br>
-         * The presentation engine <b>may</b> be synchronous or asynchronous with respect to the application and/or logical device.<br><br>
-         * Some implementations <b>may</b> use the device’s graphics queue or dedicated presentation hardware to perform presentation.
-         *
-         * The presentable images of a swapchain are owned by the presentation engine. An application <b>can</b> acquire use of a presentable image from the presentation engine. Use of a presentable image <b>must</b> occur only after the image is returned by vkAcquireNextImageKHR, and before it is released by vkQueuePresentKHR. This includes transitioning the image layout and rendering commands.<br><br>
-         *
-         * An application <b>can</b> acquire use of a presentable image with vkAcquireNextImageKHR. After acquiring a presentable image and before modifying it, the application <b>must</b> use a synchronization primitive to ensure that the presentation engine has finished reading from the image. The application <b>can</b> then transition the image’s layout, queue rendering commands to it, etc. Finally, the application presents the image with vkQueuePresentKHR, which releases the acquisition of the image. The application <b>can</b> also release the acquisition of the image through vkReleaseSwapchainImagesEXT, if the image is not in use by the device, and skip the present operation.<br><br>
-         *
-         * The presentation engine controls the order in which presentable images are acquired for use by the application.
-         *
-         * @note This allows the platform to handle situations which require out-of-order return of images after presentation. At the same time, it allows the application to generate command buffers referencing all of the images in the swapchain at initialization time, rather than in its main loop.
-         */
-        VkSwapchainKHR createVkSwapchainKHR(
-                const VkDevice                             &device,
-                const VkSurfaceKHR                         &surface,
-                const std::vector<VkPresentModeKHR>        &presentModes,
-                const VkSurfaceCapabilitiesKHR             &capabilities,
-                const std::vector<uint32_t>                &queueFamilyIndices,
-                const VkSurfaceFormatKHR                   &format,
-                const VkExtent2D                           &extent,
-                const VkAllocationCallbacks                *pAllocator
-        );
-
-        //TODO VkValidationCacheEXT createVkValidationCacheEXT();
 
 }
 

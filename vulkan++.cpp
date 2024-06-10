@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <set>
 
+using namespace vk;
+
 VkApplicationInfo vk::createVkApplicationInfo(
         const char            *pApplicationName,
         const uint32_t        &applicationVersion,
@@ -908,6 +910,34 @@ VkDescriptorImageInfo vk::createVkDescriptorImageInfo(
         };
 }
 
+VkAccelerationStructureCreateInfoNV vk::createVkAccelerationStructureCreateInfoNV(
+        const VkDeviceSize                         &compactedSize,
+        const VkAccelerationStructureInfoNV        &info
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV,
+                .pNext = nullptr,
+                .compactedSize = compactedSize,
+                .info = info
+        };
+}
+
+VkAccelerationStructureInfoNV vk::createVkAccelerationStructureInfoNV(
+        const VkAccelerationStructureTypeNV              &type,
+        const uint32_t                                   &instanceCount,
+        const std::vector<VkGeometryNV>                  &geometries
+) {
+        return {
+                .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV,
+                .pNext = nullptr,
+                .type = type,
+                .flags = VkBuildAccelerationStructureFlagsNV(),
+                .instanceCount = instanceCount,
+                .geometryCount = static_cast<uint32_t>(geometries.size()),
+                .pGeometries = geometries.data()
+        };
+}
+
 VkPhysicalDeviceProperties vk::getVkPhysicalDeviceProperties(
         const VkPhysicalDevice        &physicalDevice
 ) {
@@ -989,15 +1019,15 @@ std::vector<VkPresentModeKHR> vk::getVkPresentModeKHR(
         return presentModes;
 }
 
-VkBuffer vk::createVkBuffer(
-        const VkDevice                     &device,
+Buffer vk::createVkBuffer(
+        const Device                       &device,
         const VkDeviceSize                 &size,
         const VkBufferUsageFlags           &usage,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createVkBufferCreateInfo(size, usage);
 
-        VkBuffer buffer{};
+        Buffer buffer{};
         VkResult result = vkCreateBuffer(device, &createInfo, pAllocator, &buffer);
 
         if (result != VK_SUCCESS)
@@ -1006,9 +1036,9 @@ VkBuffer vk::createVkBuffer(
         return buffer;
 }
 
-VkBufferView vk::createVkBufferView(
-        const VkDevice                     &device,
-        const VkBuffer                     &buffer,
+BufferView vk::createVkBufferView(
+        const Device                       &device,
+        const Buffer                       &buffer,
         const VkFormat                     &format,
         const VkDeviceSize                 &offset,
         const VkDeviceSize                 &range,
@@ -1018,7 +1048,7 @@ VkBufferView vk::createVkBufferView(
                 buffer, format, offset, range
         );
 
-        VkBufferView bufferView{};
+        BufferView bufferView{};
         VkResult result = vkCreateBufferView(device, &createInfo, pAllocator, &bufferView);
 
         if (result != VK_SUCCESS)
@@ -1027,13 +1057,13 @@ VkBufferView vk::createVkBufferView(
         return bufferView;
 }
 
-VkCommandBuffer vk::createVkCommandBuffer(
-        const VkCommandPool        &commandPool,
-        const VkDevice             &device
+CommandBuffer vk::createVkCommandBuffer(
+        const CommandPool          &commandPool,
+        const Device               &device
 ) {
         auto allocateInfo = vk::createVkCommandBufferAllocateInfo(commandPool);
 
-        VkCommandBuffer commandBuffer{};
+        CommandBuffer commandBuffer{};
         VkResult result = vkAllocateCommandBuffers(
                 device, &allocateInfo, &commandBuffer
         );
@@ -1044,16 +1074,16 @@ VkCommandBuffer vk::createVkCommandBuffer(
         return commandBuffer;
 }
 
-VkCommandPool vk::createVkCommandPool(
+CommandPool vk::createVkCommandPool(
         const uint32_t                     &queueFamilyIndex,
-        const VkDevice                     &device,
+        const Device                       &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createVkCommandPoolCreateInfo(
                 queueFamilyIndex
         );
 
-        VkCommandPool commandPool{};
+        CommandPool commandPool{};
         VkResult result = vkCreateCommandPool(device, &createInfo, pAllocator, &commandPool);
 
         if (result != VK_SUCCESS)
@@ -1062,8 +1092,8 @@ VkCommandPool vk::createVkCommandPool(
         return commandPool;
 }
 
-VkDescriptorPool vk::createVkDescriptorPool(
-        const VkDevice                                 &device,
+DescriptorPool vk::createVkDescriptorPool(
+        const Device                                   &device,
         const uint32_t                                 &descriptorCount,
         const std::vector<VkDescriptorPoolSize>        &poolSizes,
         const VkAllocationCallbacks                    *pAllocator
@@ -1072,7 +1102,7 @@ VkDescriptorPool vk::createVkDescriptorPool(
                 descriptorCount, poolSizes
         );
 
-        VkDescriptorPool descriptorPool;
+        DescriptorPool descriptorPool;
         VkResult result = vkCreateDescriptorPool(
                 device, &createInfo,
                 pAllocator, &descriptorPool
@@ -1084,8 +1114,8 @@ VkDescriptorPool vk::createVkDescriptorPool(
         return descriptorPool;
 }
 
-std::vector<VkDescriptorSet> vk::createVkDescriptorSets(
-        const VkDevice                                  &device,
+std::vector<DescriptorSet> vk::createVkDescriptorSets(
+        const Device                                    &device,
         const VkDescriptorPool                          &pool,
         const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts
 ) {
@@ -1093,7 +1123,7 @@ std::vector<VkDescriptorSet> vk::createVkDescriptorSets(
                 pool, descriptorSetLayouts
         );
 
-        std::vector<VkDescriptorSet> descriptorSets(descriptorSetLayouts.size());
+        std::vector<DescriptorSet> descriptorSets(descriptorSetLayouts.size());
         VkResult result = vkAllocateDescriptorSets(
                 device, &allocateInfo, descriptorSets.data()
         );
@@ -1104,7 +1134,7 @@ std::vector<VkDescriptorSet> vk::createVkDescriptorSets(
         return descriptorSets;
 }
 
-VkDescriptorSetLayout vk::createVkDescriptorSetLayout(
+DescriptorSetLayout vk::createVkDescriptorSetLayout(
         const VkDevice                                         &device,
         const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
         const VkAllocationCallbacks                            *pAllocator
@@ -1113,7 +1143,7 @@ VkDescriptorSetLayout vk::createVkDescriptorSetLayout(
                 bindings
         );
 
-        VkDescriptorSetLayout descriptorSetLayout;
+        DescriptorSetLayout descriptorSetLayout;
         VkResult result = vkCreateDescriptorSetLayout(
                 device, &createInfo,
                 pAllocator, &descriptorSetLayout
@@ -1126,8 +1156,8 @@ VkDescriptorSetLayout vk::createVkDescriptorSetLayout(
         return descriptorSetLayout;
 }
 
-VkDevice vk::createVkDevice(
-        const VkPhysicalDevice                 &physicalDevice,
+Device vk::createVkDevice(
+        const PhysicalDevice                   &physicalDevice,
         const std::vector<uint32_t>            &queueFamilyIndices,
         const std::vector<const char *>        &enabledExtensionNames,
         const VkPhysicalDeviceFeatures         *pEnabledFeatures,
@@ -1148,7 +1178,7 @@ VkDevice vk::createVkDevice(
                 queueCreateInfos, enabledExtensionNames, pEnabledFeatures
         );
 
-        VkDevice device{};
+        Device device{};
         VkResult result = vkCreateDevice(
                 physicalDevice, &createInfo,
                 pAllocator, &device
@@ -1160,13 +1190,13 @@ VkDevice vk::createVkDevice(
         return device;
 }
 
-VkFence vk::createVkFence(
-        const VkDevice                     &device,
+Fence vk::createVkFence(
+        const Device                       &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createVkFenceCreateInfo();
 
-        VkFence fence{};
+        Fence fence{};
         VkResult result = vkCreateFence(
                 device, &createInfo,
                 pAllocator, &fence
@@ -1178,18 +1208,18 @@ VkFence vk::createVkFence(
         return fence;
 }
 
-VkFramebuffer vk::createVkFramebuffer(
-        const VkRenderPass                     &renderPass,
-        const VkExtent2D                       &extent,
-        const std::vector<VkImageView>         &imageViews,
-        const VkDevice                         &device,
-        const VkAllocationCallbacks            *pAllocator
+Framebuffer vk::createVkFramebuffer(
+        const RenderPass                      &renderPass,
+        const VkExtent2D                      &extent,
+        const std::vector<VkImageView>        &imageViews,
+        const Device                          &device,
+        const VkAllocationCallbacks           *pAllocator
 ) {
         auto createInfo = vk::createVkFramebufferCreateInfo(
                 renderPass, extent, imageViews
         );
 
-        VkFramebuffer framebuffer{};
+        Framebuffer framebuffer{};
         VkResult result = vkCreateFramebuffer(
                 device, &createInfo,
                 pAllocator, &framebuffer
@@ -1201,8 +1231,8 @@ VkFramebuffer vk::createVkFramebuffer(
         return framebuffer;
 }
 
-VkImage vk::createVkImage(
-        const VkDevice                     &device,
+Image vk::createVkImage(
+        const Device                       &device,
         const VkImageType                  &imageType,
         const VkFormat                     &format,
         const VkExtent3D                   &extent,
@@ -1214,7 +1244,7 @@ VkImage vk::createVkImage(
                 imageType, format, extent, usage, queueFamilyIndices
         );
 
-        VkImage image{};
+        Image image{};
         VkResult result = vkCreateImage(device, &createInfo, pAllocator, &image);
 
         if (result != VK_SUCCESS)
@@ -1223,17 +1253,17 @@ VkImage vk::createVkImage(
         return image;
 }
 
-VkImageView vk::createVkImageView(
-        const VkImage                      &image,
+ImageView vk::createVkImageView(
+        const Image                        &image,
         const VkFormat                     &format,
-        const VkDevice                     &device,
+        const Device                       &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createVkImageViewCreateInfo(
                 image, format
         );
 
-        VkImageView imageView{};
+        ImageView imageView{};
         VkResult result = vkCreateImageView(
                 device, &createInfo,
                 pAllocator, &imageView
@@ -1245,7 +1275,7 @@ VkImageView vk::createVkImageView(
         return imageView;
 }
 
-VkInstance vk::createVkInstance(
+Instance vk::createVkInstance(
         const char                             *name,
         const uint32_t                         &version,
         const std::vector<const char *>        &enabledLayerNames,
@@ -1266,7 +1296,7 @@ VkInstance vk::createVkInstance(
                 appInfo, enabledLayerNames, enabledExtensionNames
         );
 
-        VkInstance instance{};
+        Instance instance{};
         result = vkCreateInstance(&createInfo, pAllocator, &instance);
 
         if (result != VK_SUCCESS)
@@ -1275,8 +1305,8 @@ VkInstance vk::createVkInstance(
         return instance;
 }
 
-std::vector<VkPhysicalDevice> vk::getVkPhysicalDevices(
-        const VkInstance &instance
+std::vector<PhysicalDevice> vk::getVkPhysicalDevices(
+        const Instance        &instance
 ) {
         uint32_t physicalDevicesCount = 0;
         VkResult result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr);
@@ -1284,7 +1314,7 @@ std::vector<VkPhysicalDevice> vk::getVkPhysicalDevices(
         if (result != VK_SUCCESS && result != VK_INCOMPLETE)
                 throw std::runtime_error("Could not get physical devices count!");
 
-        std::vector<VkPhysicalDevice> physicalDevices(physicalDevicesCount);
+        std::vector<PhysicalDevice> physicalDevices(physicalDevicesCount);
         result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, physicalDevices.data());
 
         if (result != VK_SUCCESS)
@@ -1293,12 +1323,12 @@ std::vector<VkPhysicalDevice> vk::getVkPhysicalDevices(
         return physicalDevices;
 }
 
-VkPipeline vk::createVkPipeline(
-        const VkDevice                                              &device,
-        const VkRenderPass                                          &renderPass,
+Pipeline vk::createVkPipeline(
+        const Device                                                &device,
+        const RenderPass                                            &renderPass,
         const std::vector<VkViewport>                               &viewports,
         const std::vector<VkRect2D>                                 &scissors,
-        const VkPipelineLayout                                      &layout,
+        const PipelineLayout                                        &layout,
         const std::vector<VkPipelineShaderStageCreateInfo>          &shaderStages,
         const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
         const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
@@ -1334,7 +1364,7 @@ VkPipeline vk::createVkPipeline(
                 shaderStages, layout, renderPass
         );
 
-        VkPipeline pipeline{};
+        Pipeline pipeline{};
         VkResult result = vkCreateGraphicsPipelines(
                 device, nullptr,
                 1, &createInfo,
@@ -1347,17 +1377,17 @@ VkPipeline vk::createVkPipeline(
         return pipeline;
 }
 
-VkPipelineLayout vk::createVkPipelineLayout(
-        const VkDevice                                  &device,
-        const std::vector<VkDescriptorSetLayout>        &setLayouts,
-        const std::vector<VkPushConstantRange>          &pushConstantRanges,
-        const VkAllocationCallbacks                     *pAllocator
+PipelineLayout vk::createVkPipelineLayout(
+        const Device                                  &device,
+        const std::vector<DescriptorSetLayout>        &setLayouts,
+        const std::vector<VkPushConstantRange>        &pushConstantRanges,
+        const VkAllocationCallbacks                   *pAllocator
 ) {
         auto createInfo = vk::createVkPipelineLayoutCreateInfo(
                 setLayouts, pushConstantRanges
         );
 
-        VkPipelineLayout layout{};
+        PipelineLayout layout{};
         VkResult result = vkCreatePipelineLayout(
                 device, &createInfo,
                 pAllocator, &layout
@@ -1369,12 +1399,12 @@ VkPipelineLayout vk::createVkPipelineLayout(
         return layout;
 }
 
-VkQueue vk::getVkQueue(
-        const VkDevice        &device,
+Queue vk::getVkQueue(
+        const Device          &device,
         const uint32_t        &queueFamilyIndex,
         const uint32_t        &queueIndex
 ) {
-        VkQueue queue{};
+        Queue queue{};
         vkGetDeviceQueue(
                 device, queueFamilyIndex,
                 queueIndex, &queue
@@ -1383,10 +1413,10 @@ VkQueue vk::getVkQueue(
         return queue;
 }
 
-VkRenderPass vk::createVkRenderPass(
-        const VkPhysicalDevice             &physicalDevice,
-        const VkDevice                     &device,
-        const VkSurfaceKHR                 &surface,
+RenderPass vk::createVkRenderPass(
+        const PhysicalDevice               &physicalDevice,
+        const Device                       &device,
+        const SurfaceKHR                   &surface,
         const VkSurfaceFormatKHR           &requiredFormat,
         const VkAllocationCallbacks        *pAllocator
 ) {
@@ -1430,7 +1460,7 @@ VkRenderPass vk::createVkRenderPass(
                 attachmentDescription, subpassDescription
         );
 
-        VkRenderPass renderPass{};
+        RenderPass renderPass{};
         result = vkCreateRenderPass(
                 device, &createInfo,
                 pAllocator, &renderPass
@@ -1442,8 +1472,8 @@ VkRenderPass vk::createVkRenderPass(
         return renderPass;
 }
 
-VkSampler vk::createVkSampler(
-        const VkDevice                    &device,
+Sampler vk::createVkSampler(
+        const Device                      &device,
         const VkFilter                    &filter,
         const VkSamplerAddressMode        &addressMode,
         const VkBool32                    &anisotropyEnable,
@@ -1456,7 +1486,7 @@ VkSampler vk::createVkSampler(
                 maxAnisotropy, compareEnable, compareOp
         );
 
-        VkSampler sampler{};
+        Sampler sampler{};
         VkResult result = vkCreateSampler(
                 device, &createInfo,
                 nullptr, &sampler
@@ -1468,13 +1498,13 @@ VkSampler vk::createVkSampler(
         return sampler;
 }
 
-VkSemaphore vk::createVkSemaphore(
-        const VkDevice                     &device,
+Semaphore vk::createVkSemaphore(
+        const Device                       &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createVkSemaphoreCreateInfo();
 
-        VkSemaphore semaphore{};
+        Semaphore semaphore{};
         VkResult result = vkCreateSemaphore(
                 device, &createInfo,
                 pAllocator, &semaphore
@@ -1486,16 +1516,16 @@ VkSemaphore vk::createVkSemaphore(
         return semaphore;
 }
 
-VkShaderModule vk::createVkShaderModule(
+ShaderModule vk::createVkShaderModule(
         const std::vector<uint8_t>         &code,
-        const VkDevice                     &device,
+        const Device                       &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createVkShaderModuleCreateInfo(
                 code
         );
 
-        VkShaderModule shaderModule{};
+        ShaderModule shaderModule{};
         VkResult result = vkCreateShaderModule(
                 device, &createInfo,
                 pAllocator, &shaderModule
@@ -1507,8 +1537,8 @@ VkShaderModule vk::createVkShaderModule(
         return shaderModule;
 }
 
-VkSwapchainKHR vk::createVkSwapchainKHR(
-        const VkDevice                             &device,
+SwapchainKHR vk::createVkSwapchainKHR(
+        const Device                               &device,
         const VkSurfaceKHR                         &surface,
         const std::vector<VkPresentModeKHR>        &presentModes,
         const VkSurfaceCapabilitiesKHR             &capabilities,
@@ -1538,7 +1568,7 @@ VkSwapchainKHR vk::createVkSwapchainKHR(
                 surface, sharingMode, fixedIndices
         );
 
-        VkSwapchainKHR swapchain{};
+        SwapchainKHR swapchain{};
         VkResult result = vkCreateSwapchainKHR(
                 device, &createInfo,
                 pAllocator, &swapchain
