@@ -8,11 +8,244 @@
 
 namespace vk {
 
-        /*
-         *  -------------------------------------
-         *  |              HANDLES              |
-         *  -------------------------------------
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorPoolSize - Structure specifying descriptor pool size<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkDescriptorPoolSize structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkDescriptorPoolSize {
+         *     VkDescriptorType    type;
+         *     uint32_t            descriptorCount;
+         * } VkDescriptorPoolSize;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>type is the type of descriptor.
+         * <li>descriptorCount is the number of descriptors of that type to allocate. If type is VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT then descriptorCount is the number of bytes to allocate for descriptors of this type.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * @note When creating a descriptor pool that will contain descriptors for combined image samplers of multi-planar formats, an application needs to account for non-trivial descriptor consumption when choosing the descriptorCount value, as indicated by VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount.
          */
+        using DescriptorPoolSize = VkDescriptorPoolSize;
+        constexpr DescriptorPoolSize createDescriptorPoolSize(
+                const VkDescriptorType        &type,
+                const uint32_t                &descriptorCount
+        ) {
+                return {
+                        .type = type,
+                        .descriptorCount = descriptorCount
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkExtent2D - Structure specifying a two-dimensional extent<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A two-dimensional extent is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkExtent2D {
+         *     uint32_t    width;
+         *     uint32_t    height;
+         * } VkExtent2D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>width is the width of the extent.
+         * <li>height is the height of the extent.
+         * </ul>
+         */
+        using Extent2D = VkExtent2D;
+        constexpr Extent2D createExtent2D(
+                const uint32_t        &width,
+                const uint32_t        &height
+        ) {
+                return {
+                        .width = width,
+                        .height = height
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkViewport - Structure specifying a viewport<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkViewport structure is defined as:
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkViewport {
+         *     float    x;
+         *     float    y;
+         *     float    width;
+         *     float    height;
+         *     float    minDepth;
+         *     float    maxDepth;
+         * } VkViewport;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>x and y are the viewport’s upper left corner (x,y).
+         * <li>width and height are the viewport’s width and height, respectively.
+         * <li>minDepth and maxDepth are the depth range for the viewport.
+         * </ul><br>
+         * <b>Description</b><hr>
+         *
+         * @note Despite their names, minDepth <b>can</b> be less than, equal to, or greater than maxDepth.
+         *
+         * The framebuffer depth coordinate zf <b>may</b> be represented using either a fixed-point or floating-point representation. However, a floating-point representation <b>must</b> be used if the depth/stencil attachment has a floating-point depth component. If an m-bit fixed-point representation is used, we assume that it represents each value k/(2^m-1), where k ∈ { 0, 1, ..., 2^m-1 }, as k (e.g. 1.0 is represented in binary as a string of all ones).<br><br>
+         *
+         * The viewport parameters shown in the above equations are found from these values as<br><br>
+         *
+         * Ox = x + width / 2<br><br>
+         *
+         * Oy = y + height / 2<br><br>
+         *
+         * Oz = minDepth (or (maxDepth + minDepth) / 2 if VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne is VK_TRUE)<br><br>
+         *
+         * Px = width<br><br>
+         *
+         * Py = height<br><br>
+         *
+         * Pz = maxDepth - minDepth (or (maxDepth - minDepth) / 2 if VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne is VK_TRUE)<br><br>
+         *
+         * If a render pass transform is enabled, the values (px,py) and (ox, oy) defining the viewport are transformed as described in render pass transform before participating in the viewport transform.<br><br>
+         *
+         * The application <b>can</b> specify a negative term for height, which has the effect of negating the y coordinate in clip space before performing the transform. When using a negative height, the application <b>should</b> also adjust the y value to point to the lower left corner of the viewport instead of the upper left corner. Using the negative height allows the application to avoid having to negate the y component of the Position output from the last pre-rasterization shader stage.<br><br>
+         *
+         * The width and height of the implementation-dependent maximum viewport dimensions <b>must</b> be greater than or equal to the width and height of the largest image which <b>can</b> be created and attached to a framebuffer.<br><br>
+         *
+         * The floating-point viewport bounds are represented with an implementation-dependent precision.
+         *
+         */
+        using Viewport = VkViewport;
+        constexpr Viewport createViewport(
+                const Extent2D        &extent
+        ) {
+                return {
+                        .x = 0.0f,
+                        .y = 0.0f,
+                        .width = static_cast<float>(extent.width),
+                        .height = static_cast<float>(extent.height),
+                        .minDepth = 0.0f,
+                        .maxDepth = 1.0f
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkOffset2D - Structure specifying a two-dimensional offset<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A two-dimensional offset is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkOffset2D {
+         *     int32_t    x;
+         *     int32_t    y;
+         * } VkOffset2D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>x is the x offset.
+         * <li>y is the y offset.
+         * </ul>
+         */
+        using Offset2D = VkOffset2D;
+        constexpr Offset2D createOffset2D(
+                const int32_t        &x,
+                const int32_t        &y
+        ) {
+                return {
+                        .x = x,
+                        .y = y
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkRect2D - Structure specifying a two-dimensional subregion<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Rectangles are used to describe a specified rectangular region of pixels within an image or framebuffer. Rectangles include both an offset and an extent of the same dimensionality, as described above. Two-dimensional rectangles are defined by the structure
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkRect2D {
+         *     VkOffset2D    offset;
+         *     VkExtent2D    extent;
+         * } VkRect2D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>offset is a VkOffset2D specifying the rectangle offset.
+         * <li>extent is a VkExtent2D specifying the rectangle extent.
+         * </ul>
+         */
+        using Rect2D = VkRect2D;
+        constexpr Rect2D createRect2D(
+                const Offset2D        &offset,
+                const Extent2D        &extent
+        ) {
+                return {
+                        .offset = offset,
+                        .extent = extent
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkExtent3D - Structure specifying a three-dimensional extent<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A three-dimensional extent is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkExtent3D {
+         *     uint32_t    width;
+         *     uint32_t    height;
+         *     uint32_t    depth;
+         * } VkExtent3D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>width is the width of the extent.
+         * <li>height is the height of the extent.
+         * <li>depth is the depth of the extent.
+         * </ul>
+         */
+        using Extent3D = VkExtent3D;
+        constexpr Extent3D createExtent3D(
+                const uint32_t        &width,
+                const uint32_t        &height,
+                const uint32_t        &depth
+        )  {
+                return {
+                        .width = width,
+                        .height = height,
+                        .depth = depth
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -264,30 +497,10 @@ namespace vk {
  */
         using DescriptorPool = VkDescriptorPool;
         DescriptorPool createDescriptorPool(
-                const Device                                   &device,
-                const uint32_t                                 &descriptorCount,
-                const std::vector<VkDescriptorPoolSize>        &poolSizes,
-                const VkAllocationCallbacks                    *pAllocator
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkDescriptorSet - Opaque handle to a descriptor set object<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Descriptor sets are allocated from descriptor pool objects, and are represented by VkDescriptorSet handles:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
-         * @endcode
-         */
-        using DescriptorSet = VkDescriptorSet;
-        std::vector<DescriptorSet> createDescriptorSets(
-                const Device                                    &device,
-                const DescriptorPool                            &pool,
-                const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts
+                const Device                                 &device,
+                const uint32_t                               &descriptorCount,
+                const std::vector<DescriptorPoolSize>        &poolSizes,
+                const VkAllocationCallbacks                  *pAllocator
         );
 
         /** <b>Name</b><hr><br>
@@ -310,6 +523,26 @@ namespace vk {
                 const Device                                           &device,
                 const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
                 const VkAllocationCallbacks                            *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorSet - Opaque handle to a descriptor set object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Descriptor sets are allocated from descriptor pool objects, and are represented by VkDescriptorSet handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
+         * @endcode
+         */
+        using DescriptorSet = VkDescriptorSet;
+        std::vector<DescriptorSet> createDescriptorSets(
+                const Device                                  &device,
+                const DescriptorPool                          &pool,
+                const std::vector<DescriptorSetLayout>        &descriptorSetLayouts
         );
 
         /** <b>Name</b><hr><br>
@@ -397,6 +630,7 @@ namespace vk {
         using Fence = VkFence;
         Fence createFence(
                 const Device                       &device,
+                const bool                         &signaled,
                 const VkAllocationCallbacks        *pAllocator
         );
 
@@ -420,7 +654,7 @@ namespace vk {
                 const Device                       &device,
                 const VkImageType                  &imageType,
                 const VkFormat                     &format,
-                const VkExtent3D                   &extent,
+                const Extent3D                     &extent,
                 const VkImageUsageFlags            &usage,
                 const std::vector<uint32_t>        &queueFamilyIndices,
                 const VkAllocationCallbacks        *pAllocator
@@ -489,6 +723,42 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
+         * VkPushConstantRange - Structure specifying a push constant range<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPushConstantRange structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPushConstantRange {
+         *     VkShaderStageFlags    stageFlags;
+         *     uint32_t              offset;
+         *     uint32_t              size;
+         * } VkPushConstantRange;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>stageFlags is a set of stage flags describing the shader stages that will access a range of push constants. If a particular stage is not included in the range, then accessing members of that range of push constants from the corresponding shader stage will return undefined values.
+         * <li>offset and size are the start offset and size, respectively, consumed by the range. Both offset and size are in units of bytes and <b>must</b> be a multiple of 4. The layout of the push constant variables is specified in the shader.
+         * </ul>
+         */
+        using PushConstantRange = VkPushConstantRange;
+        constexpr PushConstantRange createPushConstantRange(
+                const VkShaderStageFlags        &stageFlags,
+                const uint32_t                  &offset,
+                const uint32_t                  &size
+        ) {
+                return {
+                        .stageFlags = stageFlags,
+                        .offset = offset,
+                        .size = size
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
          * VkPipelineLayout - Opaque handle to a pipeline layout object<br><br><br>
          *
          * <b>C Specification</b><hr><br>
@@ -504,10 +774,10 @@ namespace vk {
          */
         using PipelineLayout = VkPipelineLayout;
         PipelineLayout createPipelineLayout(
-                const Device                                    &device,
-                const std::vector<VkDescriptorSetLayout>        &setLayouts,
-                const std::vector<VkPushConstantRange>          &pushConstantRanges,
-                const VkAllocationCallbacks                     *pAllocator
+                const Device                                  &device,
+                const std::vector<DescriptorSetLayout>        &setLayouts,
+                const std::vector<PushConstantRange>          &pushConstantRanges,
+                const VkAllocationCallbacks                   *pAllocator
         );
 
         /** <b>Name</b><hr><br>
@@ -532,6 +802,34 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
+         * VkSurfaceFormatKHR - Structure describing a supported swapchain format-color space pair<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSurfaceFormatKHR structure is defined as:
+         *
+         * @code
+         * // Provided by VK_KHR_surface
+         * typedef struct VkSurfaceFormatKHR {
+         *     VkFormat           format;
+         *     VkColorSpaceKHR    colorSpace;
+         * } VkSurfaceFormatKHR;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>format is a VkFormat that is compatible with the specified surface.
+         * <li>colorSpace is a presentation VkColorSpaceKHR that is compatible with the surface.
+         * </ul><br>
+         */
+        using SurfaceFormatKHR = VkSurfaceFormatKHR;
+        std::vector<SurfaceFormatKHR> getSurfaceFormatKHRs(
+                const PhysicalDevice        &physicalDevice,
+                const SurfaceKHR            &surface
+        );
+
+        /** <b>Name</b><hr><br>
+         *
          * VkRenderPass - Opaque handle to a render pass object<br><br><br>
          *
          * <b>C Specification</b><hr><br>
@@ -550,7 +848,7 @@ namespace vk {
                 const PhysicalDevice               &physicalDevice,
                 const Device                       &device,
                 const SurfaceKHR                   &surface,
-                const VkSurfaceFormatKHR           &requiredFormat,
+                const SurfaceFormatKHR             &requiredFormat,
                 const VkAllocationCallbacks        *pAllocator
         );
 
@@ -571,12 +869,170 @@ namespace vk {
          */
         using Framebuffer = VkFramebuffer;
         Framebuffer createFramebuffer(
-                const RenderPass                      &renderPass,
-                const VkExtent2D                      &extent,
-                const std::vector<VkImageView>        &imageViews,
-                const Device                          &device,
-                const VkAllocationCallbacks           *pAllocator
+                const RenderPass                    &renderPass,
+                const Extent2D                      &extent,
+                const std::vector<ImageView>        &imageViews,
+                const Device                        &device,
+                const VkAllocationCallbacks         *pAllocator
         );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkVertexInputAttributeDescription - Structure specifying vertex input attribute description<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Each vertex input attribute is specified by the VkVertexInputAttributeDescription structure, defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkVertexInputAttributeDescription {
+         *     uint32_t    location;
+         *     uint32_t    binding;
+         *     VkFormat    format;
+         *     uint32_t    offset;
+         * } VkVertexInputAttributeDescription;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>location is the shader input location number for this attribute.
+         * <li>binding is the binding number which this attribute takes its data from.
+         * <li>format is the size and type of the vertex attribute data.
+         * <li>offset is a byte offset of this attribute relative to the start of an element in the vertex input binding.
+         * </ul>
+         */
+        using VertexInputAttributeDescription = VkVertexInputAttributeDescription;
+        constexpr VertexInputAttributeDescription createVertexInputAttributeDescription(
+                const uint32_t        &location,
+                const uint32_t        &binding,
+                const VkFormat        &format,
+                const uint32_t        &offset
+        ) {
+                return {
+                        .location = location,
+                        .binding = binding,
+                        .format = format,
+                        .offset = offset
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkVertexInputBindingDescription - Structure specifying vertex input binding description<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Each vertex input binding is specified by the VkVertexInputBindingDescription structure, defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkVertexInputBindingDescription {
+         *     uint32_t             binding;
+         *     uint32_t             stride;
+         *     VkVertexInputRate    inputRate;
+         * } VkVertexInputBindingDescription;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>binding is the binding number that this structure describes.
+         * <li>stride is the byte stride between consecutive elements within the buffer.
+         * <li>inputRate is a VkVertexInputRate value specifying whether vertex attribute addressing is a function of the vertex index or of the instance index.
+         * </ul>
+         */
+        using VertexInputBindingDescription = VkVertexInputBindingDescription;
+        constexpr VertexInputBindingDescription createVertexInputBindingDescription(
+                const uint32_t                 &binding,
+                const uint32_t                 &size,
+                const VkVertexInputRate        &inputRate
+        ) {
+                return {
+                        .binding = binding,
+                        .stride = size,
+                        .inputRate = inputRate
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkShaderModule - Opaque handle to a shader module object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Shader modules contain shader code and one or more entry points. Shaders are selected from a shader module by specifying an entry point as part of pipeline creation. The stages of a pipeline <b>can</b> use shaders that come from different modules. The shader code defining a shader module <b>must</b> be in the SPIR-V format, as described by the Vulkan Environment for SPIR-V appendix.<br><br>
+         *
+         * Shader modules are represented by VkShaderModule handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+         * @endcode
+         */
+        using ShaderModule = VkShaderModule;
+        ShaderModule createShaderModule(
+                const std::vector<uint8_t>         &code,
+                const Device                       &device,
+                const VkAllocationCallbacks        *pAllocator
+        );
+
+        /** <b>Name</b><hr><br>
+         * VkPipelineShaderStageCreateInfo - Structure specifying parameters of a newly created pipeline shader stage<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPipelineShaderStageCreateInfo structure is defined as:
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPipelineShaderStageCreateInfo {
+         *     VkStructureType                     sType;
+         *     const void*                         pNext;
+         *     VkPipelineShaderStageCreateFlags    flags;
+         *     VkShaderStageFlagBits               stage;
+         *     VkShaderModule                      module;
+         *     const char*                         pName;
+         *     const VkSpecializationInfo*         pSpecializationInfo;
+         * } VkPipelineShaderStageCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is a bitmask of VkPipelineShaderStageCreateFlagBits specifying how the pipeline shader stage will be generated.
+         * <li>stage is a VkShaderStageFlagBits value specifying a single pipeline stage.
+         * <li>module is optionally a VkShaderModule object containing the shader code for this stage.
+         * <li>pName is a pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage.
+         * <li>pSpecializationInfo is a pointer to a VkSpecializationInfo structure, as described in Specialization Constants, or NULL.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * If module is not VK_NULL_HANDLE, the shader code used by the pipeline is defined by module. If module is VK_NULL_HANDLE, the shader code is defined by the chained VkShaderModuleCreateInfo if present.<br><br>
+         *
+         * If the shaderModuleIdentifier feature is enabled, applications can omit shader code for stage and instead provide a module identifier. This is done by including a VkPipelineShaderStageModuleIdentifierCreateInfoEXT struct with identifierSize not equal to 0 in the pNext chain. A shader stage created in this way is equivalent to one created using a shader module with the same identifier. The identifier allows an implementation to look up a pipeline without consuming a valid SPIR-V module. If a pipeline is not found, pipeline compilation is not possible and the implementation must fail as specified by VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT. <br><br>
+         *
+         * When an identifier is used in lieu of a shader module, implementations may fail pipeline compilation with VK_PIPELINE_COMPILE_REQUIRED for any reason.
+         *
+         * @note The rationale for the relaxed requirement on implementations to return a pipeline with VkPipelineShaderStageModuleIdentifierCreateInfoEXT is that layers or tools may intercept pipeline creation calls and require the full SPIR-V context to operate correctly. ICDs are not expected to fail pipeline compilation if the pipeline exists in a cache somewhere.
+         *
+         * Applications <b>can</b> use identifiers when creating pipelines with VK_PIPELINE_CREATE_LIBRARY_BIT_KHR. When creating such pipelines, VK_SUCCESS <b>may</b> be returned, but subsequently fail when referencing the pipeline in a VkPipelineLibraryCreateInfoKHR struct.<br>
+         * Applications <b>must</b> allow pipeline compilation to fail during link steps with VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT as it <b>may</b> not be possible to determine if a pipeline <b>can</b> be created from identifiers until the link step.
+         */
+        using PipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo;
+        constexpr PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
+                const VkShaderStageFlagBits        &stage,
+                const ShaderModule                 &module
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineShaderStageCreateFlags(),
+                        .stage = stage,
+                        .module = module,
+                        .pName = "main",
+                        .pSpecializationInfo = nullptr
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -593,15 +1049,15 @@ namespace vk {
          */
         using Pipeline = VkPipeline;
         Pipeline createPipeline(
-                const Device                                                &device,
-                const RenderPass                                            &renderPass,
-                const std::vector<VkViewport>                               &viewports,
-                const std::vector<VkRect2D>                                 &scissors,
-                const PipelineLayout                                        &layout,
-                const std::vector<VkPipelineShaderStageCreateInfo>          &shaderStages,
-                const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
-                const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
-                const VkAllocationCallbacks                                 *pAllocator
+                const Device                                              &device,
+                const RenderPass                                          &renderPass,
+                const std::vector<Viewport>                               &viewports,
+                const std::vector<Rect2D>                                 &scissors,
+                const PipelineLayout                                      &layout,
+                const std::vector<PipelineShaderStageCreateInfo>          &shaderStages,
+                const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
+                const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
+                const VkAllocationCallbacks                               *pAllocator
         );
 
         /** <b>Name</b><hr><br>
@@ -656,7 +1112,7 @@ namespace vk {
          * @endcode
          */
         using Queue = VkQueue;
-        Queue getVkQueue(
+        Queue getQueue(
                 const Device          &device,
                 const uint32_t        &queueFamilyIndex,
                 const uint32_t        &queueIndex
@@ -736,24 +1192,102 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
-         * VkShaderModule - Opaque handle to a shader module object<br><br><br>
+         * VkPresentModeKHR - Presentation mode supported for a surface<br><br><br>
          *
          * <b>C Specification</b><hr><br>
          *
-         * Shader modules contain shader code and one or more entry points. Shaders are selected from a shader module by specifying an entry point as part of pipeline creation. The stages of a pipeline <b>can</b> use shaders that come from different modules. The shader code defining a shader module <b>must</b> be in the SPIR-V format, as described by the Vulkan Environment for SPIR-V appendix.<br><br>
-         *
-         * Shader modules are represented by VkShaderModule handles:
+         * Possible values of elements of the vkGetPhysicalDeviceSurfacePresentModesKHR::pPresentModes array, indicating the supported presentation modes for a surface, are:
          *
          * @code
-         * // Provided by VK_VERSION_1_0
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+         * // Provided by VK_KHR_surface
+         * typedef enum VkPresentModeKHR {
+         *     VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
+         *     VK_PRESENT_MODE_MAILBOX_KHR = 1,
+         *     VK_PRESENT_MODE_FIFO_KHR = 2,
+         *     VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
+         *   // Provided by VK_KHR_shared_presentable_image
+         *     VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = 1000111000,
+         *   // Provided by VK_KHR_shared_presentable_image
+         *     VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = 1000111001,
+         * } VkPresentModeKHR;
          * @endcode
+         *
+         * <b>Description</b><hr><br>
+         * <ul>
+         * <li>VK_PRESENT_MODE_IMMEDIATE_KHR specifies that the presentation engine does not wait for a vertical blanking period to update the current image, meaning this mode <b>may</b> result in visible tearing. No internal queuing of presentation requests is needed, as the requests are applied immediately.
+         * <li>VK_PRESENT_MODE_MAILBOX_KHR specifies that the presentation engine waits for the next vertical blanking period to update the current image. Tearing <b>cannot</b> be observed. An internal single-entry queue is used to hold pending presentation requests. If the queue is full when a new presentation request is received, the new request replaces the existing entry, and any images associated with the prior entry become available for reuse by the application. One request is removed from the queue and processed during each vertical blanking period in which the queue is non-empty.
+         * <li>VK_PRESENT_MODE_FIFO_KHR specifies that the presentation engine waits for the next vertical blanking period to update the current image. Tearing <b>cannot</b> be observed. An internal queue is used to hold pending presentation requests. New requests are appended to the end of the queue, and one request is removed from the beginning of the queue and processed during each vertical blanking period in which the queue is non-empty. This is the only value of presentMode that is <b>required</b> to be supported.
+         * <li>VK_PRESENT_MODE_FIFO_RELAXED_KHR specifies that the presentation engine generally waits for the next vertical blanking period to update the current image. If a vertical blanking period has already passed since the last update of the current image then the presentation engine does not wait for another vertical blanking period for the update, meaning this mode <b>may</b> result in visible tearing in this case. This mode is useful for reducing visual stutter with an application that will mostly present a new image before the next vertical blanking period, but may occasionally be late, and present a new image just after the next vertical blanking period. An internal queue is used to hold pending presentation requests. New requests are appended to the end of the queue, and one request is removed from the beginning of the queue and processed during or after each vertical blanking period in which the queue is non-empty.
+         * <li>VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR specifies that the presentation engine and application have concurrent access to a single image, which is referred to as a shared presentable image. The presentation engine is only required to update the current image after a new presentation request is received. Therefore the application <b>must</b> make a presentation request whenever an update is required. However, the presentation engine <b>may</b> update the current image at any point, meaning this mode <b>may</b> result in visible tearing.
+         * <li>VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR specifies that the presentation engine and application have concurrent access to a single image, which is referred to as a shared presentable image. The presentation engine periodically updates the current image on its regular refresh cycle. The application is only required to make one initial presentation request, after which the presentation engine <b>must</b> update the current image without any need for further presentation requests. The application <b>can</b> indicate the image contents have been updated by making a presentation request, but this does not guarantee the timing of when it will be updated. This mode <b>may</b> result in visible tearing if rendering to the image is not timed correctly.
+         * </ul>
+         * The supported VkImageUsageFlagBits of the presentable images of a swapchain created for a surface <b>may</b> differ depending on the presentation mode, and can be determined as per the table below:<br><br>
+         *
+         * Table 1. Presentable image usage queries
+         *
+         * <pre><b>  Presentation mode</b>                             | <b>Image usage flags</b></pre><
+         * <pre>  VK_PRESENT_MODE_IMMEDIATE_KHR                 | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_MAILBOX_KHR                   | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_FIFO_KHR                      | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_FIFO_RELAXED_KHR              | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR     | VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags</pre>
+         * <pre>  VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR | VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags</pre>
+         *
+         * @note For reference, the mode indicated by VK_PRESENT_MODE_FIFO_KHR is equivalent to the behavior of {wgl|glX|egl}SwapBuffers with a swap interval of 1, while the mode indicated by VK_PRESENT_MODE_FIFO_RELAXED_KHR is equivalent to the behavior of {wgl|glX}SwapBuffers with a swap interval of -1 (from the {WGL|GLX}_EXT_swap_control_tear extensions).
          */
-        using ShaderModule = VkShaderModule;
-        ShaderModule createShaderModule(
-                const std::vector<uint8_t>         &code,
-                const Device                       &device,
-                const VkAllocationCallbacks        *pAllocator
+        using PresentModeKHR = VkPresentModeKHR;
+        std::vector<PresentModeKHR> getPresentModeKHR(
+                const PhysicalDevice        &physicalDevice,
+                const SurfaceKHR            &surface
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSurfaceCapabilitiesKHR - Structure describing capabilities of a surface<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSurfaceCapabilitiesKHR structure is defined as:
+         *
+         * @code
+         * // Provided by VK_KHR_surface
+         * typedef struct VkSurfaceCapabilitiesKHR {
+         *     uint32_t                         minImageCount;
+         *     uint32_t                         maxImageCount;
+         *     VkExtent2D                       currentExtent;
+         *     VkExtent2D                       minImageExtent;
+         *     VkExtent2D                       maxImageExtent;
+         *     uint32_t                         maxImageArrayLayers;
+         *     VkSurfaceTransformFlagsKHR       supportedTransforms;
+         *     VkSurfaceTransformFlagBitsKHR    currentTransform;
+         *     VkCompositeAlphaFlagsKHR         supportedCompositeAlpha;
+         *     VkImageUsageFlags                supportedUsageFlags;
+         * } VkSurfaceCapabilitiesKHR;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>minImageCount is the minimum number of images the specified device supports for a swapchain created for the surface, and will be at least one.
+         * <li>maxImageCount is the maximum number of images the specified device supports for a swapchain created for the surface, and will be either 0, or greater than or equal to minImageCount. A value of 0 means that there is no limit on the number of images, though there <b>may</b> be limits related to the total amount of memory used by presentable images.
+         * <li>currentExtent is the current width and height of the surface, or the special value (0xFFFFFFFF, 0xFFFFFFFF) indicating that the surface size will be determined by the extent of a swapchain targeting the surface.
+         * <li>minImageExtent contains the smallest valid swapchain extent for the surface on the specified device. The width and height of the extent will each be less than or equal to the corresponding width and height of currentExtent, unless currentExtent has the special value described above.
+         * <li>maxImageExtent contains the largest valid swapchain extent for the surface on the specified device. The width and height of the extent will each be greater than or equal to the corresponding width and height of minImageExtent. The width and height of the extent will each be greater than or equal to the corresponding width and height of currentExtent, unless currentExtent has the special value described above.
+         * <li>maxImageArrayLayers is the maximum number of layers presentable images <b>can</b> have for a swapchain created for this device and surface, and will be at least one.
+         * <li>supportedTransforms is a bitmask of VkSurfaceTransformFlagBitsKHR indicating the presentation transforms supported for the surface on the specified device. At least one bit will be set.
+         * <li>currentTransform is VkSurfaceTransformFlagBitsKHR value indicating the surface’s current transform relative to the presentation engine’s natural orientation.
+         * <li>supportedCompositeAlpha is a bitmask of VkCompositeAlphaFlagBitsKHR, representing the alpha compositing modes supported by the presentation engine for the surface on the specified device, and at least one bit will be set. Opaque composition <b>can</b> be achieved in any alpha compositing mode by either using an image format that has no alpha component, or by ensuring that all pixels in the presentable images have an alpha value of 1.0.
+         * <li>supportedUsageFlags is a bitmask of VkImageUsageFlagBits representing the ways the application <b>can</b> use the presentable images of a swapchain created with VkPresentModeKHR set to VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR or VK_PRESENT_MODE_FIFO_RELAXED_KHR for the surface on the specified device. VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT <b>must</b> be included in the set. Implementations may support additional usages.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * @note Supported usage flags of a presentable image when using VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR or VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR presentation mode are provided by VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags.
+         *
+         * @note Formulas such as min(N, maxImageCount) are not correct, since maxImageCount <b>may</b> be zero.
+         */
+        using SurfaceCapabilitiesKHR = VkSurfaceCapabilitiesKHR;
+        SurfaceCapabilitiesKHR getSurfaceCapabilitiesKHR(
+                const PhysicalDevice        &physicalDevice,
+                const SurfaceKHR            &surface
         );
 
         /** <b>Name</b><hr><br>
@@ -788,14 +1322,14 @@ namespace vk {
          */
         using SwapchainKHR = VkSwapchainKHR;
         SwapchainKHR createSwapchainKHR(
-                const Device                               &device,
-                const SurfaceKHR                           &surface,
-                const std::vector<VkPresentModeKHR>        &presentModes,
-                const VkSurfaceCapabilitiesKHR             &capabilities,
-                const std::vector<uint32_t>                &queueFamilyIndices,
-                const VkSurfaceFormatKHR                   &format,
-                const VkExtent2D                           &extent,
-                const VkAllocationCallbacks                *pAllocator
+                const Device                             &device,
+                const SurfaceKHR                         &surface,
+                const std::vector<PresentModeKHR>        &presentModes,
+                const SurfaceCapabilitiesKHR             &capabilities,
+                const std::vector<uint32_t>              &queueFamilyIndices,
+                const SurfaceFormatKHR                   &format,
+                const Extent2D                           &extent,
+                const VkAllocationCallbacks              *pAllocator
         );
 
         /** <b>Name</b><hr><br>
@@ -816,11 +1350,182 @@ namespace vk {
         using ValidationCacheEXT = VkValidationCacheEXT;
         // TODO create
 
-        /*
-         *  --------------------------------------
-         *  |             STRUCTURES             |
-         *  --------------------------------------
+        /** <b>Name</b><hr><br>
+         *
+         * VkPhysicalDeviceProperties - Structure specifying physical device properties<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPhysicalDeviceProperties structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPhysicalDeviceProperties {
+         *     uint32_t                            apiVersion;
+         *     uint32_t                            driverVersion;
+         *     uint32_t                            vendorID;
+         *     uint32_t                            deviceID;
+         *     VkPhysicalDeviceType                deviceType;
+         *     char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+         *     uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
+         *     VkPhysicalDeviceLimits              limits;
+         *     VkPhysicalDeviceSparseProperties    sparseProperties;
+         * } VkPhysicalDeviceProperties;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>apiVersion is the version of Vulkan supported by the device, encoded as described in https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#extendingvulkan-coreversions-versionnumbers.
+         * <li>driverVersion is the vendor-specified version of the driver.
+         * <li>vendorID is a unique identifier for the vendor (see below) of the physical device.
+         * <li>deviceID is a unique identifier for the physical device among devices available from the vendor.
+         * <li>deviceType is a VkPhysicalDeviceType specifying the type of device.
+         * <li>deviceName is an array of VK_MAX_PHYSICAL_DEVICE_NAME_SIZE char containing a null-terminated UTF-8 string which is the name of the device.
+         * <li>pipelineCacheUUID is an array of VK_UUID_SIZE uint8_t values representing a universally unique identifier for the device.
+         * <li>limits is the VkPhysicalDeviceLimits structure specifying device-specific limits of the physical device. See Limits for details.
+         * <li>sparseProperties is the VkPhysicalDeviceSparseProperties structure specifying various sparse related properties of the physical device. See Sparse Properties for details.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * @note The value of apiVersion <b>may</b> be different than the version returned by vkEnumerateInstanceVersion; either higher or lower. In such cases, the application <b>must</b> not use functionality that exceeds the version of Vulkan associated with a given object. The pApiVersion parameter returned by vkEnumerateInstanceVersion is the version associated with a VkInstance and its children, except for a VkPhysicalDevice and its children.<br>
+         * VkPhysicalDeviceProperties::apiVersion is the version associated with a VkPhysicalDevice and its children.
+         *
+         * @note The encoding of driverVersion is implementation-defined. It <b>may</b> not use the same encoding as apiVersion. Applications should follow information from the vendor on how to extract the version information from driverVersion.
+         *
+         * On implementations that claim support for the Roadmap 2022 profile, the major and minor version expressed by apiVersion <b>must</b> be at least Vulkan 1.3.<br><br>
+         *
+         * The vendorID and deviceID fields are provided to allow applications to adapt to device characteristics that are not adequately exposed by other Vulkan queries.
+         *
+         * @note These <b>may</b> include performance profiles, hardware errata, or other characteristics.
+         *
+         * The vendor identified by vendorID is the entity responsible for the most salient characteristics of the underlying implementation of the VkPhysicalDevice being queried.
+         *
+         * @note For example, in the case of a discrete GPU implementation, this <b>should</b> be the GPU chipset vendor. In the case of a hardware accelerator integrated into a system-on-chip (SoC), this <b>should</b> be the supplier of the silicon IP used to create the accelerator.
+         *
+         * If the vendor has a PCI vendor ID, the low 16 bits of vendorID <b>must</b> contain that PCI vendor ID, and the remaining bits <b>must</b> be set to zero. Otherwise, the value returned <b>must</b> be a valid Khronos vendor ID, obtained as described in the Vulkan Documentation and Extensions: Procedures and Conventions document in the section “Registering a Vendor ID with Khronos”. Khronos vendor IDs are allocated starting at 0x10000, to distinguish them from the PCI vendor ID namespace. Khronos vendor IDs are symbolically defined in the VkVendorId type.<br><br>
+         *
+         * The vendor is also responsible for the value returned in deviceID. If the implementation is driven primarily by a PCI device with a PCI device ID, the low 16 bits of deviceID <b>must</b> contain that PCI device ID, and the remaining bits <b>must</b> be set to zero. Otherwise, the choice of what values to return <b>may</b> be dictated by operating system or platform policies - but <b>should</b> uniquely identify both the device version and any major configuration options (for example, core count in the case of multicore devices).
+         *
+         * @note The same device ID <b>should</b> be used for all physical implementations of that device version and configuration. For example, all uses of a specific silicon IP GPU version and configuration <b>should</b> use the same device ID, even if those uses occur in different SoCs.
          */
+        using PhysicalDeviceProperties = VkPhysicalDeviceProperties;
+        PhysicalDeviceProperties getPhysicalDeviceProperties(
+                const PhysicalDevice        &physicalDevice
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPhysicalDeviceMemoryProperties - Structure specifying physical device memory properties<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPhysicalDeviceMemoryProperties structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPhysicalDeviceMemoryProperties {
+         *     uint32_t        memoryTypeCount;
+         *     VkMemoryType    memoryTypes[VK_MAX_MEMORY_TYPES];
+         *     uint32_t        memoryHeapCount;
+         *     VkMemoryHeap    memoryHeaps[VK_MAX_MEMORY_HEAPS];
+         * } VkPhysicalDeviceMemoryProperties;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>memoryTypeCount is the number of valid elements in the memoryTypes array.
+         * <li>memoryTypes is an array of VK_MAX_MEMORY_TYPES VkMemoryType structures describing the memory types that <b>can</b> be used to access memory allocated from the heaps specified by memoryHeaps.
+         * <li>memoryHeapCount is the number of valid elements in the memoryHeaps array.
+         * <li>memoryHeaps is an array of VK_MAX_MEMORY_HEAPS VkMemoryHeap structures describing the memory heaps from which memory <b>can</b> be allocated.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The VkPhysicalDeviceMemoryProperties structure describes a number of memory heaps as well as a number of memory types that <b>can</b> be used to access memory allocated in those heaps. Each heap describes a memory resource of a particular size, and each memory type describes a set of memory properties (e.g. host cached vs. uncached) that <b>can</b> be used with a given memory heap.<br>
+         * Allocations using a particular memory type will consume resources from the heap indicated by that memory type’s heap index. More than one memory type <b>may</b> share each heap, and the heaps and memory types provide a mechanism to advertise an accurate size of the physical memory resources while allowing the memory to be used with a variety of different properties.<br><br>
+         *
+         * The number of memory heaps is given by memoryHeapCount and is less than or equal to VK_MAX_MEMORY_HEAPS. Each heap is described by an element of the memoryHeaps array as a VkMemoryHeap structure. The number of memory types available across all memory heaps is given by memoryTypeCount and is less than or equal to VK_MAX_MEMORY_TYPES. Each memory type is described by an element of the memoryTypes array as a VkMemoryType structure.<br><br
+         *
+         * At least one heap <b>must</b> include VK_MEMORY_HEAP_DEVICE_LOCAL_BIT in VkMemoryHeap::flags. If there are multiple heaps that all have similar performance characteristics, they <b>may</b> all include VK_MEMORY_HEAP_DEVICE_LOCAL_BIT. In a unified memory architecture (UMA) system there is often only a single memory heap which is considered to be equally “local” to the host and to the device, and such an implementation <b>must</b> advertise the heap as device-local.<br><br>
+         *
+         * Each memory type returned by vkGetPhysicalDeviceMemoryProperties <b>must</b> have its propertyFlags set to one of the following values:
+         * <ul>
+         * <li>0
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
+         * <li>VK_MEMORY_PROPERTY_PROTECTED_BIT
+         * <li>VK_MEMORY_PROPERTY_PROTECTED_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV
+         * </ul>
+         * There <b>must</b> be at least one memory type with both the VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT and VK_MEMORY_PROPERTY_HOST_COHERENT_BIT bits set in its propertyFlags. There <b>must</b> be at least one memory type with the VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT bit set in its propertyFlags. If the deviceCoherentMemory feature is enabled, there <b>must</b> be at least one memory type with the VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD bit set in its propertyFlags.<br><br>
+         *
+         * For each pair of elements <b>X</b> and <b>Y</b> returned in memoryTypes, <b>X must</b> be placed at a lower index position than <b>Y</b> if:
+         * <ul>
+         * <li>the set of bit flags returned in the propertyFlags member of <b>X</b> is a strict subset of the set of bit flags returned in the propertyFlags member of <b>Y</b>; or
+         * <li>the propertyFlags members of <b>X</b> and <b>Y</b> are equal, and <b>X</b> belongs to a memory heap with greater performance (as determined in an implementation-specific manner) ; or
+         * <li>the propertyFlags members of <b>Y</b> includes VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD or VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD and <b>X</b> does not
+         * </ul>
+         * @note There is no ordering requirement between <b>X</b> and <b>Y</b> elements for the case their propertyFlags members are not in a subset relation. That potentially allows more than one possible way to order the same set of memory types. Notice that the list of all allowed memory property flag combinations is written in a valid order. But if instead VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT was before VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, the list would still be in a valid order.<br><br>
+         * There may be a performance penalty for using device coherent or uncached device memory types, and using these accidentally is undesirable. In order to avoid this, memory types with these properties always appear at the end of the list; but are subject to the same rules otherwise.<br><br>
+         *
+         * This ordering requirement enables applications to use a simple search loop to select the desired memory type along the lines of:
+         * @code
+         * // Find a memory in `memoryTypeBitsRequirement` that includes all of `requiredProperties`
+         * int32_t findProperties(const VkPhysicalDeviceMemoryProperties* pMemoryProperties,
+         *                       uint32_t memoryTypeBitsRequirement,
+         *                       VkMemoryPropertyFlags requiredProperties) {
+         *     const uint32_t memoryCount = pMemoryProperties->memoryTypeCount;
+         *     for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; ++memoryIndex) {
+         *         const uint32_t memoryTypeBits = (1 << memoryIndex);
+         *         const bool isRequiredMemoryType = memoryTypeBitsRequirement & memoryTypeBits;
+         *
+         *         const VkMemoryPropertyFlags properties =
+         *             pMemoryProperties->memoryTypes[memoryIndex].propertyFlags;
+         *         const bool hasRequiredProperties =
+         *             (properties & requiredProperties) == requiredProperties;
+         *
+         *         if (isRequiredMemoryType && hasRequiredProperties)
+         *             return static_cast<int32_t>(memoryIndex);
+         *     }
+         *
+         *     // failed to find memory type
+         *     return -1;
+         * }
+         *
+         * // Try to find an optimal memory type, or if it does not exist try fallback memory type
+         * // `device` is the VkDevice
+         * // `image` is the VkImage that requires memory to be bound
+         * // `memoryProperties` properties as returned by vkGetPhysicalDeviceMemoryProperties
+         * // `requiredProperties` are the property flags that must be present
+         * // `optimalProperties` are the property flags that are preferred by the application
+         * VkMemoryRequirements memoryRequirements;
+         * vkGetImageMemoryRequirements(device, image, &memoryRequirements);
+         * int32_t memoryType =
+         *     findProperties(&memoryProperties, memoryRequirements.memoryTypeBits, optimalProperties);
+         * if (memoryType == -1) // not found; try fallback properties
+         *     memoryType =
+         *         findProperties(&memoryProperties, memoryRequirements.memoryTypeBits, requiredProperties);
+         * @endcode
+         */
+        using PhysicalDeviceMemoryProperties = VkPhysicalDeviceMemoryProperties;
+        PhysicalDeviceMemoryProperties getPhysicalDeviceMemoryProperties(
+                const PhysicalDevice        &physicalDevice
+        );
 
         /** <b>Name</b><hr><br>
          *
@@ -857,11 +1562,22 @@ namespace vk {
          *
          * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
          */
-        VkAccelerationStructureInfoNV createAccelerationStructureInfoNV(
+        using AccelerationStructureInfoNV = VkAccelerationStructureInfoNV;
+        constexpr AccelerationStructureInfoNV createAccelerationStructureInfoNV(
                 const VkAccelerationStructureTypeNV              &type,
                 const uint32_t                                   &instanceCount,
                 const std::vector<VkGeometryNV>                  &geometries
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV,
+                        .pNext = nullptr,
+                        .type = type,
+                        .flags = VkBuildAccelerationStructureFlagsNV(),
+                        .instanceCount = instanceCount,
+                        .geometryCount = static_cast<uint32_t>(geometries.size()),
+                        .pGeometries = geometries.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -889,10 +1605,18 @@ namespace vk {
          * <li>info is the VkAccelerationStructureInfoNV structure specifying further parameters of the created acceleration structure.
          * </ul>
          */
-        VkAccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
+        using AccelerationStructureCreateInfoNV = VkAccelerationStructureCreateInfoNV;
+        constexpr AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
                 const VkDeviceSize                         &compactedSize,
-                const VkAccelerationStructureInfoNV        &info
-        );
+                const AccelerationStructureInfoNV          &info
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV,
+                        .pNext = nullptr,
+                        .compactedSize = compactedSize,
+                        .info = info
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -943,11 +1667,22 @@ namespace vk {
          *
          * @note Providing a NULL VkInstanceCreateInfo::pApplicationInfo or providing an apiVersion of 0 is equivalent to providing an apiVersion of VK_MAKE_API_VERSION(0,1,0,0).
          */
-        VkApplicationInfo createApplicationInfo(
+        using ApplicationInfo = VkApplicationInfo;
+        constexpr ApplicationInfo createApplicationInfo(
                 const char            *pApplicationName,
                 const uint32_t        &applicationVersion,
-                const uint32_t        &version
-        );
+                const uint32_t        &apiVersion
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+                        .pNext = nullptr,
+                        .pApplicationName = pApplicationName,
+                        .applicationVersion = applicationVersion,
+                        .pEngineName = "Vulkan Engine",
+                        .engineVersion = 1,
+                        .apiVersion = apiVersion
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -984,12 +1719,23 @@ namespace vk {
          *
          * The buffer view has a buffer view usage identifying which descriptor types <b>can</b> be created from it. This usage can be defined by including the VkBufferUsageFlags2CreateInfoKHR structure in the pNext chain, and specifying the usage value there. If this structure is not included, it is equal to the VkBufferCreateInfo::usage value used to create buffer.
          */
-        VkBufferViewCreateInfo createBufferViewCreateInfo(
-                const VkBuffer            &buffer,
+        using BufferViewCreateInfo = VkBufferViewCreateInfo;
+        constexpr BufferViewCreateInfo createBufferViewCreateInfo(
+                const Buffer              &buffer,
                 const VkFormat            &format,
                 const VkDeviceSize        &offset,
                 const VkDeviceSize        &range
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkBufferViewCreateFlags(),
+                        .buffer = buffer,
+                        .format = format,
+                        .offset = offset,
+                        .range = range
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1022,10 +1768,21 @@ namespace vk {
          * <li>pVertexAttributeDescriptions is a pointer to an array of VkVertexInputAttributeDescription structures.
          * </ul>
          */
-        VkPipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
-                const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
-                const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions
-        );
+        using PipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo;
+        constexpr PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
+                const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
+                const std::vector<VertexInputAttributeDescription>        &attributeDescriptions
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineVertexInputStateCreateFlags(),
+                        .vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size()),
+                        .pVertexBindingDescriptions = bindingDescriptions.data(),
+                        .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
+                        .pVertexAttributeDescriptions = attributeDescriptions.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1063,138 +1820,17 @@ namespace vk {
          *
          * Restarting the assembly of primitives discards the most recent index values if those elements formed an incomplete primitive, and restarts the primitive assembly using the subsequent indices, but only assembling the immediately following element through the end of the originally specified elements. The primitive restart index value comparison is performed before adding the vertexOffset value to the index value.
          */
-        VkPipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo();
-
-        /** <b>Name</b><hr><br>
-         * VkPipelineShaderStageCreateInfo - Structure specifying parameters of a newly created pipeline shader stage<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkPipelineShaderStageCreateInfo structure is defined as:
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkPipelineShaderStageCreateInfo {
-         *     VkStructureType                     sType;
-         *     const void*                         pNext;
-         *     VkPipelineShaderStageCreateFlags    flags;
-         *     VkShaderStageFlagBits               stage;
-         *     VkShaderModule                      module;
-         *     const char*                         pName;
-         *     const VkSpecializationInfo*         pSpecializationInfo;
-         * } VkPipelineShaderStageCreateInfo;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>sType is a VkStructureType value identifying this structure.
-         * <li>pNext is NULL or a pointer to a structure extending this structure.
-         * <li>flags is a bitmask of VkPipelineShaderStageCreateFlagBits specifying how the pipeline shader stage will be generated.
-         * <li>stage is a VkShaderStageFlagBits value specifying a single pipeline stage.
-         * <li>module is optionally a VkShaderModule object containing the shader code for this stage.
-         * <li>pName is a pointer to a null-terminated UTF-8 string specifying the entry point name of the shader for this stage.
-         * <li>pSpecializationInfo is a pointer to a VkSpecializationInfo structure, as described in Specialization Constants, or NULL.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * If module is not VK_NULL_HANDLE, the shader code used by the pipeline is defined by module. If module is VK_NULL_HANDLE, the shader code is defined by the chained VkShaderModuleCreateInfo if present.<br><br>
-         *
-         * If the shaderModuleIdentifier feature is enabled, applications can omit shader code for stage and instead provide a module identifier. This is done by including a VkPipelineShaderStageModuleIdentifierCreateInfoEXT struct with identifierSize not equal to 0 in the pNext chain. A shader stage created in this way is equivalent to one created using a shader module with the same identifier. The identifier allows an implementation to look up a pipeline without consuming a valid SPIR-V module. If a pipeline is not found, pipeline compilation is not possible and the implementation must fail as specified by VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT. <br><br>
-         *
-         * When an identifier is used in lieu of a shader module, implementations may fail pipeline compilation with VK_PIPELINE_COMPILE_REQUIRED for any reason.
-         *
-         * @note The rationale for the relaxed requirement on implementations to return a pipeline with VkPipelineShaderStageModuleIdentifierCreateInfoEXT is that layers or tools may intercept pipeline creation calls and require the full SPIR-V context to operate correctly. ICDs are not expected to fail pipeline compilation if the pipeline exists in a cache somewhere.
-         *
-         * Applications <b>can</b> use identifiers when creating pipelines with VK_PIPELINE_CREATE_LIBRARY_BIT_KHR. When creating such pipelines, VK_SUCCESS <b>may</b> be returned, but subsequently fail when referencing the pipeline in a VkPipelineLibraryCreateInfoKHR struct.<br>
-         * Applications <b>must</b> allow pipeline compilation to fail during link steps with VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT as it <b>may</b> not be possible to determine if a pipeline <b>can</b> be created from identifiers until the link step.
-         */
-        VkPipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
-                const VkShaderStageFlagBits        &stage,
-                const VkShaderModule               &module
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkViewport - Structure specifying a viewport<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkViewport structure is defined as:
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkViewport {
-         *     float    x;
-         *     float    y;
-         *     float    width;
-         *     float    height;
-         *     float    minDepth;
-         *     float    maxDepth;
-         * } VkViewport;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>x and y are the viewport’s upper left corner (x,y).
-         * <li>width and height are the viewport’s width and height, respectively.
-         * <li>minDepth and maxDepth are the depth range for the viewport.
-         * </ul><br>
-         * <b>Description</b><hr>
-         *
-         * @note Despite their names, minDepth <b>can</b> be less than, equal to, or greater than maxDepth.
-         *
-         * The framebuffer depth coordinate zf <b>may</b> be represented using either a fixed-point or floating-point representation. However, a floating-point representation <b>must</b> be used if the depth/stencil attachment has a floating-point depth component. If an m-bit fixed-point representation is used, we assume that it represents each value k/(2^m-1), where k ∈ { 0, 1, ..., 2^m-1 }, as k (e.g. 1.0 is represented in binary as a string of all ones).<br><br>
-         *
-         * The viewport parameters shown in the above equations are found from these values as<br><br>
-         *
-         * Ox = x + width / 2<br><br>
-         *
-         * Oy = y + height / 2<br><br>
-         *
-         * Oz = minDepth (or (maxDepth + minDepth) / 2 if VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne is VK_TRUE)<br><br>
-         *
-         * Px = width<br><br>
-         *
-         * Py = height<br><br>
-         *
-         * Pz = maxDepth - minDepth (or (maxDepth - minDepth) / 2 if VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne is VK_TRUE)<br><br>
-         *
-         * If a render pass transform is enabled, the values (px,py) and (ox, oy) defining the viewport are transformed as described in render pass transform before participating in the viewport transform.<br><br>
-         *
-         * The application <b>can</b> specify a negative term for height, which has the effect of negating the y coordinate in clip space before performing the transform. When using a negative height, the application <b>should</b> also adjust the y value to point to the lower left corner of the viewport instead of the upper left corner. Using the negative height allows the application to avoid having to negate the y component of the Position output from the last pre-rasterization shader stage.<br><br>
-         *
-         * The width and height of the implementation-dependent maximum viewport dimensions <b>must</b> be greater than or equal to the width and height of the largest image which <b>can</b> be created and attached to a framebuffer.<br><br>
-         *
-         * The floating-point viewport bounds are represented with an implementation-dependent precision.
-         *
-         */
-        VkViewport createViewport(
-                const VkExtent2D        &extent
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkRect2D - Structure specifying a two-dimensional subregion<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Rectangles are used to describe a specified rectangular region of pixels within an image or framebuffer. Rectangles include both an offset and an extent of the same dimensionality, as described above. Two-dimensional rectangles are defined by the structure
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkRect2D {
-         *     VkOffset2D    offset;
-         *     VkExtent2D    extent;
-         * } VkRect2D;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>offset is a VkOffset2D specifying the rectangle offset.
-         * <li>extent is a VkExtent2D specifying the rectangle extent.
-         * </ul>
-         */
-        VkRect2D createRect2D(
-                const VkOffset2D        &offset,
-                const VkExtent2D        &extent
-        );
+        using PipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo;
+        constexpr PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo()
+        {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineInputAssemblyStateCreateFlags(),
+                        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+                        .primitiveRestartEnable = VK_FALSE
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1227,10 +1863,21 @@ namespace vk {
          * <li>pScissors is a pointer to an array of VkRect2D structures defining the rectangular bounds of the scissor for the corresponding viewport. If the scissor state is dynamic, this member is ignored.
          * </ul>
          */
-        VkPipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
-                const std::vector<VkViewport>        &viewports,
-                const std::vector<VkRect2D>          &scissors
-        );
+        using PipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo;
+        constexpr PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
+                const std::vector<Viewport>        &viewports,
+                const std::vector<Rect2D>          &scissors
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineViewportStateCreateFlags(),
+                        .viewportCount = static_cast<uint32_t>(viewports.size()),
+                        .pViewports = viewports.data(),
+                        .scissorCount = static_cast<uint32_t>(scissors.size()),
+                        .pScissors = scissors.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1278,7 +1925,25 @@ namespace vk {
          *
          * The application <b>can</b> also add a VkPipelineRasterizationStateRasterizationOrderAMD structure to the pNext chain of a VkPipelineRasterizationStateCreateInfo structure. This structure enables selecting the rasterization order to use when rendering with the corresponding graphics pipeline as described in Rasterization Order.
          */
-        VkPipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo();
+        using PipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo;
+        constexpr PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo()
+        {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineRasterizationStateCreateFlags(),
+                        .depthClampEnable = VK_FALSE,
+                        .rasterizerDiscardEnable = VK_FALSE,
+                        .polygonMode = VK_POLYGON_MODE_FILL,
+                        .cullMode = VK_CULL_MODE_BACK_BIT,
+                        .frontFace = VK_FRONT_FACE_CLOCKWISE,
+                        .depthBiasEnable = VK_FALSE,
+                        .depthBiasConstantFactor = 0.0f,
+                        .depthBiasClamp = 0.0f,
+                        .depthBiasSlopeFactor = 0.0f,
+                        .lineWidth = 1.0f
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1320,7 +1985,21 @@ namespace vk {
          * Each bit in the sample mask is associated with a unique sample index as defined for the coverage mask. Each bit b for mask word w in the sample mask corresponds to sample index i, where i = 32 × w + b. pSampleMask has a length equal to ⌈ rasterizationSamples / 32 ⌉ words.<br><br>
          * If pSampleMask is NULL, it is treated as if the mask has all bits set to 1.
          */
-        VkPipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo();
+        using PipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo;
+        constexpr PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo()
+        {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineMultisampleStateCreateFlags(),
+                        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+                        .sampleShadingEnable = VK_FALSE,
+                        .minSampleShading = 0.0f,
+                        .pSampleMask = nullptr,
+                        .alphaToCoverageEnable = VK_FALSE,
+                        .alphaToOneEnable = VK_FALSE
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1356,7 +2035,20 @@ namespace vk {
          * <li>colorWriteMask is a bitmask of VkColorComponentFlagBits specifying which of the R, G, B, and/or A components are enabled for writing, as described for the Color Write Mask.
          * </ul>
          */
-        VkPipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState();
+        using PipelineColorBlendAttachmentState = VkPipelineColorBlendAttachmentState;
+        constexpr PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
+        {
+                return {
+                        .blendEnable = VK_FALSE,
+                        .srcColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+                        .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+                        .colorBlendOp = VK_BLEND_OP_ADD,
+                        .srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+                        .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+                        .alphaBlendOp = VK_BLEND_OP_ADD,
+                        .colorWriteMask = 0xF
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1390,9 +2082,21 @@ namespace vk {
          * <li>blendConstants is a pointer to an array of four values used as the R, G, B, and A components of the blend constant that are used in blending, depending on the blend factor.
          * </ul>
          */
-        VkPipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
+        using PipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo;
+        constexpr PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
                 const VkPipelineColorBlendAttachmentState        &colorBlendAttachmentState
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineColorBlendStateCreateFlags(),
+                        .logicOpEnable = VK_FALSE,
+                        .logicOp = VK_LOGIC_OP_COPY,
+                        .attachmentCount = 1,
+                        .pAttachments = &colorBlendAttachmentState,
+                        .blendConstants = {0.0f, 0.0f, 0.0f, 0.0f}
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1449,9 +2153,22 @@ namespace vk {
          *
          * @note Once an attachment needs the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit, there <b>should</b> be no additional cost of introducing additional aliases, and using these additional aliases <b>may</b> allow more efficient clearing of the attachments on multiple uses via VK_ATTACHMENT_LOAD_OP_CLEAR.
          */
-        VkAttachmentDescription createAttachmentDescription(
+        using AttachmentDescription = VkAttachmentDescription;
+        constexpr AttachmentDescription createAttachmentDescription(
                 const VkFormat        &format
-        );
+        ) {
+                return {
+                        .flags = VkAttachmentDescriptionFlags(),
+                        .format = format,
+                        .samples = VK_SAMPLE_COUNT_1_BIT,
+                        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+                        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+                        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1475,10 +2192,16 @@ namespace vk {
          * <li>layout is a VkImageLayout value specifying the layout the attachment uses during the subpass.
          * </ul>
          */
-        VkAttachmentReference createAttachmentReference(
+        using AttachmentReference = VkAttachmentReference;
+        constexpr AttachmentReference createAttachmentReference(
                 const uint32_t             &attachment,
                 const VkImageLayout        &layout
-        );
+        ) {
+                return {
+                        .attachment = attachment,
+                        .layout = layout
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1545,13 +2268,27 @@ namespace vk {
          *
          * Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.<br><br>
          */
-        VkSubpassDescription createSubpassDescription(
-                const std::vector<VkAttachmentReference>        &inputAttachments,
-                const std::vector<VkAttachmentReference>        &colorAttachments,
-                const std::vector<VkAttachmentReference>        &resolveAttachments,
-                const std::vector<VkAttachmentReference>        &depthStencilAttachment,
-                const std::vector<uint32_t>                     &preserveAttachments
-        );
+        using SubpassDescription = VkSubpassDescription;
+        constexpr SubpassDescription createSubpassDescription(
+                const std::vector<AttachmentReference>        &inputAttachments,
+                const std::vector<AttachmentReference>        &colorAttachments,
+                const std::vector<AttachmentReference>        &resolveAttachments,
+                const std::vector<AttachmentReference>        &depthStencilAttachment,
+                const std::vector<uint32_t>                   &preserveAttachments
+        ) {
+                return {
+                        .flags = VkSubpassDescriptionFlags(),
+                        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        .inputAttachmentCount = static_cast<uint32_t>(inputAttachments.size()),
+                        .pInputAttachments = inputAttachments.data(),
+                        .colorAttachmentCount = static_cast<uint32_t>(colorAttachments.size()),
+                        .pColorAttachments = colorAttachments.data(),
+                        .pResolveAttachments = resolveAttachments.data(),
+                        .pDepthStencilAttachment = depthStencilAttachment.data(),
+                        .preserveAttachmentCount = static_cast<uint32_t>(preserveAttachments.size()),
+                        .pPreserveAttachments = preserveAttachments.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1579,9 +2316,17 @@ namespace vk {
          * <li>pInheritanceInfo is a pointer to a VkCommandBufferInheritanceInfo structure, used if commandBuffer is a secondary command buffer. If this is a primary command buffer, then this value is ignored.
          * </ul>
          */
-        VkCommandBufferBeginInfo createCommandBufferBeginInfo(
+        using CommandBufferBeginInfo = VkCommandBufferBeginInfo;
+        constexpr CommandBufferBeginInfo createCommandBufferBeginInfo(
                 const VkCommandBufferUsageFlags        &flags
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                        .pNext = nullptr,
+                        .flags = flags,
+                        .pInheritanceInfo = nullptr
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1626,12 +2371,25 @@ namespace vk {
          *
          * @note There <b>may</b> be a performance cost for using a render area smaller than the framebuffer, unless it matches the render area granularity for the render pass.
          */
-        VkRenderPassBeginInfo createRenderPassBeginInfo(
-                const VkRenderPass                     &renderPass,
-                const VkFramebuffer                    &framebuffer,
-                const VkExtent2D                       &extent,
+        using RenderPassBeginInfo = VkRenderPassBeginInfo;
+        constexpr RenderPassBeginInfo createRenderPassBeginInfo(
+                const RenderPass                       &renderPass,
+                const Framebuffer                      &framebuffer,
+                const Extent2D                         &extent,
                 const std::vector<VkClearValue>        &clearValues
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                        .pNext = nullptr,
+                        .renderPass = renderPass,
+                        .framebuffer = framebuffer,
+                        .renderArea = vk::createRect2D(
+                                vk::createOffset2D(0, 0), extent
+                        ),
+                        .clearValueCount = static_cast<uint32_t>(clearValues.size()),
+                        .pClearValues = clearValues.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1672,12 +2430,25 @@ namespace vk {
          *
          * The order that command buffers appear in pCommandBuffers is used to determine submission order, and thus all the implicit ordering guarantees that respect it. Other than these implicit ordering guarantees and any explicit synchronization primitives, these command buffers <b>may</b> overlap or otherwise execute out of order.
          */
-        VkSubmitInfo createSubmitInfo(
-                const std::vector<VkSemaphore>            &waitSemaphores,
-                const VkPipelineStageFlags                *pWaitDstStageMask,
-                const std::vector<VkCommandBuffer>        &commandBuffers,
-                const std::vector<VkSemaphore>            &signalSemaphores
-        );
+        using SubmitInfo = VkSubmitInfo;
+        constexpr SubmitInfo createSubmitInfo(
+                const std::vector<Semaphore>            &waitSemaphores,
+                const VkPipelineStageFlags              *pWaitDstStageMask,
+                const std::vector<CommandBuffer>        &commandBuffers,
+                const std::vector<Semaphore>            &signalSemaphores
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                        .pNext = nullptr,
+                        .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()),
+                        .pWaitSemaphores = waitSemaphores.data(),
+                        .pWaitDstStageMask = pWaitDstStageMask,
+                        .commandBufferCount = static_cast<uint32_t>(commandBuffers.size()),
+                        .pCommandBuffers = commandBuffers.data(),
+                        .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()),
+                        .pSignalSemaphores = signalSemaphores.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1718,103 +2489,23 @@ namespace vk {
          *
          * @note When transitioning the image to VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR or VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, there is no need to delay subsequent processing, or perform any visibility operations (as vkQueuePresentKHR performs automatic visibility operations). To achieve this, the dstAccessMask member of the VkImageMemoryBarrier <b>should</b> be set to 0, and the dstStageMask parameter <b>should</b> be set to VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT.
          */
-        VkPresentInfoKHR createPresentInfoKHR(
-                const std::vector<VkSemaphore>          &waitSemaphores,
-                const std::vector<VkSwapchainKHR>       &swapchains,
-                const std::vector<uint32_t>             &imageIndices
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPushConstantRange - Structure specifying a push constant range<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkPushConstantRange structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkPushConstantRange {
-         *     VkShaderStageFlags    stageFlags;
-         *     uint32_t              offset;
-         *     uint32_t              size;
-         * } VkPushConstantRange;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>stageFlags is a set of stage flags describing the shader stages that will access a range of push constants. If a particular stage is not included in the range, then accessing members of that range of push constants from the corresponding shader stage will return undefined values.
-         * <li>offset and size are the start offset and size, respectively, consumed by the range. Both offset and size are in units of bytes and <b>must</b> be a multiple of 4. The layout of the push constant variables is specified in the shader.
-         * </ul>
-         */
-        VkPushConstantRange createPushConstantRange(
-                const VkShaderStageFlags        &stageFlags,
-                const uint32_t                  &offset,
-                const uint32_t                  &size
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkVertexInputBindingDescription - Structure specifying vertex input binding description<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Each vertex input binding is specified by the VkVertexInputBindingDescription structure, defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkVertexInputBindingDescription {
-         *     uint32_t             binding;
-         *     uint32_t             stride;
-         *     VkVertexInputRate    inputRate;
-         * } VkVertexInputBindingDescription;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>binding is the binding number that this structure describes.
-         * <li>stride is the byte stride between consecutive elements within the buffer.
-         * <li>inputRate is a VkVertexInputRate value specifying whether vertex attribute addressing is a function of the vertex index or of the instance index.
-         * </ul>
-         */
-        VkVertexInputBindingDescription createVertexInputBindingDescription(
-                const uint32_t                 &binding,
-                const uint32_t                 &size,
-                const VkVertexInputRate        &inputRate
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkVertexInputAttributeDescription - Structure specifying vertex input attribute description<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Each vertex input attribute is specified by the VkVertexInputAttributeDescription structure, defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkVertexInputAttributeDescription {
-         *     uint32_t    location;
-         *     uint32_t    binding;
-         *     VkFormat    format;
-         *     uint32_t    offset;
-         * } VkVertexInputAttributeDescription;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>location is the shader input location number for this attribute.
-         * <li>binding is the binding number which this attribute takes its data from.
-         * <li>format is the size and type of the vertex attribute data.
-         * <li>offset is a byte offset of this attribute relative to the start of an element in the vertex input binding.
-         * </ul>
-         */
-        VkVertexInputAttributeDescription createVertexInputAttributeDescription(
-                const uint32_t        &location,
-                const uint32_t        &binding,
-                const VkFormat        &format,
-                const uint32_t        &offset
-        );
+        using PresentInfoKHR = VkPresentInfoKHR;
+        constexpr PresentInfoKHR createPresentInfoKHR(
+                const std::vector<Semaphore>          &waitSemaphores,
+                const std::vector<SwapchainKHR>       &swapchains,
+                const std::vector<uint32_t>           &imageIndices
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+                        .pNext = nullptr,
+                        .waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size()),
+                        .pWaitSemaphores = waitSemaphores.data(),
+                        .swapchainCount = static_cast<uint32_t>(swapchains.size()),
+                        .pSwapchains = swapchains.data(),
+                        .pImageIndices = imageIndices.data(),
+                        .pResults = nullptr
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1866,37 +2557,18 @@ namespace vk {
          * </ul>
          * When performing a memory import operation, it is the responsibility of the application to ensure the external handles and their associated payloads meet all valid usage requirements. However, implementations <b>must</b> perform sufficient validation of external handles and payloads to ensure that the operation results in a valid memory object which will not cause program termination, device loss, queue stalls, or corruption of other resources when used as allowed according to its allocation parameters. If the external handle provided does not meet these requirements, the implementation <b>must</b> fail the memory import operation with the error code VK_ERROR_INVALID_EXTERNAL_HANDLE. If the parameters define an export operation and the external handle type is VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID, implementations <b>should</b> not strictly follow memoryTypeIndex. Instead, they <b>should</b> modify the allocation internally to use the required memory type for the application’s given usage. This is because for an export operation, there is currently no way for the client to know the memory type index before allocating.
          */
-        VkMemoryAllocateInfo createMemoryAllocateInfo(
+        using MemoryAllocateInfo = VkMemoryAllocateInfo;
+        constexpr MemoryAllocateInfo createMemoryAllocateInfo(
                 const uint64_t        &allocationSize,
                 const uint32_t        &memoryTypeIndex
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkExtent2D - Structure specifying a two-dimensional extent<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A two-dimensional extent is defined by the structure:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkExtent2D {
-         *     uint32_t    width;
-         *     uint32_t    height;
-         * } VkExtent2D;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>width is the width of the extent.
-         * <li>height is the height of the extent.
-         * </ul>
-         */
-        VkExtent2D createExtent2D(
-                const uint32_t        &width,
-                const uint32_t        &height
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+                        .pNext = nullptr,
+                        .allocationSize = allocationSize,
+                        .memoryTypeIndex = memoryTypeIndex
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1922,9 +2594,16 @@ namespace vk {
          * <li>size is the number of bytes to copy.
          * </ul>
          */
-        VkBufferCopy createBufferCopy(
+        using BufferCopy = VkBufferCopy;
+        constexpr BufferCopy createBufferCopy(
                 const size_t        &size
-        );
+        ) {
+                return {
+                        .srcOffset = 0,
+                        .dstOffset = 0,
+                        .size = size
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1963,10 +2642,22 @@ namespace vk {
          *
          * If a VkBufferUsageFlags2CreateInfoKHR structure is present in the pNext chain, VkBufferUsageFlags2CreateInfoKHR::usage from that structure is used instead of usage from this structure.
          */
-        VkBufferCreateInfo createBufferCreateInfo(
+        using BufferCreateInfo = VkBufferCreateInfo;
+        constexpr BufferCreateInfo createBufferCreateInfo(
                 const VkDeviceSize              &size,
                 const VkBufferUsageFlags        &usage
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkBufferCreateFlags(),
+                        .size = size,
+                        .usage = usage,
+                        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+                        .queueFamilyIndexCount = 0,
+                        .pQueueFamilyIndices = nullptr
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1996,9 +2687,18 @@ namespace vk {
          * <li>commandBufferCount is the number of command buffers to allocate from the pool.
          * </ul>
          */
-        VkCommandBufferAllocateInfo createCommandBufferAllocateInfo(
-                const VkCommandPool        &commandPool
-        );
+        using CommandBufferAllocateInfo = VkCommandBufferAllocateInfo;
+        constexpr CommandBufferAllocateInfo createCommandBufferAllocateInfo(
+                const CommandPool        &commandPool
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                        .pNext = nullptr,
+                        .commandPool = commandPool,
+                        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                        .commandBufferCount = 1
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2026,9 +2726,17 @@ namespace vk {
          * <li>queueFamilyIndex designates a queue family as described in section Queue Family Properties. All command buffers allocated from this command pool <b>must</b> be submitted on queues from the same queue family.
          * </ul>
          */
-        VkCommandPoolCreateInfo createCommandPoolCreateInfo(
+        using CommandPoolCreateInfo = VkCommandPoolCreateInfo;
+        constexpr CommandPoolCreateInfo createCommandPoolCreateInfo(
                 const uint32_t        &queueFamilyIndex
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+                        .queueFamilyIndex = queueFamilyIndex
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2060,10 +2768,20 @@ namespace vk {
          * <li>pQueuePriorities is a pointer to an array of queueCount normalized floating point values, specifying priorities of work that will be submitted to each created queue. See Queue Priority for more information.
          * </ul>
          */
-        VkDeviceQueueCreateInfo createDeviceQueueCreateInfo(
+        using DeviceQueueCreateInfo = VkDeviceQueueCreateInfo;
+        constexpr DeviceQueueCreateInfo createDeviceQueueCreateInfo(
                 const uint32_t        &queueFamilyIndex,
                 const float           *queuePriority
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkDeviceQueueCreateFlags(),
+                        .queueFamilyIndex = queueFamilyIndex,
+                        .queueCount = 1,
+                        .pQueuePriorities = queuePriority
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2103,11 +2821,25 @@ namespace vk {
          * <li>pEnabledFeatures is NULL or a pointer to a VkPhysicalDeviceFeatures structure containing boolean indicators of all the features to be enabled. Refer to the Features section for further details.
          * </ul>
          */
-        VkDeviceCreateInfo createDeviceCreateInfo(
-                const std::vector<VkDeviceQueueCreateInfo>        &queueCreateInfos,
-                const std::vector<const char *>                   &enabledExtensionNames,
-                const VkPhysicalDeviceFeatures                    *pEnabledFeatures
-        );
+        using DeviceCreateInfo = VkDeviceCreateInfo;
+        constexpr DeviceCreateInfo createDeviceCreateInfo(
+                const std::vector<DeviceQueueCreateInfo>        &queueCreateInfos,
+                const std::vector<const char *>                 &enabledExtensionNames,
+                const VkPhysicalDeviceFeatures                  *pEnabledFeatures
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkDeviceCreateFlags(),
+                        .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+                        .pQueueCreateInfos = queueCreateInfos.data(),
+                        .enabledLayerCount = 0,                /* Deprecated */
+                        .ppEnabledLayerNames = nullptr,        /* Deprecated */
+                        .enabledExtensionCount = static_cast<uint32_t>(enabledExtensionNames.size()),
+                        .ppEnabledExtensionNames = enabledExtensionNames.data(),
+                        .pEnabledFeatures = pEnabledFeatures
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2133,7 +2865,16 @@ namespace vk {
          * <li>flags is a bitmask of VkFenceCreateFlagBits specifying the initial state and behavior of the fence.
          * </ul>
          */
-        VkFenceCreateInfo createFenceCreateInfo();
+        using FenceCreateInfo = VkFenceCreateInfo;
+        constexpr FenceCreateInfo createFenceCreateInfo(
+                const VkFenceCreateFlags        &flags
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = flags
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2172,11 +2913,125 @@ namespace vk {
          *
          * It is legal for a subpass to use no color or depth/stencil attachments, either because it has no attachment references or because all of them are VK_ATTACHMENT_UNUSED. This kind of subpass <b>can</b> use shader side effects such as image stores and atomics to produce an output. In this case, the subpass continues to use the width, height, and layers of the framebuffer to define the dimensions of the rendering area, and the rasterizationSamples from each pipeline’s VkPipelineMultisampleStateCreateInfo to define the number of samples used in rasterization; however, if VkPhysicalDeviceFeatures::variableMultisampleRate is VK_FALSE, then all pipelines to be bound with the subpass <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. In all such cases, rasterizationSamples <b>must</b> be a valid VkSampleCountFlagBits value that is set in VkPhysicalDeviceLimits::framebufferNoAttachmentsSampleCounts.
          */
-        VkFramebufferCreateInfo createFramebufferCreateInfo(
-                const VkRenderPass                     &renderPass,
-                const VkExtent2D                       &extent,
-                const std::vector<VkImageView>         &imageViews
-        );
+        using FramebufferCreateInfo = VkFramebufferCreateInfo;
+        constexpr FramebufferCreateInfo createFramebufferCreateInfo(
+                const RenderPass                     &renderPass,
+                const Extent2D                       &extent,
+                const std::vector<ImageView>         &imageViews
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkFramebufferCreateFlags(),
+                        .renderPass = renderPass,
+                        .attachmentCount = static_cast<uint32_t>(imageViews.size()),
+                        .pAttachments = imageViews.data(),
+                        .width = extent.width,
+                        .height = extent.height,
+                        .layers = 1
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkComponentMapping - Structure specifying a color component mapping<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkComponentMapping structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkComponentMapping {
+         *     VkComponentSwizzle    r;
+         *     VkComponentSwizzle    g;
+         *     VkComponentSwizzle    b;
+         *     VkComponentSwizzle    a;
+         *} VkComponentMapping;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>r is a VkComponentSwizzle specifying the component value placed in the R component of the output vector.
+         * <li>g is a VkComponentSwizzle specifying the component value placed in the G component of the output vector.
+         * <li>b is a VkComponentSwizzle specifying the component value placed in the B component of the output vector.
+         * <li>a is a VkComponentSwizzle specifying the component value placed in the A component of the output vector.
+         * </ul>
+         */
+        using ComponentMapping = VkComponentMapping;
+        constexpr ComponentMapping createComponentMapping(
+                const VkComponentSwizzle        &r,
+                const VkComponentSwizzle        &g,
+                const VkComponentSwizzle        &b,
+                const VkComponentSwizzle        &a
+        ) {
+                return {
+                        .r = r,
+                        .g = g,
+                        .b = b,
+                        .a = a
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkImageSubresourceRange - Structure specifying an image subresource range<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkImageSubresourceRange structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkImageSubresourceRange {
+         *     VkImageAspectFlags    aspectMask;
+         *     uint32_t              baseMipLevel;
+         *     uint32_t              levelCount;
+         *     uint32_t              baseArrayLayer;
+         *     uint32_t              layerCount;
+         * } VkImageSubresourceRange;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>aspectMask is a bitmask of VkImageAspectFlagBits specifying which aspect(s) of the image are included in the view.
+         * <li>baseMipLevel is the first mipmap level accessible to the view.
+         * <li>levelCount is the number of mipmap levels (starting from baseMipLevel) accessible to the view.
+         * <li>baseArrayLayer is the first array layer accessible to the view.
+         * <li>layerCount is the number of array layers (starting from baseArrayLayer) accessible to the view.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The number of mipmap levels and array layers <b>must</b> be a subset of the image subresources in the image. If an application wants to use all mip levels or layers in an image after the baseMipLevel or baseArrayLayer, it <b>can</b> set levelCount and layerCount to the special values VK_REMAINING_MIP_LEVELS and VK_REMAINING_ARRAY_LAYERS without knowing the exact number of mip levels or layers.<br><br>
+         *
+         * For cube and cube array image views, the layers of the image view starting at baseArrayLayer correspond to faces in the order +X, -X, +Y, -Y, +Z, -Z. For cube arrays, each set of six sequential layers is a single cube, so the number of cube maps in a cube map array view is layerCount / 6, and image array layer (baseArrayLayer + i) is face index (i mod 6) of cube i / 6. If the number of layers in the view, whether set explicitly in layerCount or implied by VK_REMAINING_ARRAY_LAYERS, is not a multiple of 6, the last cube map in the array <b>must</b> not be accessed.<br><br>
+         *
+         * aspectMask <b>must</b> be only VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_ASPECT_DEPTH_BIT or VK_IMAGE_ASPECT_STENCIL_BIT if format is a color, depth-only or stencil-only format, respectively, except if format is a multi-planar format. If using a depth/stencil format with both depth and stencil components, aspectMask <b>must</b> include at least one of VK_IMAGE_ASPECT_DEPTH_BIT and VK_IMAGE_ASPECT_STENCIL_BIT, and <b>can</b> include both.<br><br>
+         *
+         * When the VkImageSubresourceRange structure is used to select a subset of the slices of a 3D image’s mip level in order to create a 2D or 2D array image view of a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT, baseArrayLayer and layerCount specify the first slice index and the number of slices to include in the created image view. Such an image view <b>can</b> be used as a framebuffer attachment that refers only to the specified range of slices of the selected mip level. However, any layout transitions performed on such an attachment view during a render pass instance still apply to the entire subresource referenced which includes all the slices of the selected mip level.<br><br>
+         *
+         * When using an image view of a depth/stencil image to populate a descriptor set (e.g. for sampling in the shader, or for use as an input attachment), the aspectMask <b>must</b> only include one bit, which selects whether the image view is used for depth reads (i.e. using a floating-point sampler or input attachment in the shader) or stencil reads (i.e. using an unsigned integer sampler or input attachment in the shader). When an image view of a depth/stencil image is used as a depth/stencil framebuffer attachment, the aspectMask is ignored and both depth and stencil image subresources are used.<br><br>
+         *
+         * When creating a VkImageView, if sampler Y′CBCR conversion is enabled in the sampler, the aspectMask of a subresourceRange used by the VkImageView <b>must</b> be VK_IMAGE_ASPECT_COLOR_BIT.<br><br>
+         *
+         * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
+         */
+        using ImageSubresourceRange = VkImageSubresourceRange;
+        constexpr ImageSubresourceRange createImageSubresourceRange(
+                const VkImageAspectFlags        &aspectMask,
+                const uint32_t                  &baseMipLevel,
+                const uint32_t                  &levelCount,
+                const uint32_t                  &baseArrayLayer,
+                const uint32_t                  &layerCount
+        ) {
+                return {
+                        .aspectMask = aspectMask,
+                        .baseMipLevel = baseMipLevel,
+                        .levelCount = levelCount,
+                        .baseArrayLayer = baseArrayLayer,
+                        .layerCount = layerCount
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2254,10 +3109,27 @@ namespace vk {
          *
          *
          */
-        VkImageViewCreateInfo createImageViewCreateInfo(
-                const VkImage         &image,
+        using ImageViewCreateInfo = VkImageViewCreateInfo;
+        constexpr ImageViewCreateInfo createImageViewCreateInfo(
+                const Image           &image,
                 const VkFormat        &format
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkImageViewCreateFlags(),
+                        .image = image,
+                        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                        .format = format,
+                        .components = vk::createComponentMapping(
+                                VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+                                VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY
+                        ),
+                        .subresourceRange = vk::createImageSubresourceRange(
+                                VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+                        ),
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2300,11 +3172,23 @@ namespace vk {
          *
          * @note VkDirectDriverLoadingListLUNARG allows applications to ship drivers with themselves. Only drivers that are designed to work with it should be used, such as drivers that implement Vulkan in software or that implement Vulkan by translating it to a different API. Any driver that requires installation should not be used, such as hardware drivers.
          */
-        VkInstanceCreateInfo createInstanceCreateInfo(
-                const VkApplicationInfo                &applicationInfo,
+        using InstanceCreateInfo = VkInstanceCreateInfo;
+        constexpr InstanceCreateInfo createInstanceCreateInfo(
+                const ApplicationInfo                  &applicationInfo,
                 const std::vector<const char *>        &enabledLayerNames,
                 const std::vector<const char *>        &enabledExtensionNames
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkInstanceCreateFlags(),
+                        .pApplicationInfo = &applicationInfo,
+                        .enabledLayerCount = static_cast<uint32_t>(enabledLayerNames.size()),
+                        .ppEnabledLayerNames = enabledLayerNames.data(),
+                        .enabledExtensionCount = static_cast<uint32_t>(enabledExtensionNames.size()),
+                        .ppEnabledExtensionNames = enabledExtensionNames.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2469,17 +3353,40 @@ namespace vk {
          *
          * If a VkPipelineCreateFlags2CreateInfoKHR structure is present in the pNext chain, VkPipelineCreateFlags2CreateInfoKHR::flags from that structure is used instead of flags from this structure.
          */
-        VkGraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
-                const VkPipelineVertexInputStateCreateInfo                &vertexInputStateCreateInfo,
-                const VkPipelineInputAssemblyStateCreateInfo              &inputAssemblyStateCreateInfo,
-                const VkPipelineViewportStateCreateInfo                   &viewportStateCreateInfo,
-                const VkPipelineRasterizationStateCreateInfo              &rasterizationStateCreateInfo,
-                const VkPipelineMultisampleStateCreateInfo                &multisampleStateCreateInfo,
-                const VkPipelineColorBlendStateCreateInfo                 &colorBlendStateCreateInfo,
-                const std::vector<VkPipelineShaderStageCreateInfo>        &shaderStages,
-                const VkPipelineLayout                                    &layout,
-                const VkRenderPass                                        &renderPass
-        );
+        using GraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo;
+        constexpr GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
+                const PipelineVertexInputStateCreateInfo                &vertexInputStateCreateInfo,
+                const PipelineInputAssemblyStateCreateInfo              &inputAssemblyStateCreateInfo,
+                const PipelineViewportStateCreateInfo                   &viewportStateCreateInfo,
+                const PipelineRasterizationStateCreateInfo              &rasterizationStateCreateInfo,
+                const PipelineMultisampleStateCreateInfo                &multisampleStateCreateInfo,
+                const PipelineColorBlendStateCreateInfo                 &colorBlendStateCreateInfo,
+                const std::vector<PipelineShaderStageCreateInfo>        &shaderStages,
+                const PipelineLayout                                    &layout,
+                const RenderPass                                        &renderPass
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineCreateFlags(),
+                        .stageCount = static_cast<uint32_t>(shaderStages.size()),
+                        .pStages = shaderStages.data(),
+                        .pVertexInputState = &vertexInputStateCreateInfo,
+                        .pInputAssemblyState = &inputAssemblyStateCreateInfo,
+                        .pTessellationState = nullptr,
+                        .pViewportState = &viewportStateCreateInfo,
+                        .pRasterizationState = &rasterizationStateCreateInfo,
+                        .pMultisampleState = &multisampleStateCreateInfo,
+                        .pDepthStencilState = nullptr,
+                        .pColorBlendState = &colorBlendStateCreateInfo,
+                        .pDynamicState = nullptr,
+                        .layout = layout,
+                        .renderPass = renderPass,
+                        .subpass = 0,
+                        .basePipelineHandle = nullptr,
+                        .basePipelineIndex = -1,
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2513,10 +3420,21 @@ namespace vk {
          * <li>pPushConstantRanges is a pointer to an array of VkPushConstantRange structures defining a set of push constant ranges for use in a single pipeline layout. In addition to descriptor set layouts, a pipeline layout also describes how many push constants <b>can</b> be accessed by each stage of the pipeline.
          * </ul>
          */
-        VkPipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
-                const std::vector<VkDescriptorSetLayout>        &setLayouts,
-                const std::vector<VkPushConstantRange>          &pushConstantRanges
-        );
+        using PipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo;
+        constexpr PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
+                const std::vector<DescriptorSetLayout>        &setLayouts,
+                const std::vector<PushConstantRange>          &pushConstantRanges
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkPipelineLayoutCreateFlags(),
+                        .setLayoutCount = static_cast<uint32_t>(setLayouts.size()),
+                        .pSetLayouts = setLayouts.data(),
+                        .pushConstantRangeCount = static_cast<uint32_t>(pushConstantRanges.size()),
+                        .pPushConstantRanges = pushConstantRanges.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2557,10 +3475,23 @@ namespace vk {
          *
          * @note Care should be taken to avoid a data race here; if any subpasses access attachments with overlapping memory locations, and one of those accesses is a write, a subpass dependency needs to be included between them.
          */
-        VkRenderPassCreateInfo createRenderPassCreateInfo(
-                const VkAttachmentDescription        &attachmentDescription,
-                const VkSubpassDescription           &subpassDescription
-        );
+        using RenderPassCreateInfo = VkRenderPassCreateInfo;
+        constexpr RenderPassCreateInfo createRenderPassCreateInfo(
+                const AttachmentDescription        &attachmentDescription,
+                const SubpassDescription           &subpassDescription
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkRenderPassCreateFlags(),
+                        .attachmentCount = 1,
+                        .pAttachments = &attachmentDescription,
+                        .subpassCount = 1,
+                        .pSubpasses = &subpassDescription,
+                        .dependencyCount = 0,
+                        .pDependencies = nullptr
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2586,7 +3517,15 @@ namespace vk {
          * <li>flags is reserved for future use.
          * </ul>
          */
-        VkSemaphoreCreateInfo createSemaphoreCreateInfo();
+        using SemaphoreCreateInfo = VkSemaphoreCreateInfo;
+        constexpr SemaphoreCreateInfo createSemaphoreCreateInfo()
+        {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkSemaphoreCreateFlags()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2616,9 +3555,18 @@ namespace vk {
          * <li>pCode is a pointer to code that is used to create the shader module. The type and format of the code is determined from the content of the memory addressed by pCode.
          * </ul>
          */
-        VkShaderModuleCreateInfo createShaderModuleCreateInfo(
+        using ShaderModuleCreateInfo = VkShaderModuleCreateInfo;
+        constexpr ShaderModuleCreateInfo createShaderModuleCreateInfo(
                 const std::vector<uint8_t>        &code
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkShaderModuleCreateFlags(),
+                        .codeSize = static_cast<uint32_t>(code.size()),
+                        .pCode = std::_Bit_cast<const uint32_t *>(code.data())
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2696,16 +3644,39 @@ namespace vk {
          * After oldSwapchain is retired, the application <b>can</b> pass to vkQueuePresentKHR any images it had already acquired from oldSwapchain. E.g., an application may present an image from the old swapchain before an image from the new swapchain is ready to be presented. As usual, vkQueuePresentKHR <b>may</b> fail if oldSwapchain has entered a state that causes VK_ERROR_OUT_OF_DATE_KHR to be returned.<br><br>
          * The application <b>can</b> continue to use a shared presentable image obtained from oldSwapchain until a presentable image is acquired from the new swapchain, as long as it has not entered a state that causes it to return VK_ERROR_OUT_OF_DATE_KHR.
          */
-        VkSwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
-                const VkSurfaceCapabilitiesKHR        &capabilities,
-                const uint32_t                        &minImageCount,
-                const VkSurfaceFormatKHR              &format,
-                const VkExtent2D                      &extent,
-                const VkPresentModeKHR                &presentMode,
-                const VkSurfaceKHR                    &surface,
-                const VkSharingMode                   &sharingMode,
-                const std::vector<uint32_t>           &queueFamilyIndices
-        );
+        using SwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR;
+        constexpr SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
+                const SurfaceCapabilitiesKHR        &capabilities,
+                const uint32_t                      &minImageCount,
+                const SurfaceFormatKHR              &format,
+                const Extent2D                      &extent,
+                const PresentModeKHR                &presentMode,
+                const SurfaceKHR                    &surface,
+                const VkSharingMode                 &sharingMode,
+                const std::vector<uint32_t>         &queueFamilyIndices
+        ) {
+
+                return {
+                        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+                        .pNext = nullptr,
+                        .flags = VkSwapchainCreateFlagsKHR(),
+                        .surface = surface,
+                        .minImageCount = minImageCount,
+                        .imageFormat = format.format,
+                        .imageColorSpace = format.colorSpace,
+                        .imageExtent = extent,
+                        .imageArrayLayers = 1,
+                        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+                        .imageSharingMode = sharingMode,
+                        .queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size()),
+                        .pQueueFamilyIndices = queueFamilyIndices.data(),
+                        .preTransform = capabilities.currentTransform,
+                        .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+                        .presentMode = presentMode,
+                        .clipped = VK_TRUE,
+                        .oldSwapchain = nullptr
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2740,13 +3711,22 @@ namespace vk {
          * </ul>
          * The above layout definition allows the descriptor bindings to be specified sparsely such that not all binding numbers between 0 and the maximum binding number need to be specified in the pBindings array. Bindings that are not specified have a descriptorCount and stageFlags of zero, and the value of descriptorType is undefined. However, all binding numbers between 0 and the maximum binding number in the VkDescriptorSetLayoutCreateInfo::pBindings array <b>may</b> consume memory in the descriptor set layout even if not all descriptor bindings are used, though it <b>should</b> not consume additional memory from the descriptor pool.
          */
-        VkDescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
+        using DescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding;
+        constexpr DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
                 const uint32_t                  &binding,
                 const VkDescriptorType          &descriptorType,
                 const uint32_t                  &descriptorCount,
                 const VkShaderStageFlags        &stageFlags,
-                const VkSampler                 *pImmutableSamplers
-        );
+                const Sampler                   *pImmutableSamplers
+        ) {
+                return {
+                        .binding = binding,
+                        .descriptorType = descriptorType,
+                        .descriptorCount = descriptorCount,
+                        .stageFlags = stageFlags,
+                        .pImmutableSamplers = pImmutableSamplers
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2776,39 +3756,18 @@ namespace vk {
          * <li>pBindings is a pointer to an array of VkDescriptorSetLayoutBinding structures.
          * </ul>
          */
-        VkDescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
-                const std::vector<VkDescriptorSetLayoutBinding>        &bindings
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkDescriptorPoolSize - Structure specifying descriptor pool size<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkDescriptorPoolSize structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkDescriptorPoolSize {
-         *     VkDescriptorType    type;
-         *     uint32_t            descriptorCount;
-         * } VkDescriptorPoolSize;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>type is the type of descriptor.
-         * <li>descriptorCount is the number of descriptors of that type to allocate. If type is VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT then descriptorCount is the number of bytes to allocate for descriptors of this type.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * @note When creating a descriptor pool that will contain descriptors for combined image samplers of multi-planar formats, an application needs to account for non-trivial descriptor consumption when choosing the descriptorCount value, as indicated by VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount.
-         */
-        VkDescriptorPoolSize createDescriptorPoolSize(
-                const VkDescriptorType        &type,
-                const uint32_t                &descriptorCount
-        );
+        using DescriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo;
+        constexpr DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
+                const std::vector<DescriptorSetLayoutBinding>        &bindings
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkDescriptorSetLayoutCreateFlags(),
+                        .bindingCount = static_cast<uint32_t>(bindings.size()),
+                        .pBindings = bindings.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2851,10 +3810,20 @@ namespace vk {
          *
          * If flags has the VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT bit set, descriptor pool creation <b>may</b> fail with the error VK_ERROR_FRAGMENTATION if the total number of descriptors across all pools (including this one) created with this bit set exceeds maxUpdateAfterBindDescriptorsInAllPools, or if fragmentation of the underlying hardware resources occurs.
          */
-        VkDescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
-                const uint32_t                                 &maxSets,
-                const std::vector<VkDescriptorPoolSize>        &poolSizes
-        );
+        using DescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo;
+        constexpr DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
+                const uint32_t                               &maxSets,
+                const std::vector<DescriptorPoolSize>        &poolSizes
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkDescriptorPoolCreateFlags(),
+                        .maxSets = maxSets,
+                        .poolSizeCount = static_cast<uint32_t>(poolSizes.size()),
+                        .pPoolSizes = poolSizes.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2883,10 +3852,19 @@ namespace vk {
          * <li>pSetLayouts is a pointer to an array of descriptor set layouts, with each member specifying how the corresponding descriptor set is allocated.
          * </ul>
          */
-        VkDescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
-                const VkDescriptorPool                          &descriptorPool,
-                const std::vector<VkDescriptorSetLayout>        &setLayouts
-        );
+        using DescriptorSetAllocateInfo = VkDescriptorSetAllocateInfo;
+        constexpr DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
+                const DescriptorPool                          &descriptorPool,
+                const std::vector<DescriptorSetLayout>        &setLayouts
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+                        .pNext = nullptr,
+                        .descriptorPool = descriptorPool,
+                        .descriptorSetCount = static_cast<uint32_t>(setLayouts.size()),
+                        .pSetLayouts = setLayouts.data()
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2917,11 +3895,18 @@ namespace vk {
          *
          * For VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC and VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC descriptor types, offset is the base offset from which the dynamic offset is applied and range is the static size used for all dynamic offsets.
          */
-        VkDescriptorBufferInfo createDescriptorBufferInfo(
-                const VkBuffer            &buffer,
+        using DescriptorBufferInfo = VkDescriptorBufferInfo;
+        constexpr DescriptorBufferInfo createDescriptorBufferInfo(
+                const Buffer              &buffer,
                 const VkDeviceSize        &offset,
                 const VkDeviceSize        &range
-        );
+        ) {
+                return {
+                        .buffer = buffer,
+                        .offset = offset,
+                        .range = range
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -2968,16 +3953,30 @@ namespace vk {
          *
          * @note The same behavior applies to bindings with a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT where descriptorCount specifies the number of bytes to update while dstArrayElement specifies the starting byte offset, thus in this case if the dstBinding has a smaller byte size than the sum of dstArrayElement and descriptorCount, then the remainder will be used to update the subsequent binding - dstBinding+1 starting at offset zero. This falls out as a special case of the above rule.
          */
-        VkWriteDescriptorSet createWriteDescriptorSet(
-                const VkDescriptorSet               &dstSet,
+        using WriteDescriptorSet = VkWriteDescriptorSet;
+        constexpr WriteDescriptorSet createWriteDescriptorSet(
+                const DescriptorSet                 &dstSet,
                 const uint32_t                      &dstBinding,
                 const uint32_t                      &dstArrayElement,
                 const uint32_t                      &descriptorCount,
                 const VkDescriptorType              &descriptorType,
                 const VkDescriptorImageInfo         *pImageInfo,
                 const VkDescriptorBufferInfo        *pBufferInfo,
-                const VkBufferView                  *pTexelBufferView
-        );
+                const BufferView                    *pTexelBufferView
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                        .pNext = nullptr,
+                        .dstSet = dstSet,
+                        .dstBinding = dstBinding,
+                        .dstArrayElement = dstArrayElement,
+                        .descriptorCount = descriptorCount,
+                        .descriptorType = descriptorType,
+                        .pImageInfo = pImageInfo,
+                        .pBufferInfo = pBufferInfo,
+                        .pTexelBufferView = pTexelBufferView
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -3055,13 +4054,32 @@ namespace vk {
          * @note For images created without VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for the format the image is created with.<br><br>
          * For images created with VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for at least one of the formats a VkImageView created from the image <b>can</b> have (see Image Views for more detail).
          */
-        VkImageCreateInfo createImageCreateInfo(
+        using ImageCreateInfo = VkImageCreateInfo;
+        constexpr ImageCreateInfo createImageCreateInfo(
                 const VkImageType                  &imageType,
                 const VkFormat                     &format,
-                const VkExtent3D                   &extent,
+                const Extent3D                     &extent,
                 const VkImageUsageFlags            &usage,
                 const std::vector<uint32_t>        &queueFamilyIndices
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkImageCreateFlags(),
+                        .imageType = imageType,
+                        .format = format,
+                        .extent = extent,
+                        .mipLevels = 1,
+                        .arrayLayers = 1,
+                        .samples = VK_SAMPLE_COUNT_1_BIT,
+                        .tiling = VK_IMAGE_TILING_OPTIMAL,
+                        .usage = usage,
+                        .sharingMode = queueFamilyIndices.size() == 1 ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT,
+                        .queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size()),
+                        .pQueueFamilyIndices = queueFamilyIndices.data(),
+                        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -3116,66 +4134,108 @@ namespace vk {
          *
          * If image has a multi-planar format and the image is disjoint, then including VK_IMAGE_ASPECT_COLOR_BIT in the aspectMask member of subresourceRange is equivalent to including VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, and (for three-plane formats only) VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
-        VkImageMemoryBarrier createImageMemoryBarrier(
+        using ImageMemoryBarrier = VkImageMemoryBarrier;
+        constexpr ImageMemoryBarrier createImageMemoryBarrier(
                 const VkAccessFlags              &srcAccessMask,
                 const VkAccessFlags              &dstAccessMask,
                 const VkImageLayout              &oldLayout,
                 const VkImageLayout              &newLayout,
                 const uint32_t                   &srcQueueFamilyIndex,
                 const uint32_t                   &dstQueueFamilyIndex,
-                const VkImage                    &image
-        );
+                const Image                      &image
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                        .pNext = nullptr,
+                        .srcAccessMask = srcAccessMask,
+                        .dstAccessMask = dstAccessMask,
+                        .oldLayout = oldLayout,
+                        .newLayout = newLayout,
+                        .srcQueueFamilyIndex = srcQueueFamilyIndex,
+                        .dstQueueFamilyIndex = dstQueueFamilyIndex,
+                        .image = image,
+                        .subresourceRange = vk::createImageSubresourceRange(
+                                VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+                        )
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
-         * VkImageSubresourceRange - Structure specifying an image subresource range<br><br><br>
+         * VkImageSubresourceLayers - Structure specifying an image subresource layers<br><br><br>
          *
          * <b>C Specification</b><hr><br>
          *
-         * The VkImageSubresourceRange structure is defined as:
+         * The VkImageSubresourceLayers structure is defined as:
          *
          * @code
          * // Provided by VK_VERSION_1_0
-         * typedef struct VkImageSubresourceRange {
+         * typedef struct VkImageSubresourceLayers {
          *     VkImageAspectFlags    aspectMask;
-         *     uint32_t              baseMipLevel;
-         *     uint32_t              levelCount;
+         *     uint32_t              mipLevel;
          *     uint32_t              baseArrayLayer;
          *     uint32_t              layerCount;
-         * } VkImageSubresourceRange;
+         * } VkImageSubresourceLayers;
          * @endcode
          *
          * <b>Members</b><hr><br>
          * <ul>
-         * <li>aspectMask is a bitmask of VkImageAspectFlagBits specifying which aspect(s) of the image are included in the view.
-         * <li>baseMipLevel is the first mipmap level accessible to the view.
-         * <li>levelCount is the number of mipmap levels (starting from baseMipLevel) accessible to the view.
-         * <li>baseArrayLayer is the first array layer accessible to the view.
-         * <li>layerCount is the number of array layers (starting from baseArrayLayer) accessible to the view.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * The number of mipmap levels and array layers <b>must</b> be a subset of the image subresources in the image. If an application wants to use all mip levels or layers in an image after the baseMipLevel or baseArrayLayer, it <b>can</b> set levelCount and layerCount to the special values VK_REMAINING_MIP_LEVELS and VK_REMAINING_ARRAY_LAYERS without knowing the exact number of mip levels or layers.<br><br>
-         *
-         * For cube and cube array image views, the layers of the image view starting at baseArrayLayer correspond to faces in the order +X, -X, +Y, -Y, +Z, -Z. For cube arrays, each set of six sequential layers is a single cube, so the number of cube maps in a cube map array view is layerCount / 6, and image array layer (baseArrayLayer + i) is face index (i mod 6) of cube i / 6. If the number of layers in the view, whether set explicitly in layerCount or implied by VK_REMAINING_ARRAY_LAYERS, is not a multiple of 6, the last cube map in the array <b>must</b> not be accessed.<br><br>
-         *
-         * aspectMask <b>must</b> be only VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_ASPECT_DEPTH_BIT or VK_IMAGE_ASPECT_STENCIL_BIT if format is a color, depth-only or stencil-only format, respectively, except if format is a multi-planar format. If using a depth/stencil format with both depth and stencil components, aspectMask <b>must</b> include at least one of VK_IMAGE_ASPECT_DEPTH_BIT and VK_IMAGE_ASPECT_STENCIL_BIT, and <b>can</b> include both.<br><br>
-         *
-         * When the VkImageSubresourceRange structure is used to select a subset of the slices of a 3D image’s mip level in order to create a 2D or 2D array image view of a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT, baseArrayLayer and layerCount specify the first slice index and the number of slices to include in the created image view. Such an image view <b>can</b> be used as a framebuffer attachment that refers only to the specified range of slices of the selected mip level. However, any layout transitions performed on such an attachment view during a render pass instance still apply to the entire subresource referenced which includes all the slices of the selected mip level.<br><br>
-         *
-         * When using an image view of a depth/stencil image to populate a descriptor set (e.g. for sampling in the shader, or for use as an input attachment), the aspectMask <b>must</b> only include one bit, which selects whether the image view is used for depth reads (i.e. using a floating-point sampler or input attachment in the shader) or stencil reads (i.e. using an unsigned integer sampler or input attachment in the shader). When an image view of a depth/stencil image is used as a depth/stencil framebuffer attachment, the aspectMask is ignored and both depth and stencil image subresources are used.<br><br>
-         *
-         * When creating a VkImageView, if sampler Y′CBCR conversion is enabled in the sampler, the aspectMask of a subresourceRange used by the VkImageView <b>must</b> be VK_IMAGE_ASPECT_COLOR_BIT.<br><br>
-         *
-         * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
+         * <li>aspectMask is a combination of VkImageAspectFlagBits, selecting the color, depth and/or stencil aspects to be copied.
+         * <li>mipLevel is the mipmap level to copy
+         * <li>baseArrayLayer and layerCount are the starting layer and number of layers to copy.
+         * </ul>
          */
-        VkImageSubresourceRange createImageSubresourceRange(
+        using ImageSubresourceLayers = VkImageSubresourceLayers;
+        constexpr ImageSubresourceLayers createImageSubresourceLayers(
                 const VkImageAspectFlags        &aspectMask,
-                const uint32_t                  &baseMipLevel,
-                const uint32_t                  &levelCount,
+                const uint32_t                  &mipLevel,
                 const uint32_t                  &baseArrayLayer,
                 const uint32_t                  &layerCount
-        );
+        ) {
+                return {
+                        .aspectMask = aspectMask,
+                        .mipLevel = mipLevel,
+                        .baseArrayLayer = baseArrayLayer,
+                        .layerCount = layerCount
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkOffset3D - Structure specifying a three-dimensional offset<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A three-dimensional offset is defined by the structure:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkOffset2D {
+         *     int32_t    x;
+         *     int32_t    y;
+         *     int32_t    z;
+         * } VkOffset2D;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>x is the x offset.
+         * <li>y is the y offset.
+         * <li>z is the z offset.
+         * </ul>
+         */
+        using Offset3D = VkOffset3D;
+        constexpr Offset3D createOffset3D(
+                const int32_t        &x,
+                const int32_t        &y,
+                const int32_t        &z
+        ) {
+                return {
+                        .x = x,
+                        .y = y,
+                        .z = z
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -3206,164 +4266,24 @@ namespace vk {
          * <li>imageExtent is the size in texels of the image to copy in width, height and depth.
          * </ul>
          */
-        VkBufferImageCopy createBufferImageCopy(
+        using BufferImageCopy = VkBufferImageCopy;
+        constexpr BufferImageCopy createBufferImageCopy(
                 const VkDeviceSize                    &bufferOffset,
                 const uint32_t                        &bufferRowLength,
                 const uint32_t                        &bufferImageHeight,
-                const VkExtent3D                      &imageExtent
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkImageSubresourceLayers - Structure specifying an image subresource layers<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkImageSubresourceLayers structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkImageSubresourceLayers {
-         *     VkImageAspectFlags    aspectMask;
-         *     uint32_t              mipLevel;
-         *     uint32_t              baseArrayLayer;
-         *     uint32_t              layerCount;
-         * } VkImageSubresourceLayers;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>aspectMask is a combination of VkImageAspectFlagBits, selecting the color, depth and/or stencil aspects to be copied.
-         * <li>mipLevel is the mipmap level to copy
-         * <li>baseArrayLayer and layerCount are the starting layer and number of layers to copy.
-         * </ul>
-         */
-        VkImageSubresourceLayers createImageSubresourceLayers(
-                const VkImageAspectFlags        &aspectMask,
-                const uint32_t                  &mipLevel,
-                const uint32_t                  &baseArrayLayer,
-                const uint32_t                  &layerCount
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkExtent3D - Structure specifying a three-dimensional extent<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A three-dimensional extent is defined by the structure:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkExtent3D {
-         *     uint32_t    width;
-         *     uint32_t    height;
-         *     uint32_t    depth;
-         * } VkExtent3D;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>width is the width of the extent.
-         * <li>height is the height of the extent.
-         * <li>depth is the depth of the extent.
-         * </ul>
-         */
-        VkExtent3D createExtent3D(
-                const uint32_t        &width,
-                const uint32_t        &height,
-                const uint32_t        &depth
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkOffset2D - Structure specifying a two-dimensional offset<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A two-dimensional offset is defined by the structure:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkOffset2D {
-         *     int32_t    x;
-         *     int32_t    y;
-         * } VkOffset2D;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>x is the x offset.
-         * <li>y is the y offset.
-         * </ul>
-         */
-        VkOffset2D createOffset2D(
-                const int32_t        &x,
-                const int32_t        &y
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkOffset3D - Structure specifying a three-dimensional offset<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * A three-dimensional offset is defined by the structure:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkOffset2D {
-         *     int32_t    x;
-         *     int32_t    y;
-         *     int32_t    z;
-         * } VkOffset2D;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>x is the x offset.
-         * <li>y is the y offset.
-         * <li>z is the z offset.
-         * </ul>
-         */
-        VkOffset3D createOffset3D(
-                const int32_t        &x,
-                const int32_t        &y,
-                const int32_t        &z
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkComponentMapping - Structure specifying a color component mapping<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkComponentMapping structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkComponentMapping {
-         *     VkComponentSwizzle    r;
-         *     VkComponentSwizzle    g;
-         *     VkComponentSwizzle    b;
-         *     VkComponentSwizzle    a;
-         *} VkComponentMapping;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>r is a VkComponentSwizzle specifying the component value placed in the R component of the output vector.
-         * <li>g is a VkComponentSwizzle specifying the component value placed in the G component of the output vector.
-         * <li>b is a VkComponentSwizzle specifying the component value placed in the B component of the output vector.
-         * <li>a is a VkComponentSwizzle specifying the component value placed in the A component of the output vector.
-         * </ul>
-         */
-        VkComponentMapping createComponentMapping(
-                const VkComponentSwizzle        &r,
-                const VkComponentSwizzle        &g,
-                const VkComponentSwizzle        &b,
-                const VkComponentSwizzle        &a
-        );
+                const Extent3D                        &imageExtent
+        ) {
+                return {
+                        .bufferOffset = bufferOffset,
+                        .bufferRowLength = bufferRowLength,
+                        .bufferImageHeight = bufferImageHeight,
+                        .imageSubresource = vk::createImageSubresourceLayers(
+                                VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1
+                        ),
+                        .imageOffset = vk::createOffset3D(0, 0, 0),
+                        .imageExtent = imageExtent
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -3444,14 +4364,36 @@ namespace vk {
          *
          * Since VkSampler is a non-dispatchable handle type, implementations <b>may</b> return the same handle for sampler state vectors that are identical. In such cases, all such objects would only count once against the maxSamplerAllocationCount limit.
          */
-        VkSamplerCreateInfo createSamplerCreateInfo(
+        using SamplerCreateInfo = VkSamplerCreateInfo;
+        constexpr SamplerCreateInfo createSamplerCreateInfo(
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
                 const VkBool32                    &anisotropyEnable,
                 const float                       &maxAnisotropy,
                 const VkBool32                    &compareEnable,
                 const VkCompareOp                 &compareOp
-        );
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                        .pNext = nullptr,
+                        .flags = VkSamplerCreateFlags(),
+                        .magFilter = filter,
+                        .minFilter = filter,
+                        .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+                        .addressModeU = addressMode,
+                        .addressModeV = addressMode,
+                        .addressModeW = addressMode,
+                        .mipLodBias = 0.0f,
+                        .anisotropyEnable = anisotropyEnable,
+                        .maxAnisotropy = maxAnisotropy,
+                        .compareEnable = compareEnable,
+                        .compareOp = compareOp,
+                        .minLod = 0.0f,
+                        .maxLod = 0.0f,
+                        .borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+                        .unnormalizedCoordinates = VK_FALSE
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -3475,315 +4417,331 @@ namespace vk {
          * <li>sampler is a sampler handle, and is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLER and VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER if the binding being updated does not use immutable samplers.
          * <li>imageView is VK_NULL_HANDLE or an image view handle, and is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, and VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT.
          * <li>imageLayout is the layout that the image subresources accessible from imageView will be in at the time this descriptor is accessed. imageLayout is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, and VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT.
-         * </ul><<br>
+         * </ul><br>
          * <b>Description</b><hr><br>
          * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
          */
-        VkDescriptorImageInfo createDescriptorImageInfo(
-                const VkSampler            &sampler,
-                const VkImageView          &imageView,
+        using DescriptorImageInfo = VkDescriptorImageInfo;
+        constexpr DescriptorImageInfo createDescriptorImageInfo(
+                const Sampler              &sampler,
+                const ImageView            &imageView,
                 const VkImageLayout        &imageLayout
-        );
+        ) {
+                return {
+                        .sampler = sampler,
+                        .imageView = imageView,
+                        .imageLayout = imageLayout
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
-         * VkPhysicalDeviceProperties - Structure specifying physical device properties<br><br><br>
+         * VkPhysicalDeviceFeatures - Structure describing the fine-grained features that can be supported by an implementation<br><br><br>
          *
          * <b>C Specification</b><hr><br>
          *
-         * The VkPhysicalDeviceProperties structure is defined as:
+         * The VkPhysicalDeviceFeatures structure is defined as:
          *
          * @code
          * // Provided by VK_VERSION_1_0
-         * typedef struct VkPhysicalDeviceProperties {
-         *     uint32_t                            apiVersion;
-         *     uint32_t                            driverVersion;
-         *     uint32_t                            vendorID;
-         *     uint32_t                            deviceID;
-         *     VkPhysicalDeviceType                deviceType;
-         *     char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
-         *     uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
-         *     VkPhysicalDeviceLimits              limits;
-         *     VkPhysicalDeviceSparseProperties    sparseProperties;
-         * } VkPhysicalDeviceProperties;
+         * typedef struct VkPhysicalDeviceFeatures {
+         *     VkBool32    robustBufferAccess;
+         *     VkBool32    fullDrawIndexUint32;
+         *     VkBool32    imageCubeArray;
+         *     VkBool32    independentBlend;
+         *     VkBool32    geometryShader;
+         *     VkBool32    tessellationShader;
+         *     VkBool32    sampleRateShading;
+         *     VkBool32    dualSrcBlend;
+         *     VkBool32    logicOp;
+         *     VkBool32    multiDrawIndirect;
+         *     VkBool32    drawIndirectFirstInstance;
+         *     VkBool32    depthClamp;
+         *     VkBool32    depthBiasClamp;
+         *     VkBool32    fillModeNonSolid;
+         *     VkBool32    depthBounds;
+         *     VkBool32    wideLines;
+         *     VkBool32    largePoints;
+         *     VkBool32    alphaToOne;
+         *     VkBool32    multiViewport;
+         *     VkBool32    samplerAnisotropy;
+         *     VkBool32    textureCompressionETC2;
+         *     VkBool32    textureCompressionASTC_LDR;
+         *     VkBool32    textureCompressionBC;
+         *     VkBool32    occlusionQueryPrecise;
+         *     VkBool32    pipelineStatisticsQuery;
+         *     VkBool32    vertexPipelineStoresAndAtomics;
+         *     VkBool32    fragmentStoresAndAtomics;
+         *     VkBool32    shaderTessellationAndGeometryPointSize;
+         *     VkBool32    shaderImageGatherExtended;
+         *     VkBool32    shaderStorageImageExtendedFormats;
+         *     VkBool32    shaderStorageImageMultisample;
+         *     VkBool32    shaderStorageImageReadWithoutFormat;
+         *     VkBool32    shaderStorageImageWriteWithoutFormat;
+         *     VkBool32    shaderUniformBufferArrayDynamicIndexing;
+         *     VkBool32    shaderSampledImageArrayDynamicIndexing;
+         *     VkBool32    shaderStorageBufferArrayDynamicIndexing;
+         *     VkBool32    shaderStorageImageArrayDynamicIndexing;
+         *     VkBool32    shaderClipDistance;
+         *     VkBool32    shaderCullDistance;
+         *     VkBool32    shaderFloat64;
+         *     VkBool32    shaderInt64;
+         *     VkBool32    shaderInt16;
+         *     VkBool32    shaderResourceResidency;
+         *     VkBool32    shaderResourceMinLod;
+         *     VkBool32    sparseBinding;
+         *     VkBool32    sparseResidencyBuffer;
+         *     VkBool32    sparseResidencyImage2D;
+         *     VkBool32    sparseResidencyImage3D;
+         *     VkBool32    sparseResidency2Samples;
+         *     VkBool32    sparseResidency4Samples;
+         *     VkBool32    sparseResidency8Samples;
+         *     VkBool32    sparseResidency16Samples;
+         *     VkBool32    sparseResidencyAliased;
+         *     VkBool32    variableMultisampleRate;
+         *     VkBool32    inheritedQueries;
+         * } VkPhysicalDeviceFeatures;
          * @endcode
          *
          * <b>Members</b><hr><br>
+         *
+         * This structure describes the following features:
          * <ul>
-         * <li>apiVersion is the version of Vulkan supported by the device, encoded as described in https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#extendingvulkan-coreversions-versionnumbers.
-         * <li>driverVersion is the vendor-specified version of the driver.
-         * <li>vendorID is a unique identifier for the vendor (see below) of the physical device.
-         * <li>deviceID is a unique identifier for the physical device among devices available from the vendor.
-         * <li>deviceType is a VkPhysicalDeviceType specifying the type of device.
-         * <li>deviceName is an array of VK_MAX_PHYSICAL_DEVICE_NAME_SIZE char containing a null-terminated UTF-8 string which is the name of the device.
-         * <li>pipelineCacheUUID is an array of VK_UUID_SIZE uint8_t values representing a universally unique identifier for the device.
-         * <li>limits is the VkPhysicalDeviceLimits structure specifying device-specific limits of the physical device. See Limits for details.
-         * <li>sparseProperties is the VkPhysicalDeviceSparseProperties structure specifying various sparse related properties of the physical device. See Sparse Properties for details.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * @note The value of apiVersion <b>may</b> be different than the version returned by vkEnumerateInstanceVersion; either higher or lower. In such cases, the application <b>must</b> not use functionality that exceeds the version of Vulkan associated with a given object. The pApiVersion parameter returned by vkEnumerateInstanceVersion is the version associated with a VkInstance and its children, except for a VkPhysicalDevice and its children.<br>
-         * VkPhysicalDeviceProperties::apiVersion is the version associated with a VkPhysicalDevice and its children.
-         *
-         * @note The encoding of driverVersion is implementation-defined. It <b>may</b> not use the same encoding as apiVersion. Applications should follow information from the vendor on how to extract the version information from driverVersion.
-         *
-         * On implementations that claim support for the Roadmap 2022 profile, the major and minor version expressed by apiVersion <b>must</b> be at least Vulkan 1.3.<br><br>
-         *
-         * The vendorID and deviceID fields are provided to allow applications to adapt to device characteristics that are not adequately exposed by other Vulkan queries.
-         *
-         * @note These <b>may</b> include performance profiles, hardware errata, or other characteristics.
-         *
-         * The vendor identified by vendorID is the entity responsible for the most salient characteristics of the underlying implementation of the VkPhysicalDevice being queried.
-         *
-         * @note For example, in the case of a discrete GPU implementation, this <b>should</b> be the GPU chipset vendor. In the case of a hardware accelerator integrated into a system-on-chip (SoC), this <b>should</b> be the supplier of the silicon IP used to create the accelerator.
-         *
-         * If the vendor has a PCI vendor ID, the low 16 bits of vendorID <b>must</b> contain that PCI vendor ID, and the remaining bits <b>must</b> be set to zero. Otherwise, the value returned <b>must</b> be a valid Khronos vendor ID, obtained as described in the Vulkan Documentation and Extensions: Procedures and Conventions document in the section “Registering a Vendor ID with Khronos”. Khronos vendor IDs are allocated starting at 0x10000, to distinguish them from the PCI vendor ID namespace. Khronos vendor IDs are symbolically defined in the VkVendorId type.<br><br>
-         *
-         * The vendor is also responsible for the value returned in deviceID. If the implementation is driven primarily by a PCI device with a PCI device ID, the low 16 bits of deviceID <b>must</b> contain that PCI device ID, and the remaining bits <b>must</b> be set to zero. Otherwise, the choice of what values to return <b>may</b> be dictated by operating system or platform policies - but <b>should</b> uniquely identify both the device version and any major configuration options (for example, core count in the case of multicore devices).
-         *
-         * @note The same device ID <b>should</b> be used for all physical implementations of that device version and configuration. For example, all uses of a specific silicon IP GPU version and configuration <b>should</b> use the same device ID, even if those uses occur in different SoCs.
-         */
-        VkPhysicalDeviceProperties getVkPhysicalDeviceProperties(
-                const VkPhysicalDevice        &physicalDevice
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPhysicalDeviceMemoryProperties - Structure specifying physical device memory properties<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkPhysicalDeviceMemoryProperties structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkPhysicalDeviceMemoryProperties {
-         *     uint32_t        memoryTypeCount;
-         *     VkMemoryType    memoryTypes[VK_MAX_MEMORY_TYPES];
-         *     uint32_t        memoryHeapCount;
-         *     VkMemoryHeap    memoryHeaps[VK_MAX_MEMORY_HEAPS];
-         * } VkPhysicalDeviceMemoryProperties;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>memoryTypeCount is the number of valid elements in the memoryTypes array.
-         * <li>memoryTypes is an array of VK_MAX_MEMORY_TYPES VkMemoryType structures describing the memory types that <b>can</b> be used to access memory allocated from the heaps specified by memoryHeaps.
-         * <li>memoryHeapCount is the number of valid elements in the memoryHeaps array.
-         * <li>memoryHeaps is an array of VK_MAX_MEMORY_HEAPS VkMemoryHeap structures describing the memory heaps from which memory <b>can</b> be allocated.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * The VkPhysicalDeviceMemoryProperties structure describes a number of memory heaps as well as a number of memory types that <b>can</b> be used to access memory allocated in those heaps. Each heap describes a memory resource of a particular size, and each memory type describes a set of memory properties (e.g. host cached vs. uncached) that <b>can</b> be used with a given memory heap.<br>
-         * Allocations using a particular memory type will consume resources from the heap indicated by that memory type’s heap index. More than one memory type <b>may</b> share each heap, and the heaps and memory types provide a mechanism to advertise an accurate size of the physical memory resources while allowing the memory to be used with a variety of different properties.<br><br>
-         *
-         * The number of memory heaps is given by memoryHeapCount and is less than or equal to VK_MAX_MEMORY_HEAPS. Each heap is described by an element of the memoryHeaps array as a VkMemoryHeap structure. The number of memory types available across all memory heaps is given by memoryTypeCount and is less than or equal to VK_MAX_MEMORY_TYPES. Each memory type is described by an element of the memoryTypes array as a VkMemoryType structure.<br><br
-         *
-         * At least one heap <b>must</b> include VK_MEMORY_HEAP_DEVICE_LOCAL_BIT in VkMemoryHeap::flags. If there are multiple heaps that all have similar performance characteristics, they <b>may</b> all include VK_MEMORY_HEAP_DEVICE_LOCAL_BIT. In a unified memory architecture (UMA) system there is often only a single memory heap which is considered to be equally “local” to the host and to the device, and such an implementation <b>must</b> advertise the heap as device-local.<br><br>
-         *
-         * Each memory type returned by vkGetPhysicalDeviceMemoryProperties <b>must</b> have its propertyFlags set to one of the following values:
-         * <ul>
-         * <li>0
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
-         * <li>VK_MEMORY_PROPERTY_PROTECTED_BIT
-         * <li>VK_MEMORY_PROPERTY_PROTECTED_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-         * <li>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV
+         * <li>robustBufferAccess specifies that accesses to buffers are bounds-checked against the range of the buffer descriptor (as determined by VkDescriptorBufferInfo::range, VkBufferViewCreateInfo::range, or the size of the buffer). Out of bounds accesses <b>must</b> not cause application termination, and the effects of shader loads, stores, and atomics <b>must</b> conform to an implementation-dependent behavior as described below.
+         *     <ul>
+         *     <li>A buffer access is considered to be out of bounds if any of the following are true:
+         *         <ul>
+         *         <li>The pointer was formed by OpImageTexelPointer and the coordinate is less than zero or greater than or equal to the number of whole elements in the bound range.
+         *         <li>The pointer was not formed by OpImageTexelPointer and the object pointed to is not wholly contained within the bound range. This includes accesses performed via variable pointers where the buffer descriptor being accessed cannot be statically determined. Uninitialized pointers and pointers equal to OpConstantNull are treated as pointing to a zero-sized object, so all accesses through such pointers are considered to be out of bounds. Buffer accesses through buffer device addresses are not bounds-checked.
+         *         <li>If the VkPhysicalDeviceCooperativeMatrixFeaturesNV::cooperativeMatrixRobustBufferAccess feature is not enabled, then accesses using OpCooperativeMatrixLoadNV and OpCooperativeMatrixStoreNV may not be bounds-checked.
+         *         <li>If the VkPhysicalDeviceCooperativeMatrixFeaturesKHR::cooperativeMatrixRobustBufferAccess feature is not enabled, then accesses using OpCooperativeMatrixLoadKHR and OpCooperativeMatrixStoreKHR may not be bounds-checked.
+         *         </ul>
+         *     </ul>
          * </ul>
-         * There <b>must</b> be at least one memory type with both the VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT and VK_MEMORY_PROPERTY_HOST_COHERENT_BIT bits set in its propertyFlags. There <b>must</b> be at least one memory type with the VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT bit set in its propertyFlags. If the deviceCoherentMemory feature is enabled, there <b>must</b> be at least one memory type with the VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD bit set in its propertyFlags.<br><br>
-         *
-         * For each pair of elements <b>X</b> and <b>Y</b> returned in memoryTypes, <b>X must</b> be placed at a lower index position than <b>Y</b> if:
-         * <ul>
-         * <li>the set of bit flags returned in the propertyFlags member of <b>X</b> is a strict subset of the set of bit flags returned in the propertyFlags member of <b>Y</b>; or
-         * <li>the propertyFlags members of <b>X</b> and <b>Y</b> are equal, and <b>X</b> belongs to a memory heap with greater performance (as determined in an implementation-specific manner) ; or
-         * <li>the propertyFlags members of <b>Y</b> includes VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD or VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD and <b>X</b> does not
-         * </ul>
-         * @note There is no ordering requirement between <b>X</b> and <b>Y</b> elements for the case their propertyFlags members are not in a subset relation. That potentially allows more than one possible way to order the same set of memory types. Notice that the list of all allowed memory property flag combinations is written in a valid order. But if instead VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT was before VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, the list would still be in a valid order.<br><br>
-         * There may be a performance penalty for using device coherent or uncached device memory types, and using these accidentally is undesirable. In order to avoid this, memory types with these properties always appear at the end of the list; but are subject to the same rules otherwise.<br><br>
-         *
-         * This ordering requirement enables applications to use a simple search loop to select the desired memory type along the lines of:
-         * @code
-         * // Find a memory in `memoryTypeBitsRequirement` that includes all of `requiredProperties`
-         * int32_t findProperties(const VkPhysicalDeviceMemoryProperties* pMemoryProperties,
-         *                       uint32_t memoryTypeBitsRequirement,
-         *                       VkMemoryPropertyFlags requiredProperties) {
-         *     const uint32_t memoryCount = pMemoryProperties->memoryTypeCount;
-         *     for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; ++memoryIndex) {
-         *         const uint32_t memoryTypeBits = (1 << memoryIndex);
-         *         const bool isRequiredMemoryType = memoryTypeBitsRequirement & memoryTypeBits;
-         *
-         *         const VkMemoryPropertyFlags properties =
-         *             pMemoryProperties->memoryTypes[memoryIndex].propertyFlags;
-         *         const bool hasRequiredProperties =
-         *             (properties & requiredProperties) == requiredProperties;
-         *
-         *         if (isRequiredMemoryType && hasRequiredProperties)
-         *             return static_cast<int32_t>(memoryIndex);
-         *     }
-         *
-         *     // failed to find memory type
-         *     return -1;
-         * }
-         *
-         * // Try to find an optimal memory type, or if it does not exist try fallback memory type
-         * // `device` is the VkDevice
-         * // `image` is the VkImage that requires memory to be bound
-         * // `memoryProperties` properties as returned by vkGetPhysicalDeviceMemoryProperties
-         * // `requiredProperties` are the property flags that must be present
-         * // `optimalProperties` are the property flags that are preferred by the application
-         * VkMemoryRequirements memoryRequirements;
-         * vkGetImageMemoryRequirements(device, image, &memoryRequirements);
-         * int32_t memoryType =
-         *     findProperties(&memoryProperties, memoryRequirements.memoryTypeBits, optimalProperties);
-         * if (memoryType == -1) // not found; try fallback properties
-         *     memoryType =
-         *         findProperties(&memoryProperties, memoryRequirements.memoryTypeBits, requiredProperties);
-         * @endcode
-         */
-        VkPhysicalDeviceMemoryProperties getVkPhysicalDeviceMemoryProperties(
-                const VkPhysicalDevice        &physicalDevice
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkSurfaceCapabilitiesKHR - Structure describing capabilities of a surface<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkSurfaceCapabilitiesKHR structure is defined as:
-         *
-         * @code
-         * // Provided by VK_KHR_surface
-         * typedef struct VkSurfaceCapabilitiesKHR {
-         *     uint32_t                         minImageCount;
-         *     uint32_t                         maxImageCount;
-         *     VkExtent2D                       currentExtent;
-         *     VkExtent2D                       minImageExtent;
-         *     VkExtent2D                       maxImageExtent;
-         *     uint32_t                         maxImageArrayLayers;
-         *     VkSurfaceTransformFlagsKHR       supportedTransforms;
-         *     VkSurfaceTransformFlagBitsKHR    currentTransform;
-         *     VkCompositeAlphaFlagsKHR         supportedCompositeAlpha;
-         *     VkImageUsageFlags                supportedUsageFlags;
-         * } VkSurfaceCapabilitiesKHR;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>minImageCount is the minimum number of images the specified device supports for a swapchain created for the surface, and will be at least one.
-         * <li>maxImageCount is the maximum number of images the specified device supports for a swapchain created for the surface, and will be either 0, or greater than or equal to minImageCount. A value of 0 means that there is no limit on the number of images, though there <b>may</b> be limits related to the total amount of memory used by presentable images.
-         * <li>currentExtent is the current width and height of the surface, or the special value (0xFFFFFFFF, 0xFFFFFFFF) indicating that the surface size will be determined by the extent of a swapchain targeting the surface.
-         * <li>minImageExtent contains the smallest valid swapchain extent for the surface on the specified device. The width and height of the extent will each be less than or equal to the corresponding width and height of currentExtent, unless currentExtent has the special value described above.
-         * <li>maxImageExtent contains the largest valid swapchain extent for the surface on the specified device. The width and height of the extent will each be greater than or equal to the corresponding width and height of minImageExtent. The width and height of the extent will each be greater than or equal to the corresponding width and height of currentExtent, unless currentExtent has the special value described above.
-         * <li>maxImageArrayLayers is the maximum number of layers presentable images <b>can</b> have for a swapchain created for this device and surface, and will be at least one.
-         * <li>supportedTransforms is a bitmask of VkSurfaceTransformFlagBitsKHR indicating the presentation transforms supported for the surface on the specified device. At least one bit will be set.
-         * <li>currentTransform is VkSurfaceTransformFlagBitsKHR value indicating the surface’s current transform relative to the presentation engine’s natural orientation.
-         * <li>supportedCompositeAlpha is a bitmask of VkCompositeAlphaFlagBitsKHR, representing the alpha compositing modes supported by the presentation engine for the surface on the specified device, and at least one bit will be set. Opaque composition <b>can</b> be achieved in any alpha compositing mode by either using an image format that has no alpha component, or by ensuring that all pixels in the presentable images have an alpha value of 1.0.
-         * <li>supportedUsageFlags is a bitmask of VkImageUsageFlagBits representing the ways the application <b>can</b> use the presentable images of a swapchain created with VkPresentModeKHR set to VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR or VK_PRESENT_MODE_FIFO_RELAXED_KHR for the surface on the specified device. VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT <b>must</b> be included in the set. Implementations may support additional usages.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * @note Supported usage flags of a presentable image when using VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR or VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR presentation mode are provided by VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags.
-         *
-         * @note Formulas such as min(N, maxImageCount) are not correct, since maxImageCount <b>may</b> be zero.
-         */
-        VkSurfaceCapabilitiesKHR getVkSurfaceCapabilitiesKHR(
-                const VkPhysicalDevice        &physicalDevice,
-                const VkSurfaceKHR            &surface
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkSurfaceFormatKHR - Structure describing a supported swapchain format-color space pair<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkSurfaceFormatKHR structure is defined as:
-         *
-         * @code
-         * // Provided by VK_KHR_surface
-         * typedef struct VkSurfaceFormatKHR {
-         *     VkFormat           format;
-         *     VkColorSpaceKHR    colorSpace;
-         * } VkSurfaceFormatKHR;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>format is a VkFormat that is compatible with the specified surface.
-         * <li>colorSpace is a presentation VkColorSpaceKHR that is compatible with the surface.
-         * </ul><br>
-         */
-        std::vector<VkSurfaceFormatKHR> getVkSurfaceFormatKHRs(
-                const VkPhysicalDevice        &physicalDevice,
-                const VkSurfaceKHR            &surface
-        );
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPresentModeKHR - Presentation mode supported for a surface<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * Possible values of elements of the vkGetPhysicalDeviceSurfacePresentModesKHR::pPresentModes array, indicating the supported presentation modes for a surface, are:
-         *
-         * @code
-         * // Provided by VK_KHR_surface
-         * typedef enum VkPresentModeKHR {
-         *     VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
-         *     VK_PRESENT_MODE_MAILBOX_KHR = 1,
-         *     VK_PRESENT_MODE_FIFO_KHR = 2,
-         *     VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
-         *   // Provided by VK_KHR_shared_presentable_image
-         *     VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = 1000111000,
-         *   // Provided by VK_KHR_shared_presentable_image
-         *     VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = 1000111001,
-         * } VkPresentModeKHR;
-         * @endcode
+         * @note If a SPIR-V OpLoad instruction loads a structure and the tail end of the structure is out of bounds, then all members of the structure are considered out of bounds even if the members at the end are not statically used.
          *
          * <b>Description</b><hr><br>
          * <ul>
-         * <li>VK_PRESENT_MODE_IMMEDIATE_KHR specifies that the presentation engine does not wait for a vertical blanking period to update the current image, meaning this mode <b>may</b> result in visible tearing. No internal queuing of presentation requests is needed, as the requests are applied immediately.
-         * <li>VK_PRESENT_MODE_MAILBOX_KHR specifies that the presentation engine waits for the next vertical blanking period to update the current image. Tearing <b>cannot</b> be observed. An internal single-entry queue is used to hold pending presentation requests. If the queue is full when a new presentation request is received, the new request replaces the existing entry, and any images associated with the prior entry become available for reuse by the application. One request is removed from the queue and processed during each vertical blanking period in which the queue is non-empty.
-         * <li>VK_PRESENT_MODE_FIFO_KHR specifies that the presentation engine waits for the next vertical blanking period to update the current image. Tearing <b>cannot</b> be observed. An internal queue is used to hold pending presentation requests. New requests are appended to the end of the queue, and one request is removed from the beginning of the queue and processed during each vertical blanking period in which the queue is non-empty. This is the only value of presentMode that is <b>required</b> to be supported.
-         * <li>VK_PRESENT_MODE_FIFO_RELAXED_KHR specifies that the presentation engine generally waits for the next vertical blanking period to update the current image. If a vertical blanking period has already passed since the last update of the current image then the presentation engine does not wait for another vertical blanking period for the update, meaning this mode <b>may</b> result in visible tearing in this case. This mode is useful for reducing visual stutter with an application that will mostly present a new image before the next vertical blanking period, but may occasionally be late, and present a new image just after the next vertical blanking period. An internal queue is used to hold pending presentation requests. New requests are appended to the end of the queue, and one request is removed from the beginning of the queue and processed during or after each vertical blanking period in which the queue is non-empty.
-         * <li>VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR specifies that the presentation engine and application have concurrent access to a single image, which is referred to as a shared presentable image. The presentation engine is only required to update the current image after a new presentation request is received. Therefore the application <b>must</b> make a presentation request whenever an update is required. However, the presentation engine <b>may</b> update the current image at any point, meaning this mode <b>may</b> result in visible tearing.
-         * <li>VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR specifies that the presentation engine and application have concurrent access to a single image, which is referred to as a shared presentable image. The presentation engine periodically updates the current image on its regular refresh cycle. The application is only required to make one initial presentation request, after which the presentation engine <b>must</b> update the current image without any need for further presentation requests. The application <b>can</b> indicate the image contents have been updated by making a presentation request, but this does not guarantee the timing of when it will be updated. This mode <b>may</b> result in visible tearing if rendering to the image is not timed correctly.
+         * <li>If robustBufferAccess2 is not enabled and any buffer access is determined to be out of bounds, then any other access of the same type (load, store, or atomic) to the same buffer that accesses an address less than 16 bytes away from the out of bounds address <b>may</b> also be considered out of bounds.
+         * <li>If the access is a load that reads from the same memory locations as a prior store in the same shader invocation, with no other intervening accesses to the same memory locations in that shader invocation, then the result of the load <b>may</b> be the value stored by the store instruction, even if the access is out of bounds. If the load is Volatile, then an out of bounds load <b>must</b> return the appropriate out of bounds value.
+         *     <ul>
+         *     <li>Accesses to descriptors written with a VK_NULL_HANDLE resource or view are not considered to be out of bounds. Instead, each type of descriptor access defines a specific behavior for accesses to a null descriptor.
+         *     </ul>
+         * <li>Out-of-bounds buffer loads will return any of the following values:
+         * <li>If the access is to a uniform buffer and robustBufferAccess2 is enabled, loads of offsets between the end of the descriptor range and the end of the descriptor range rounded up to a multiple of robustUniformBufferAccessSizeAlignment bytes <b>must</b> return either zero values or the contents of the memory at the offset being loaded. Loads of offsets past the descriptor range rounded up to a multiple of robustUniformBufferAccessSizeAlignment bytes <b>must</b> return zero values.
+         * <li>If the access is to a storage buffer and robustBufferAccess2 is enabled, loads of offsets between the end of the descriptor range and the end of the descriptor range rounded up to a multiple of robustStorageBufferAccessSizeAlignment bytes <b>must</b> return either zero values or the contents of the memory at the offset being loaded. Loads of offsets past the descriptor range rounded up to a multiple of robustStorageBufferAccessSizeAlignment bytes <b>must</b> return zero values. Similarly, stores to addresses between the end of the descriptor range and the end of the descriptor range rounded up to a multiple of robustStorageBufferAccessSizeAlignment bytes <b>may</b> be discarded.
+         * <li>Non-atomic accesses to storage buffers that are a multiple of 32 bits <b>may</b> be decomposed into 32-bit accesses that are individually bounds-checked.
+         * <li>If the access is to an index buffer and robustBufferAccess2 is enabled, zero values <b>must</b> be returned.
+         * <li>If the access is to a uniform texel buffer or storage texel buffer and robustBufferAccess2 is enabled, zero values <b>must</b> be returned, and then Conversion to RGBA is applied based on the buffer view’s format.
+         * <li>Values from anywhere within the memory range(s) bound to the buffer (possibly including bytes of memory past the end of the buffer, up to the end of the bound range).
+         * <li>Zero values, or (0,0,0,x) vectors for vector reads where x is a valid value represented in the type of the vector components and <b>may</b> be any of:
+         *     <ul>
+         *     <li>0, 1, or the maximum representable positive integer value, for signed or unsigned integer components
+         *     <li>0.0 or 1.0, for floating-point components
+         *         <ul>
+         *         <li>Out-of-bounds writes <b>may</b> modify values within the memory range(s) bound to the buffer, but <b>must</b> not modify any other memory.
+         *         </ul>
+         *     </ul>
+         * <li>If robustBufferAccess2 is enabled, out of bounds writes <b>must</b> not modify any memory.
+         *     <ul>
+         *     <li>Out-of-bounds atomics <b>may</b> modify values within the memory range(s) bound to the buffer, but <b>must</b> not modify any other memory, and return an undefined value.
+         *     </ul>
+         * <li>If robustBufferAccess2 is enabled, out of bounds atomics <b>must</b> not modify any memory, and return an undefined value.
+         *     <ul>
+         *     <li>If robustBufferAccess2 is disabled, vertex input attributes are considered out of bounds if the offset of the attribute in the bound vertex buffer range plus the size of the attribute is greater than either:
+         *     </ul>
+         * <li>vertexBufferRangeSize, if bindingStride == 0; or
+         * <li>(vertexBufferRangeSize - (vertexBufferRangeSize % bindingStride))<br>
+         * where vertexBufferRangeSize is the byte size of the memory range bound to the vertex buffer binding and bindingStride is the byte stride of the corresponding vertex input binding. Further, if any vertex input attribute using a specific vertex input binding is out of bounds, then all vertex input attributes using that vertex input binding for that vertex shader invocation are considered out of bounds.
+         * <li>If a vertex input attribute is out of bounds, it will be assigned one of the following values:
+         *     <ul>
+         *     <li>Values from anywhere within the memory range(s) bound to the buffer, converted according to the format of the attribute.
+         *     <li>Zero values, format converted according to the format of the attribute.
+         *     <li>Zero values, or (0,0,0,x) vectors, as described above.
+         *         <ul>
+         *         <li>If robustBufferAccess2 is enabled, vertex input attributes are considered out of bounds if the offset of the attribute in the bound vertex buffer range plus the size of the attribute is greater than the byte size of the memory range bound to the vertex buffer binding.
+         *         </ul>
+         *     </ul>
+         * <li>If a vertex input attribute is out of bounds, the raw data extracted are zero values, and missing G, B, or A components are filled with (0,0,1).
+         *     <ul>
+         *     <li>If robustBufferAccess is not enabled, applications <b>must</b> not perform out of bounds accesses except under the conditions enabled by the pipelineRobustness feature.
+         *         <ul>
+         *         <li>fullDrawIndexUint32 specifies the full 32-bit range of indices is supported for indexed draw calls when using a VkIndexType of VK_INDEX_TYPE_UINT32. maxDrawIndexedIndexValue is the maximum index value that <b>may</b> be used (aside from the primitive restart index, which is always 2^32-1 when the VkIndexType is VK_INDEX_TYPE_UINT32). If this feature is supported, maxDrawIndexedIndexValue <b>must</b> be 2^32-1; otherwise it <b>must</b> be no smaller than 2^24-1. See maxDrawIndexedIndexValue.
+         *         <li>imageCubeArray specifies whether image views with a VkImageViewType of VK_IMAGE_VIEW_TYPE_CUBE_ARRAY <b>can</b> be created, and that the corresponding SampledCubeArray and ImageCubeArray SPIR-V capabilities <b>can</b> be used in shader code.
+         *         <li>independentBlend specifies whether the VkPipelineColorBlendAttachmentState settings are controlled independently per-attachment. If this feature is not enabled, the VkPipelineColorBlendAttachmentState settings for all color attachments must be identical. Otherwise, a different VkPipelineColorBlendAttachmentState <b>can</b> be provided for each bound color attachment.
+         *         <li>geometryShader specifies whether geometry shaders are supported. If this feature is not enabled, the VK_SHADER_STAGE_GEOMETRY_BIT and VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT enum values <b>must</b> not be used. This also specifies whether shader modules <b>can</b> declare the Geometry capability.
+         *         <li>tessellationShader specifies whether tessellation control and evaluation shaders are supported. If this feature is not enabled, the VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT, VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT, and VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO enum values <b>must</b> not be used. This also specifies whether shader modules <b>can</b> declare the Tessellation capability.
+         *         <li>sampleRateShading specifies whether Sample Shading and multisample interpolation are supported. If this feature is not enabled, the sampleShadingEnable member of the VkPipelineMultisampleStateCreateInfo structure <b>must</b> be set to VK_FALSE and the minSampleShading member is ignored. This also specifies whether shader modules <b>can</b> declare the SampleRateShading capability.
+         *         <li>dualSrcBlend specifies whether blend operations which take two sources are supported. If this feature is not enabled, the VK_BLEND_FACTOR_SRC1_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR, VK_BLEND_FACTOR_SRC1_ALPHA, and VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA enum values <b>must</b> not be used as source or destination blending factors. See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#framebuffer-dsb.
+         *         <li>logicOp specifies whether logic operations are supported. If this feature is not enabled, the logicOpEnable member of the VkPipelineColorBlendStateCreateInfo structure <b>must</b> be set to VK_FALSE, and the logicOp member is ignored.
+         *         <li>multiDrawIndirect specifies whether multiple draw indirect is supported. If this feature is not enabled, the drawCount parameter to the vkCmdDrawIndirect and vkCmdDrawIndexedIndirect commands <b>must</b> be 0 or 1. The maxDrawIndirectCount member of the VkPhysicalDeviceLimits structure <b>must</b> also be 1 if this feature is not supported. See maxDrawIndirectCount.
+         *         <li>drawIndirectFirstInstance specifies whether indirect drawing calls support the firstInstance parameter. If this feature is not enabled, the firstInstance member of all VkDrawIndirectCommand and VkDrawIndexedIndirectCommand structures that are provided to the vkCmdDrawIndirect and vkCmdDrawIndexedIndirect commands <b>must</b> be 0.
+         *         <li>depthClamp specifies whether depth clamping is supported. If this feature is not enabled, the depthClampEnable member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to VK_FALSE. Otherwise, setting depthClampEnable to VK_TRUE will enable depth clamping.
+         *         <li>depthBiasClamp specifies whether depth bias clamping is supported. If this feature is not enabled, the depthBiasClamp member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to 0.0 unless the VK_DYNAMIC_STATE_DEPTH_BIAS dynamic state is enabled, and the depthBiasClamp parameter to vkCmdSetDepthBias <b>must</b> be set to 0.0.
+         *         <li>fillModeNonSolid specifies whether point and wireframe fill modes are supported. If this feature is not enabled, the VK_POLYGON_MODE_POINT and VK_POLYGON_MODE_LINE enum values <b>must</b> not be used.
+         *         <li>depthBounds specifies whether depth bounds tests are supported. If this feature is not enabled, the depthBoundsTestEnable member of the VkPipelineDepthStencilStateCreateInfo structure <b>must</b> be set to VK_FALSE. When depthBoundsTestEnable is set to VK_FALSE, the minDepthBounds and maxDepthBounds members of the VkPipelineDepthStencilStateCreateInfo structure are ignored.
+         *         <li>wideLines specifies whether lines with width other than 1.0 are supported. If this feature is not enabled, the lineWidth member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to 1.0 unless the VK_DYNAMIC_STATE_LINE_WIDTH dynamic state is enabled, and the lineWidth parameter to vkCmdSetLineWidth <b>must</b> be set to 1.0. When this feature is supported, the range and granularity of supported line widths are indicated by the lineWidthRange and lineWidthGranularity members of the VkPhysicalDeviceLimits structure, respectively.
+         *         <li>largePoints specifies whether points with size greater than 1.0 are supported. If this feature is not enabled, only a point size of 1.0 written by a shader is supported. The range and granularity of supported point sizes are indicated by the pointSizeRange and pointSizeGranularity members of the VkPhysicalDeviceLimits structure, respectively.
+         *         <li>alphaToOne specifies whether the implementation is able to replace the alpha value of the fragment shader color output in the Multisample Coverage fragment operation. If this feature is not enabled, then the alphaToOneEnable member of the VkPipelineMultisampleStateCreateInfo structure <b>must</b> be set to VK_FALSE. Otherwise setting alphaToOneEnable to VK_TRUE will enable alpha-to-one behavior.
+         *         <li>multiViewport specifies whether more than one viewport is supported. If this feature is not enabled:
+         *         </ul>
+         *     <li>The viewportCount and scissorCount members of the VkPipelineViewportStateCreateInfo structure <b>must</b> be set to 1.
+         *     <li>The firstViewport and viewportCount parameters to the vkCmdSetViewport command <b>must</b> be set to 0 and 1, respectively.
+         *     <li>The firstScissor and scissorCount parameters to the vkCmdSetScissor command <b>must</b> be set to 0 and 1, respectively.
+         *     <li>The exclusiveScissorCount member of the VkPipelineViewportExclusiveScissorStateCreateInfoNV structure <b>must</b> be set to 0 or 1.
+         *     <li>The firstExclusiveScissor and exclusiveScissorCount parameters to the vkCmdSetExclusiveScissorNV command <b>must</b> be set to 0 and 1, respectively.
+         *         <ul>
+         *         <li>samplerAnisotropy specifies whether anisotropic filtering is supported. If this feature is not enabled, the anisotropyEnable member of the VkSamplerCreateInfo structure <b>must</b> be VK_FALSE.
+         *         <li>textureCompressionETC2 specifies whether all of the ETC2 and EAC compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must</b> be supported in optimalTilingFeatures for the following formats:
+         *         </ul>
+         *     <li>VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK
+         *     <li>VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK
+         *     <li>VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK
+         *     <li>VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK
+         *     <li>VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK
+         *     <li>VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK
+         *     <li>VK_FORMAT_EAC_R11_UNORM_BLOCK
+         *     <li>VK_FORMAT_EAC_R11_SNORM_BLOCK
+         *     <li>VK_FORMAT_EAC_R11G11_UNORM_BLOCK
+         *     <li>VK_FORMAT_EAC_R11G11_SNORM_BLOCK<br>
+         *     To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
+         *         <ul>
+         *         <li>textureCompressionASTC_LDR specifies whether all of the ASTC LDR compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must<li> be supported in optimalTilingFeatures for the following formats:
+         *         </ul>
+         *     <li>VK_FORMAT_ASTC_4x4_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_4x4_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_5x4_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_5x4_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_5x5_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_5x5_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_6x5_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_6x5_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_6x6_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_6x6_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_8x5_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_8x5_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_8x6_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_8x6_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_8x8_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_8x8_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x5_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x5_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x6_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x6_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x8_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x8_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x10_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_10x10_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_12x10_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_12x10_SRGB_BLOCK
+         *     <li>VK_FORMAT_ASTC_12x12_UNORM_BLOCK
+         *     <li>VK_FORMAT_ASTC_12x12_SRGB_BLOCK<br>
+         *     To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
+         *         <ul>
+         *         <li>textureCompressionBC specifies whether all of the BC compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must</b> be supported in optimalTilingFeatures for the following formats:
+         *         </ul>
+         *     <li>VK_FORMAT_BC1_RGB_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC1_RGB_SRGB_BLOCK
+         *     <li>VK_FORMAT_BC1_RGBA_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC1_RGBA_SRGB_BLOCK
+         *     <li>VK_FORMAT_BC2_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC2_SRGB_BLOCK
+         *     <li>VK_FORMAT_BC3_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC3_SRGB_BLOCK
+         *     <li>VK_FORMAT_BC4_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC4_SNORM_BLOCK
+         *     <li>VK_FORMAT_BC5_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC5_SNORM_BLOCK
+         *     <li>VK_FORMAT_BC6H_UFLOAT_BLOCK
+         *     <li>VK_FORMAT_BC6H_SFLOAT_BLOCK
+         *     <li>VK_FORMAT_BC7_UNORM_BLOCK
+         *     <li>VK_FORMAT_BC7_SRGB_BLOCK<br>
+         *     To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
+         *         <ul>
+         *         <li>occlusionQueryPrecise specifies whether occlusion queries returning actual sample counts are supported. Occlusion queries are created in a VkQueryPool by specifying the queryType of VK_QUERY_TYPE_OCCLUSION in the VkQueryPoolCreateInfo structure which is passed to vkCreateQueryPool. If this feature is enabled, queries of this type <b>can</b> enable VK_QUERY_CONTROL_PRECISE_BIT in the flags parameter to vkCmdBeginQuery. If this feature is not supported, the implementation supports only boolean occlusion queries. When any samples are passed, boolean queries will return a non-zero result value, otherwise a result value of zero is returned. When this feature is enabled and VK_QUERY_CONTROL_PRECISE_BIT is set, occlusion queries will report the actual number of samples passed.
+         *         <li>pipelineStatisticsQuery specifies whether the pipeline statistics queries are supported. If this feature is not enabled, queries of type VK_QUERY_TYPE_PIPELINE_STATISTICS <b>cannot</b> be created, and none of the VkQueryPipelineStatisticFlagBits bits <b>can</b> be set in the pipelineStatistics member of the VkQueryPoolCreateInfo structure.
+         *         <li>vertexPipelineStoresAndAtomics specifies whether storage buffers and images support stores and atomic operations in the vertex, tessellation, and geometry shader stages. If this feature is not enabled, all storage image, storage texel buffer, and storage buffer variables used by these stages in shader modules <b>must</b> be decorated with the NonWritable decoration (or the readonly memory qualifier in GLSL).
+         *         <li>fragmentStoresAndAtomics specifies whether storage buffers and images support stores and atomic operations in the fragment shader stage. If this feature is not enabled, all storage image, storage texel buffer, and storage buffer variables used by the fragment stage in shader modules <b>must</b> be decorated with the NonWritable decoration (or the readonly memory qualifier in GLSL).
+         *         <li>shaderTessellationAndGeometryPointSize specifies whether the PointSize built-in decoration is available in the tessellation control, tessellation evaluation, and geometry shader stages. If this feature is not enabled, members decorated with the PointSize built-in decoration <b>must</b> not be read from or written to and all points written from a tessellation or geometry shader will have a size of 1.0. This also specifies whether shader modules <b>can</b> declare the TessellationPointSize capability for tessellation control and evaluation shaders, or if the shader modules <b>can</b> declare the GeometryPointSize capability for geometry shaders. An implementation supporting this feature <b>must</b> also support one or both of the tessellationShader or geometryShader features.
+         *         <li>shaderImageGatherExtended specifies whether the extended set of image gather instructions are available in shader code. If this feature is not enabled, the OpImage*Gather instructions do not support the Offset and ConstOffsets operands. This also specifies whether shader modules <b>can</b> declare the ImageGatherExtended capability.
+         *         <li>shaderStorageImageExtendedFormats specifies whether all the “storage image extended formats” below are supported; if this feature is supported, then the VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT <b>must</b> be supported in optimalTilingFeatures for the following formats:
+         *         </ul>
+         *     <li>VK_FORMAT_R16G16_SFLOAT
+         *     <li>VK_FORMAT_B10G11R11_UFLOAT_PACK32
+         *     <li>VK_FORMAT_R16_SFLOAT
+         *     <li>VK_FORMAT_R16G16B16A16_UNORM
+         *     <li>VK_FORMAT_A2B10G10R10_UNORM_PACK32
+         *     <li>VK_FORMAT_R16G16_UNORM
+         *     <li>VK_FORMAT_R8G8_UNORM
+         *     <li>VK_FORMAT_R16_UNORM
+         *     <li>VK_FORMAT_R8_UNORM
+         *     <li>VK_FORMAT_R16G16B16A16_SNORM
+         *     <li>VK_FORMAT_R16G16_SNORM
+         *     <li>VK_FORMAT_R8G8_SNORM
+         *     <li>VK_FORMAT_R16_SNORM
+         *     <li>VK_FORMAT_R8_SNORM
+         *     <li>VK_FORMAT_R16G16_SINT
+         *     <li>VK_FORMAT_R8G8_SINT
+         *     <li>VK_FORMAT_R16_SINT
+         *     <li>VK_FORMAT_R8_SINT
+         *     <li>VK_FORMAT_A2B10G10R10_UINT_PACK32
+         *     <li>VK_FORMAT_R16G16_UINT
+         *     <li>VK_FORMAT_R8G8_UINT
+         *     <li>VK_FORMAT_R16_UINT
+         *     <li>VK_FORMAT_R8_UINT
+         *
+         *     @note shaderStorageImageExtendedFormats feature only adds a guarantee of format support, which is specified for the whole physical device. Therefore enabling or disabling the feature via vkCreateDevice has no practical effect.<br>
+         *     To query for additional properties, or if the feature is not supported, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats, as usual rules allow.<br>
+         *     VK_FORMAT_R32G32_UINT, VK_FORMAT_R32G32_SINT, and VK_FORMAT_R32G32_SFLOAT from StorageImageExtendedFormats SPIR-V capability, are already covered by core Vulkan mandatory format support.
+         *
+         *         <ul>
+         *         <li>shaderStorageImageMultisample specifies whether multisampled storage images are supported. If this feature is not enabled, images that are created with a usage that includes VK_IMAGE_USAGE_STORAGE_BIT <b>must</b> be created with samples equal to VK_SAMPLE_COUNT_1_BIT. This also specifies whether shader modules <b>can</b> declare the StorageImageMultisample and ImageMSArray capabilities.
+         *         <li>shaderStorageImageReadWithoutFormat specifies whether storage images and storage texel buffers require a format qualifier to be specified when reading. shaderStorageImageReadWithoutFormat applies only to formats listed in the storage without format list.
+         *         <li>shaderStorageImageWriteWithoutFormat specifies whether storage images and storage texel buffers require a format qualifier to be specified when writing. shaderStorageImageWriteWithoutFormat applies only to formats listed in the storage without format list.
+         *         <li>shaderUniformBufferArrayDynamicIndexing specifies whether arrays of uniform buffers <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the UniformBufferArrayDynamicIndexing capability.
+         *         <li>shaderSampledImageArrayDynamicIndexing specifies whether arrays of samplers or sampled images <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, or VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the SampledImageArrayDynamicIndexing capability.
+         *         <li>shaderStorageBufferArrayDynamicIndexing specifies whether arrays of storage buffers <b>can</b< be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the StorageBufferArrayDynamicIndexing capability.
+         *         <li>shaderStorageImageArrayDynamicIndexing specifies whether arrays of storage images <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_STORAGE_IMAGE <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the StorageImageArrayDynamicIndexing capability.
+         *         <li>shaderClipDistance specifies whether clip distances are supported in shader code. If this feature is not enabled, any members decorated with the ClipDistance built-in decoration <b>must</b> not be read from or written to in shader modules. This also specifies whether shader modules <b>can</b> declare the ClipDistance capability.
+         *         <li>shaderCullDistance specifies whether cull distances are supported in shader code. If this feature is not enabled, any members decorated with the CullDistance built-in decoration <b>must</b> not be read from or written to in shader modules. This also specifies whether shader modules <b>can</b> declare the CullDistance capability.
+         *         <li>shaderFloat64 specifies whether 64-bit floats (doubles) are supported in shader code. If this feature is not enabled, 64-bit floating-point types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Float64 capability. Declaring and using 64-bit floats is enabled for all storage classes that SPIR-V allows with the Float64 capability.
+         *         <li>shaderInt64 specifies whether 64-bit integers (signed and unsigned) are supported in shader code. If this feature is not enabled, 64-bit integer types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Int64 capability. Declaring and using 64-bit integers is enabled for all storage classes that SPIR-V allows with the Int64 capability.
+         *         <li>shaderInt16 specifies whether 16-bit integers (signed and unsigned) are supported in shader code. If this feature is not enabled, 16-bit integer types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Int16 capability. However, this only enables a subset of the storage classes that SPIR-V allows for the Int16 SPIR-V capability: Declaring and using 16-bit integers in the Private, Workgroup (for non-Block variables), and Function storage classes is enabled, while declaring them in the interface storage classes (e.g., UniformConstant, Uniform, StorageBuffer, Input, Output, and PushConstant) is not enabled.
+         *         <li>shaderResourceResidency specifies whether image operations that return resource residency information are supported in shader code. If this feature is not enabled, the OpImageSparse* instructions <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the SparseResidency capability. The feature requires at least one of the sparseResidency* features to be supported.
+         *         <li>shaderResourceMinLod specifies whether image operations specifying the minimum resource LOD are supported in shader code. If this feature is not enabled, the MinLod image operand <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the MinLod capability.
+         *         <li>sparseBinding specifies whether resource memory <b>can</b> be managed at opaque sparse block level instead of at the object level. If this feature is not enabled, resource memory <b>must</b> be bound only on a per-object basis using the vkBindBufferMemory and vkBindImageMemory commands. In this case, buffers and images <b>must</b> not be created with VK_BUFFER_CREATE_SPARSE_BINDING_BIT and VK_IMAGE_CREATE_SPARSE_BINDING_BIT set in the flags member of the VkBufferCreateInfo and VkImageCreateInfo structures, respectively. Otherwise resource memory <b>can</b> be managed as described in Sparse Resource Features.
+         *         <li>sparseResidencyBuffer specifies whether the device <b>can</b> access partially resident buffers. If this feature is not enabled, buffers <b>must</b> not be created with VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkBufferCreateInfo structure.
+         *         <li>sparseResidencyImage2D specifies whether the device <b>can</b> access partially resident 2D images with 1 sample per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_1_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         *         <li>sparseResidencyImage3D specifies whether the device <b>can</b> access partially resident 3D images. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_3D <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         *         <li>sparseResidency2Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 2 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_2_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         *         <li>sparseResidency4Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 4 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_4_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         *         <li>sparseResidency8Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 8 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_8_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         *         <li>sparseResidency16Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 16 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_16_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         *         <li>sparseResidencyAliased specifies whether the physical device <b>can</b> correctly access data aliased into multiple locations. If this feature is not enabled, the VK_BUFFER_CREATE_SPARSE_ALIASED_BIT and VK_IMAGE_CREATE_SPARSE_ALIASED_BIT enum values <b>must</b> not be used in flags members of the VkBufferCreateInfo and VkImageCreateInfo structures, respectively.
+         *         <li>variableMultisampleRate specifies whether all pipelines that will be bound to a command buffer during a subpass which uses no attachments <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. If set to VK_TRUE, the implementation supports variable multisample rates in a subpass which uses no attachments. If set to VK_FALSE, then all pipelines bound in such a subpass <b>must</b> have the same multisample rate. This has no effect in situations where a subpass uses any attachments.
+         *         <li>inheritedQueries specifies whether a secondary command buffer <b>may</b> be executed while a query is active.
+         *         </ul>
+         *     </ul>
          * </ul>
-         * The supported VkImageUsageFlagBits of the presentable images of a swapchain created for a surface <b>may</b> differ depending on the presentation mode, and can be determined as per the table below:<br><br>
-         *
-         * Table 1. Presentable image usage queries
-         *
-         * <pre><b>  Presentation mode</b>                             | <b>Image usage flags</b></pre><
-         * <pre>  VK_PRESENT_MODE_IMMEDIATE_KHR                 | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
-         * <pre>  VK_PRESENT_MODE_MAILBOX_KHR                   | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
-         * <pre>  VK_PRESENT_MODE_FIFO_KHR                      | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
-         * <pre>  VK_PRESENT_MODE_FIFO_RELAXED_KHR              | VkSurfaceCapabilitiesKHR::supportedUsageFlags</pre>
-         * <pre>  VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR     | VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags</pre>
-         * <pre>  VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR | VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags</pre>
-         *
-         * @note For reference, the mode indicated by VK_PRESENT_MODE_FIFO_KHR is equivalent to the behavior of {wgl|glX|egl}SwapBuffers with a swap interval of 1, while the mode indicated by VK_PRESENT_MODE_FIFO_RELAXED_KHR is equivalent to the behavior of {wgl|glX}SwapBuffers with a swap interval of -1 (from the {WGL|GLX}_EXT_swap_control_tear extensions).
          */
-        std::vector<VkPresentModeKHR> getVkPresentModeKHR(
-                const VkPhysicalDevice        &physicalDevice,
-                const VkSurfaceKHR            &surface
-        );
+        using PhysicalDeviceFeatures = VkPhysicalDeviceFeatures;
+        constexpr PhysicalDeviceFeatures createPhysicalDeviceFeatures(
+                const VkBool32 values[55]
+        ) {
+                return {
+                        values[0], values[1], values[2], values[3], values[4],
+                        values[5], values[6], values[7], values[8], values[9],
+                        values[10], values[11], values[12], values[13], values[14],
+                        values[15], values[6], values[17], values[18], values[19],
+                        values[20], values[21], values[22], values[23], values[24],
+                        values[25], values[26], values[27], values[28], values[29],
+                        values[30], values[31], values[32], values[33], values[34],
+                        values[35], values[36], values[37], values[38], values[39],
+                        values[40], values[1], values[42], values[43], values[44],
+                        values[45], values[46], values[47], values[48], values[49],
+                        values[50], values[51], values[52], values[53], values[54]
+                };
+        }
 
 }
 
