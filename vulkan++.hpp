@@ -29,15 +29,61 @@ namespace vk {
          */
         using AccelerationStructureNV = VkAccelerationStructureNV;
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkDebugReportCallbackEXT - Opaque handle to a debug report callback object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Debug report callbacks are represented by VkDebugReportCallbackEXT handles:
+         *
+         * @code
+         * // Provided by VK_EXT_debug_report
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
+         * @endcode
+         */
         using DebugReportCallbackEXT = VkDebugReportCallbackEXT;
-        // TODO create
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkDebugUtilsMessengerEXT - Opaque handle to a debug messenger object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A VkDebugUtilsMessengerEXT is a messenger object which handles passing along debug messages to a provided debug callback.
+         *
+         * @code
+         * // Provided by VK_EXT_debug_utils
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugUtilsMessengerEXT)
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         * The debug messenger will provide detailed feedback on the application’s use of Vulkan when events of interest occur. When an event of interest does occur, the debug messenger will submit a debug message to the debug callback that was provided during its creation. Additionally, the debug messenger is responsible with filtering out debug messages that the callback is not interested in and will only provide desired debug messages.
+         */
         using DebugUtilsMessengerEXT = VkDebugUtilsMessengerEXT;
-        // TODO create
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorUpdateTemplate - Opaque handle to a descriptor update template<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A descriptor update template specifies a mapping from descriptor update information in host memory to descriptors in a descriptor set. It is designed to avoid passing redundant information to the driver when frequently updating the same set of descriptors in descriptor sets.<br><br>
+         *
+         * Descriptor update template objects are represented by VkDescriptorUpdateTemplate handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_1
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorUpdateTemplate)
+         * @endcode
+         *
+         * or the equivalent
+         *
+         * @code
+         * // Provided by VK_KHR_descriptor_update_template
+         * typedef VkDescriptorUpdateTemplate VkDescriptorUpdateTemplateKHR;
+         * @endcode
+         */
         using DescriptorUpdateTemplate = VkDescriptorUpdateTemplate;
         // TODO create
 
@@ -57,7 +103,7 @@ namespace vk {
          * @endcode
          */
         using Instance = VkInstance;
-        Instance createVkInstance(
+        Instance createInstance(
                 const char                             *name,
                 const uint32_t                         &version,
                 const std::vector<const char *>        &enabledLayerNames,
@@ -81,7 +127,7 @@ namespace vk {
          * @endcode
          */
         using PhysicalDevice = VkPhysicalDevice;
-        std::vector<PhysicalDevice> getVkPhysicalDevices(
+        std::vector<PhysicalDevice> getPhysicalDevices(
                 const Instance        &instance
         );
 
@@ -99,7 +145,7 @@ namespace vk {
          * @endcode
          */
         using Device = VkDevice;
-        Device createVkDevice(
+        Device createDevice(
                 const PhysicalDevice                   &physicalDevice,
                 const std::vector<uint32_t>            &queueFamilyIndices,
                 const std::vector<const char *>        &enabledExtensionNames,
@@ -123,7 +169,7 @@ namespace vk {
          * @endcode
          */
         using CommandPool = VkCommandPool;
-        CommandPool createVkCommandPool(
+        CommandPool createCommandPool(
                 const uint32_t                     &queueFamilyIndex,
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator
@@ -145,7 +191,7 @@ namespace vk {
          * @endcode
          */
         using CommandBuffer = VkCommandBuffer;
-        CommandBuffer createVkCommandBuffer(
+        CommandBuffer createCommandBuffer(
                 const CommandPool          &commandPool,
                 const Device               &device
         );
@@ -166,7 +212,7 @@ namespace vk {
          * @endcode
          */
         using Buffer = VkBuffer;
-        Buffer createVkBuffer(
+        Buffer createBuffer(
                 const Device                       &device,
                 const VkDeviceSize                 &size,
                 const VkBufferUsageFlags           &usage,
@@ -192,7 +238,7 @@ namespace vk {
          * @endcode
          */
         using BufferView = VkBufferView;
-        BufferView createVkBufferView(
+        BufferView createBufferView(
                 const Device                       &device,
                 const Buffer                       &buffer,
                 const VkFormat                     &format,
@@ -217,7 +263,7 @@ namespace vk {
  * @endcode
  */
         using DescriptorPool = VkDescriptorPool;
-        DescriptorPool createVkDescriptorPool(
+        DescriptorPool createDescriptorPool(
                 const Device                                   &device,
                 const uint32_t                                 &descriptorCount,
                 const std::vector<VkDescriptorPoolSize>        &poolSizes,
@@ -238,7 +284,7 @@ namespace vk {
          * @endcode
          */
         using DescriptorSet = VkDescriptorSet;
-        std::vector<DescriptorSet> createVkDescriptorSets(
+        std::vector<DescriptorSet> createDescriptorSets(
                 const Device                                    &device,
                 const DescriptorPool                            &pool,
                 const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts
@@ -260,7 +306,7 @@ namespace vk {
          * @endcode
          */
         using DescriptorSetLayout = VkDescriptorSetLayout;
-        DescriptorSetLayout createVkDescriptorSetLayout(
+        DescriptorSetLayout createDescriptorSetLayout(
                 const Device                                           &device,
                 const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
                 const VkAllocationCallbacks                            *pAllocator
@@ -281,15 +327,53 @@ namespace vk {
          */
         using DeviceMemory = VkDeviceMemory;
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkDisplayKHR - Opaque handle to a display object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Displays are represented by VkDisplayKHR handles:<br><br>
+         *
+         * @code
+         * // Provided by VK_KHR_display
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayKHR)
+         * @endcode
+         */
         using DisplayKHR = VkDisplayKHR;
         // TODO create
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkDisplayModeKHR - Opaque handle to a display mode object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Display modes are represented by VkDisplayModeKHR handles:<br><br>
+         *
+         * @code
+         * // Provided by VK_KHR_display
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayModeKHR)
+         * @endcode
+         */
         using DisplayModeKHR = VkDisplayModeKHR;
         // TODO create
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkEvent - Opaque handle to an event object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Events are a synchronization primitive that <b>can</b> be used to insert a fine-grained dependency between commands submitted to the same queue, or between the host and a queue. Events <b>must</b> not be used to insert a dependency between commands submitted to different queues. Events have two states - signaled and unsignaled. An application <b>can</b> signal or unsignal an event either on the host or on the device. A device <b>can</b> be made to wait for an event to become signaled before executing further operations. No command exists to wait for an event to become signaled on the host, but the current state of an event <b>can</b> be queried.<br><br>
+         *
+         * Events are represented by VkEvent handles:<br><br>
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkEvent)
+         * @endcode
+         */
         using Event = VkEvent;
         // TODO create
 
@@ -311,7 +395,7 @@ namespace vk {
          * @endcode
          */
         using Fence = VkFence;
-        Fence createVkFence(
+        Fence createFence(
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator
         );
@@ -332,7 +416,7 @@ namespace vk {
          * @endcode
          */
         using Image = VkImage;
-        Image createVkImage(
+        Image createImage(
                 const Device                       &device,
                 const VkImageType                  &imageType,
                 const VkFormat                     &format,
@@ -358,18 +442,48 @@ namespace vk {
          * @endcode
          */
         using ImageView = VkImageView;
-        ImageView createVkImageView(
+        ImageView createImageView(
                 const Image                        &image,
                 const VkFormat                     &format,
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator
         );
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkIndirectCommandsLayoutNV - Opaque handle to an indirect commands layout object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The device-side command generation happens through an iterative processing of an atomic sequence comprised of command tokens, which are represented by:
+         *
+         * @code
+         * // Provided by VK_NV_device_generated_commands
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkIndirectCommandsLayoutNV)
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         *
+         * Each indirect command layout <b>must</b> have exactly one action command token and it <b>must</b> be the last token in the sequence.
+         */
         using IndirectCommandsLayoutNV = VkIndirectCommandsLayoutNV;
         // TODO create
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkPerformanceConfigurationINTEL - Device configuration for performance queries<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Before submitting command buffers containing performance queries commands to a device queue, the application must acquire and set a performance query configuration. The configuration can be released once all command buffers containing performance query commands are not in a pending state.<br><br>
+         *
+         * Image views are represented by VkImageView handles:
+         *
+         * @code
+         * // Provided by VK_INTEL_performance_query
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPerformanceConfigurationINTEL)
+         * @endcode
+         */
         using PerformanceConfigurationTypeINTEL = VkPerformanceConfigurationTypeINTEL;
         // TODO create
 
@@ -389,7 +503,7 @@ namespace vk {
          * @endcode
          */
         using PipelineLayout = VkPipelineLayout;
-        PipelineLayout createVkPipelineLayout(
+        PipelineLayout createPipelineLayout(
                 const Device                                    &device,
                 const std::vector<VkDescriptorSetLayout>        &setLayouts,
                 const std::vector<VkPushConstantRange>          &pushConstantRanges,
@@ -432,7 +546,7 @@ namespace vk {
          * @endcode
          */
         using RenderPass = VkRenderPass;
-        RenderPass createVkRenderPass(
+        RenderPass createRenderPass(
                 const PhysicalDevice               &physicalDevice,
                 const Device                       &device,
                 const SurfaceKHR                   &surface,
@@ -456,7 +570,7 @@ namespace vk {
          * @endcode
          */
         using Framebuffer = VkFramebuffer;
-        Framebuffer createVkFramebuffer(
+        Framebuffer createFramebuffer(
                 const RenderPass                      &renderPass,
                 const VkExtent2D                      &extent,
                 const std::vector<VkImageView>        &imageViews,
@@ -478,7 +592,7 @@ namespace vk {
          * @endcode
          */
         using Pipeline = VkPipeline;
-        Pipeline createVkPipeline(
+        Pipeline createPipeline(
                 const Device                                                &device,
                 const RenderPass                                            &renderPass,
                 const std::vector<VkViewport>                               &viewports,
@@ -490,11 +604,39 @@ namespace vk {
                 const VkAllocationCallbacks                                 *pAllocator
         );
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipelineCache - Opaque handle to a pipeline cache object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Pipeline cache objects allow the result of pipeline construction to be reused between pipelines and between runs of an application. Reuse between pipelines is achieved by passing the same pipeline cache object when creating multiple related pipelines. Reuse across runs of an application is achieved by retrieving pipeline cache contents in one run of an application, saving the contents, and using them to preinitialize a pipeline cache on a subsequent run. The contents of the pipeline cache objects are managed by the implementation. Applications <b>can</b> manage the host memory consumed by a pipeline cache object and control the amount of data retrieved from a pipeline cache object.<br><br>
+         *
+         * Pipeline cache objects are represented by VkPipelineCache handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineCache)
+         * @endcode
+         */
         using PipelineCache = VkPipelineCache;
         // TODO create
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkQueryPool - Opaque handle to a query pool object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Queries are managed using query pool objects. Each query pool is a collection of a specific number of queries of a particular type.<br><br>
+         *
+         * Query pools are represented by VkQueryPool handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkQueryPool)
+         * @endcode
+         */
         using QueryPool = VkQueryPool;
         // TODO create
 
@@ -536,7 +678,7 @@ namespace vk {
          * @endcode
          */
         using Sampler = VkSampler;
-        Sampler createVkSampler(
+        Sampler createSampler(
                 const Device                      &device,
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
@@ -546,7 +688,26 @@ namespace vk {
                 const VkCompareOp                 &compareOp
         );
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkSamplerYcbcrConversion - Opaque handle to a device-specific sampler Y′CBCR conversion description<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A sampler Y′CBCR conversion is an opaque representation of a device-specific sampler Y′CBCR conversion description, represented as a VkSamplerYcbcrConversion handle:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_1
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSamplerYcbcrConversion)
+         * @endcode
+         *
+         * or the equivalent
+         *
+         * @code
+         * // Provided by VK_KHR_sampler_ycbcr_conversion
+         * typedef VkSamplerYcbcrConversion VkSamplerYcbcrConversionKHR;
+         * @endcode
+         */
         using SamplerYcbcrConversion = VkSamplerYcbcrConversion;
         // TODO create
 
@@ -568,7 +729,7 @@ namespace vk {
          * @endcode
          */
         using Semaphore = VkSemaphore;
-        Semaphore createVkSemaphore(
+        Semaphore createSemaphore(
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator
         );
@@ -589,7 +750,7 @@ namespace vk {
          * @endcode
          */
         using ShaderModule = VkShaderModule;
-        ShaderModule createVkShaderModule(
+        ShaderModule createShaderModule(
                 const std::vector<uint8_t>         &code,
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator
@@ -626,7 +787,7 @@ namespace vk {
          * @note This allows the platform to handle situations which require out-of-order return of images after presentation. At the same time, it allows the application to generate command buffers referencing all of the images in the swapchain at initialization time, rather than in its main loop.
          */
         using SwapchainKHR = VkSwapchainKHR;
-        SwapchainKHR createVkSwapchainKHR(
+        SwapchainKHR createSwapchainKHR(
                 const Device                               &device,
                 const SurfaceKHR                           &surface,
                 const std::vector<VkPresentModeKHR>        &presentModes,
@@ -637,7 +798,21 @@ namespace vk {
                 const VkAllocationCallbacks                *pAllocator
         );
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkValidationCacheEXT - Opaque handle to a validation cache object<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * Validation cache objects allow the result of internal validation to be reused, both within a single application run and between multiple runs. Reuse within a single run is achieved by passing the same validation cache object when creating supported Vulkan objects. Reuse across runs of an application is achieved by retrieving validation cache contents in one run of an application, saving the contents, and using them to preinitialize a validation cache on a subsequent run. The contents of the validation cache objects are managed by the validation layers. Applications <b>can</b> manage the host memory consumed by a validation cache object and control the amount of data retrieved from a validation cache object.<br><br>
+         *
+         * Validation cache objects are represented by VkValidationCacheEXT handles:
+         *
+         * @code
+         * // Provided by VK_EXT_validation_cache
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkValidationCacheEXT)
+         * @endcode
+         */
         using ValidationCacheEXT = VkValidationCacheEXT;
         // TODO create
 
@@ -682,7 +857,7 @@ namespace vk {
          *
          * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
          */
-        VkAccelerationStructureInfoNV createVkAccelerationStructureInfoNV(
+        VkAccelerationStructureInfoNV createAccelerationStructureInfoNV(
                 const VkAccelerationStructureTypeNV              &type,
                 const uint32_t                                   &instanceCount,
                 const std::vector<VkGeometryNV>                  &geometries
@@ -714,7 +889,7 @@ namespace vk {
          * <li>info is the VkAccelerationStructureInfoNV structure specifying further parameters of the created acceleration structure.
          * </ul>
          */
-        VkAccelerationStructureCreateInfoNV createVkAccelerationStructureCreateInfoNV(
+        VkAccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
                 const VkDeviceSize                         &compactedSize,
                 const VkAccelerationStructureInfoNV        &info
         );
@@ -768,7 +943,7 @@ namespace vk {
          *
          * @note Providing a NULL VkInstanceCreateInfo::pApplicationInfo or providing an apiVersion of 0 is equivalent to providing an apiVersion of VK_MAKE_API_VERSION(0,1,0,0).
          */
-        VkApplicationInfo createVkApplicationInfo(
+        VkApplicationInfo createApplicationInfo(
                 const char            *pApplicationName,
                 const uint32_t        &applicationVersion,
                 const uint32_t        &version
@@ -809,7 +984,7 @@ namespace vk {
          *
          * The buffer view has a buffer view usage identifying which descriptor types <b>can</b> be created from it. This usage can be defined by including the VkBufferUsageFlags2CreateInfoKHR structure in the pNext chain, and specifying the usage value there. If this structure is not included, it is equal to the VkBufferCreateInfo::usage value used to create buffer.
          */
-        VkBufferViewCreateInfo createVkBufferViewCreateInfo(
+        VkBufferViewCreateInfo createBufferViewCreateInfo(
                 const VkBuffer            &buffer,
                 const VkFormat            &format,
                 const VkDeviceSize        &offset,
@@ -847,7 +1022,7 @@ namespace vk {
          * <li>pVertexAttributeDescriptions is a pointer to an array of VkVertexInputAttributeDescription structures.
          * </ul>
          */
-        VkPipelineVertexInputStateCreateInfo createVkPipelineVertexInputStateCreateInfo(
+        VkPipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
                 const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
                 const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions
         );
@@ -888,7 +1063,7 @@ namespace vk {
          *
          * Restarting the assembly of primitives discards the most recent index values if those elements formed an incomplete primitive, and restarts the primitive assembly using the subsequent indices, but only assembling the immediately following element through the end of the originally specified elements. The primitive restart index value comparison is performed before adding the vertexOffset value to the index value.
          */
-        VkPipelineInputAssemblyStateCreateInfo createVkPipelineInputAssemblyStateCreateInfo();
+        VkPipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo();
 
         /** <b>Name</b><hr><br>
          * VkPipelineShaderStageCreateInfo - Structure specifying parameters of a newly created pipeline shader stage<br><br><br>
@@ -932,7 +1107,7 @@ namespace vk {
          * Applications <b>can</b> use identifiers when creating pipelines with VK_PIPELINE_CREATE_LIBRARY_BIT_KHR. When creating such pipelines, VK_SUCCESS <b>may</b> be returned, but subsequently fail when referencing the pipeline in a VkPipelineLibraryCreateInfoKHR struct.<br>
          * Applications <b>must</b> allow pipeline compilation to fail during link steps with VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT as it <b>may</b> not be possible to determine if a pipeline <b>can</b> be created from identifiers until the link step.
          */
-        VkPipelineShaderStageCreateInfo createVkPipelineShaderStageCreateInfo(
+        VkPipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
                 const VkShaderStageFlagBits        &stage,
                 const VkShaderModule               &module
         );
@@ -991,7 +1166,7 @@ namespace vk {
          * The floating-point viewport bounds are represented with an implementation-dependent precision.
          *
          */
-        VkViewport createVkViewport(
+        VkViewport createViewport(
                 const VkExtent2D        &extent
         );
 
@@ -1016,7 +1191,7 @@ namespace vk {
          * <li>extent is a VkExtent2D specifying the rectangle extent.
          * </ul>
          */
-        VkRect2D createVkRect2D(
+        VkRect2D createRect2D(
                 const VkOffset2D        &offset,
                 const VkExtent2D        &extent
         );
@@ -1052,7 +1227,7 @@ namespace vk {
          * <li>pScissors is a pointer to an array of VkRect2D structures defining the rectangular bounds of the scissor for the corresponding viewport. If the scissor state is dynamic, this member is ignored.
          * </ul>
          */
-        VkPipelineViewportStateCreateInfo createVkPipelineViewportStateCreateInfo(
+        VkPipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
                 const std::vector<VkViewport>        &viewports,
                 const std::vector<VkRect2D>          &scissors
         );
@@ -1103,7 +1278,7 @@ namespace vk {
          *
          * The application <b>can</b> also add a VkPipelineRasterizationStateRasterizationOrderAMD structure to the pNext chain of a VkPipelineRasterizationStateCreateInfo structure. This structure enables selecting the rasterization order to use when rendering with the corresponding graphics pipeline as described in Rasterization Order.
          */
-        VkPipelineRasterizationStateCreateInfo createVkPipelineRasterizationStateCreateInfo();
+        VkPipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo();
 
         /** <b>Name</b><hr><br>
          *
@@ -1145,7 +1320,7 @@ namespace vk {
          * Each bit in the sample mask is associated with a unique sample index as defined for the coverage mask. Each bit b for mask word w in the sample mask corresponds to sample index i, where i = 32 × w + b. pSampleMask has a length equal to ⌈ rasterizationSamples / 32 ⌉ words.<br><br>
          * If pSampleMask is NULL, it is treated as if the mask has all bits set to 1.
          */
-        VkPipelineMultisampleStateCreateInfo createVkPipelineMultisampleStateCreateInfo();
+        VkPipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo();
 
         /** <b>Name</b><hr><br>
          *
@@ -1181,7 +1356,7 @@ namespace vk {
          * <li>colorWriteMask is a bitmask of VkColorComponentFlagBits specifying which of the R, G, B, and/or A components are enabled for writing, as described for the Color Write Mask.
          * </ul>
          */
-        VkPipelineColorBlendAttachmentState createVkPipelineColorBlendAttachmentState();
+        VkPipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState();
 
         /** <b>Name</b><hr><br>
          *
@@ -1215,7 +1390,7 @@ namespace vk {
          * <li>blendConstants is a pointer to an array of four values used as the R, G, B, and A components of the blend constant that are used in blending, depending on the blend factor.
          * </ul>
          */
-        VkPipelineColorBlendStateCreateInfo createVkPipelineColorBlendStateCreateInfo(
+        VkPipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
                 const VkPipelineColorBlendAttachmentState        &colorBlendAttachmentState
         );
 
@@ -1274,7 +1449,7 @@ namespace vk {
          *
          * @note Once an attachment needs the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit, there <b>should</b> be no additional cost of introducing additional aliases, and using these additional aliases <b>may</b> allow more efficient clearing of the attachments on multiple uses via VK_ATTACHMENT_LOAD_OP_CLEAR.
          */
-        VkAttachmentDescription createVkAttachmentDescription(
+        VkAttachmentDescription createAttachmentDescription(
                 const VkFormat        &format
         );
 
@@ -1300,7 +1475,7 @@ namespace vk {
          * <li>layout is a VkImageLayout value specifying the layout the attachment uses during the subpass.
          * </ul>
          */
-        VkAttachmentReference createVkAttachmentReference(
+        VkAttachmentReference createAttachmentReference(
                 const uint32_t             &attachment,
                 const VkImageLayout        &layout
         );
@@ -1370,7 +1545,7 @@ namespace vk {
          *
          * Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.<br><br>
          */
-        VkSubpassDescription createVkSubpassDescription(
+        VkSubpassDescription createSubpassDescription(
                 const std::vector<VkAttachmentReference>        &inputAttachments,
                 const std::vector<VkAttachmentReference>        &colorAttachments,
                 const std::vector<VkAttachmentReference>        &resolveAttachments,
@@ -1404,7 +1579,7 @@ namespace vk {
          * <li>pInheritanceInfo is a pointer to a VkCommandBufferInheritanceInfo structure, used if commandBuffer is a secondary command buffer. If this is a primary command buffer, then this value is ignored.
          * </ul>
          */
-        VkCommandBufferBeginInfo createVkCommandBufferBeginInfo(
+        VkCommandBufferBeginInfo createCommandBufferBeginInfo(
                 const VkCommandBufferUsageFlags        &flags
         );
 
@@ -1451,7 +1626,7 @@ namespace vk {
          *
          * @note There <b>may</b> be a performance cost for using a render area smaller than the framebuffer, unless it matches the render area granularity for the render pass.
          */
-        VkRenderPassBeginInfo createVkRenderPassBeginInfo(
+        VkRenderPassBeginInfo createRenderPassBeginInfo(
                 const VkRenderPass                     &renderPass,
                 const VkFramebuffer                    &framebuffer,
                 const VkExtent2D                       &extent,
@@ -1497,7 +1672,7 @@ namespace vk {
          *
          * The order that command buffers appear in pCommandBuffers is used to determine submission order, and thus all the implicit ordering guarantees that respect it. Other than these implicit ordering guarantees and any explicit synchronization primitives, these command buffers <b>may</b> overlap or otherwise execute out of order.
          */
-        VkSubmitInfo createVkSubmitInfo(
+        VkSubmitInfo createSubmitInfo(
                 const std::vector<VkSemaphore>            &waitSemaphores,
                 const VkPipelineStageFlags                *pWaitDstStageMask,
                 const std::vector<VkCommandBuffer>        &commandBuffers,
@@ -1543,7 +1718,7 @@ namespace vk {
          *
          * @note When transitioning the image to VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR or VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, there is no need to delay subsequent processing, or perform any visibility operations (as vkQueuePresentKHR performs automatic visibility operations). To achieve this, the dstAccessMask member of the VkImageMemoryBarrier <b>should</b> be set to 0, and the dstStageMask parameter <b>should</b> be set to VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT.
          */
-        VkPresentInfoKHR createVkPresentInfoKHR(
+        VkPresentInfoKHR createPresentInfoKHR(
                 const std::vector<VkSemaphore>          &waitSemaphores,
                 const std::vector<VkSwapchainKHR>       &swapchains,
                 const std::vector<uint32_t>             &imageIndices
@@ -1572,7 +1747,7 @@ namespace vk {
          * <li>offset and size are the start offset and size, respectively, consumed by the range. Both offset and size are in units of bytes and <b>must</b> be a multiple of 4. The layout of the push constant variables is specified in the shader.
          * </ul>
          */
-        VkPushConstantRange createVkPushConstantRange(
+        VkPushConstantRange createPushConstantRange(
                 const VkShaderStageFlags        &stageFlags,
                 const uint32_t                  &offset,
                 const uint32_t                  &size
@@ -1602,7 +1777,7 @@ namespace vk {
          * <li>inputRate is a VkVertexInputRate value specifying whether vertex attribute addressing is a function of the vertex index or of the instance index.
          * </ul>
          */
-        VkVertexInputBindingDescription createVkVertexInputBindingDescription(
+        VkVertexInputBindingDescription createVertexInputBindingDescription(
                 const uint32_t                 &binding,
                 const uint32_t                 &size,
                 const VkVertexInputRate        &inputRate
@@ -1634,7 +1809,7 @@ namespace vk {
          * <li>offset is a byte offset of this attribute relative to the start of an element in the vertex input binding.
          * </ul>
          */
-        VkVertexInputAttributeDescription createVkVertexInputAttributeDescription(
+        VkVertexInputAttributeDescription createVertexInputAttributeDescription(
                 const uint32_t        &location,
                 const uint32_t        &binding,
                 const VkFormat        &format,
@@ -1691,7 +1866,7 @@ namespace vk {
          * </ul>
          * When performing a memory import operation, it is the responsibility of the application to ensure the external handles and their associated payloads meet all valid usage requirements. However, implementations <b>must</b> perform sufficient validation of external handles and payloads to ensure that the operation results in a valid memory object which will not cause program termination, device loss, queue stalls, or corruption of other resources when used as allowed according to its allocation parameters. If the external handle provided does not meet these requirements, the implementation <b>must</b> fail the memory import operation with the error code VK_ERROR_INVALID_EXTERNAL_HANDLE. If the parameters define an export operation and the external handle type is VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID, implementations <b>should</b> not strictly follow memoryTypeIndex. Instead, they <b>should</b> modify the allocation internally to use the required memory type for the application’s given usage. This is because for an export operation, there is currently no way for the client to know the memory type index before allocating.
          */
-        VkMemoryAllocateInfo createVkMemoryAllocateInfo(
+        VkMemoryAllocateInfo createMemoryAllocateInfo(
                 const uint64_t        &allocationSize,
                 const uint32_t        &memoryTypeIndex
         );
@@ -1718,7 +1893,7 @@ namespace vk {
          * <li>height is the height of the extent.
          * </ul>
          */
-        VkExtent2D createVkExtent2D(
+        VkExtent2D createExtent2D(
                 const uint32_t        &width,
                 const uint32_t        &height
         );
@@ -1747,7 +1922,7 @@ namespace vk {
          * <li>size is the number of bytes to copy.
          * </ul>
          */
-        VkBufferCopy createVkBufferCopy(
+        VkBufferCopy createBufferCopy(
                 const size_t        &size
         );
 
@@ -1788,7 +1963,7 @@ namespace vk {
          *
          * If a VkBufferUsageFlags2CreateInfoKHR structure is present in the pNext chain, VkBufferUsageFlags2CreateInfoKHR::usage from that structure is used instead of usage from this structure.
          */
-        VkBufferCreateInfo createVkBufferCreateInfo(
+        VkBufferCreateInfo createBufferCreateInfo(
                 const VkDeviceSize              &size,
                 const VkBufferUsageFlags        &usage
         );
@@ -1821,7 +1996,7 @@ namespace vk {
          * <li>commandBufferCount is the number of command buffers to allocate from the pool.
          * </ul>
          */
-        VkCommandBufferAllocateInfo createVkCommandBufferAllocateInfo(
+        VkCommandBufferAllocateInfo createCommandBufferAllocateInfo(
                 const VkCommandPool        &commandPool
         );
 
@@ -1851,7 +2026,7 @@ namespace vk {
          * <li>queueFamilyIndex designates a queue family as described in section Queue Family Properties. All command buffers allocated from this command pool <b>must</b> be submitted on queues from the same queue family.
          * </ul>
          */
-        VkCommandPoolCreateInfo createVkCommandPoolCreateInfo(
+        VkCommandPoolCreateInfo createCommandPoolCreateInfo(
                 const uint32_t        &queueFamilyIndex
         );
 
@@ -1885,7 +2060,7 @@ namespace vk {
          * <li>pQueuePriorities is a pointer to an array of queueCount normalized floating point values, specifying priorities of work that will be submitted to each created queue. See Queue Priority for more information.
          * </ul>
          */
-        VkDeviceQueueCreateInfo createVkDeviceQueueCreateInfo(
+        VkDeviceQueueCreateInfo createDeviceQueueCreateInfo(
                 const uint32_t        &queueFamilyIndex,
                 const float           *queuePriority
         );
@@ -1928,7 +2103,7 @@ namespace vk {
          * <li>pEnabledFeatures is NULL or a pointer to a VkPhysicalDeviceFeatures structure containing boolean indicators of all the features to be enabled. Refer to the Features section for further details.
          * </ul>
          */
-        VkDeviceCreateInfo createVkDeviceCreateInfo(
+        VkDeviceCreateInfo createDeviceCreateInfo(
                 const std::vector<VkDeviceQueueCreateInfo>        &queueCreateInfos,
                 const std::vector<const char *>                   &enabledExtensionNames,
                 const VkPhysicalDeviceFeatures                    *pEnabledFeatures
@@ -1958,7 +2133,7 @@ namespace vk {
          * <li>flags is a bitmask of VkFenceCreateFlagBits specifying the initial state and behavior of the fence.
          * </ul>
          */
-        VkFenceCreateInfo createVkFenceCreateInfo();
+        VkFenceCreateInfo createFenceCreateInfo();
 
         /** <b>Name</b><hr><br>
          *
@@ -1997,7 +2172,7 @@ namespace vk {
          *
          * It is legal for a subpass to use no color or depth/stencil attachments, either because it has no attachment references or because all of them are VK_ATTACHMENT_UNUSED. This kind of subpass <b>can</b> use shader side effects such as image stores and atomics to produce an output. In this case, the subpass continues to use the width, height, and layers of the framebuffer to define the dimensions of the rendering area, and the rasterizationSamples from each pipeline’s VkPipelineMultisampleStateCreateInfo to define the number of samples used in rasterization; however, if VkPhysicalDeviceFeatures::variableMultisampleRate is VK_FALSE, then all pipelines to be bound with the subpass <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. In all such cases, rasterizationSamples <b>must</b> be a valid VkSampleCountFlagBits value that is set in VkPhysicalDeviceLimits::framebufferNoAttachmentsSampleCounts.
          */
-        VkFramebufferCreateInfo createVkFramebufferCreateInfo(
+        VkFramebufferCreateInfo createFramebufferCreateInfo(
                 const VkRenderPass                     &renderPass,
                 const VkExtent2D                       &extent,
                 const std::vector<VkImageView>         &imageViews
@@ -2079,7 +2254,7 @@ namespace vk {
          *
          *
          */
-        VkImageViewCreateInfo createVkImageViewCreateInfo(
+        VkImageViewCreateInfo createImageViewCreateInfo(
                 const VkImage         &image,
                 const VkFormat        &format
         );
@@ -2125,7 +2300,7 @@ namespace vk {
          *
          * @note VkDirectDriverLoadingListLUNARG allows applications to ship drivers with themselves. Only drivers that are designed to work with it should be used, such as drivers that implement Vulkan in software or that implement Vulkan by translating it to a different API. Any driver that requires installation should not be used, such as hardware drivers.
          */
-        VkInstanceCreateInfo createVkInstanceCreateInfo(
+        VkInstanceCreateInfo createInstanceCreateInfo(
                 const VkApplicationInfo                &applicationInfo,
                 const std::vector<const char *>        &enabledLayerNames,
                 const std::vector<const char *>        &enabledExtensionNames
@@ -2294,7 +2469,7 @@ namespace vk {
          *
          * If a VkPipelineCreateFlags2CreateInfoKHR structure is present in the pNext chain, VkPipelineCreateFlags2CreateInfoKHR::flags from that structure is used instead of flags from this structure.
          */
-        VkGraphicsPipelineCreateInfo createVkGraphicsPipelineCreateInfo(
+        VkGraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
                 const VkPipelineVertexInputStateCreateInfo                &vertexInputStateCreateInfo,
                 const VkPipelineInputAssemblyStateCreateInfo              &inputAssemblyStateCreateInfo,
                 const VkPipelineViewportStateCreateInfo                   &viewportStateCreateInfo,
@@ -2338,7 +2513,7 @@ namespace vk {
          * <li>pPushConstantRanges is a pointer to an array of VkPushConstantRange structures defining a set of push constant ranges for use in a single pipeline layout. In addition to descriptor set layouts, a pipeline layout also describes how many push constants <b>can</b> be accessed by each stage of the pipeline.
          * </ul>
          */
-        VkPipelineLayoutCreateInfo createVkPipelineLayoutCreateInfo(
+        VkPipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
                 const std::vector<VkDescriptorSetLayout>        &setLayouts,
                 const std::vector<VkPushConstantRange>          &pushConstantRanges
         );
@@ -2382,7 +2557,7 @@ namespace vk {
          *
          * @note Care should be taken to avoid a data race here; if any subpasses access attachments with overlapping memory locations, and one of those accesses is a write, a subpass dependency needs to be included between them.
          */
-        VkRenderPassCreateInfo createVkRenderPassCreateInfo(
+        VkRenderPassCreateInfo createRenderPassCreateInfo(
                 const VkAttachmentDescription        &attachmentDescription,
                 const VkSubpassDescription           &subpassDescription
         );
@@ -2411,7 +2586,7 @@ namespace vk {
          * <li>flags is reserved for future use.
          * </ul>
          */
-        VkSemaphoreCreateInfo createVkSemaphoreCreateInfo();
+        VkSemaphoreCreateInfo createSemaphoreCreateInfo();
 
         /** <b>Name</b><hr><br>
          *
@@ -2441,7 +2616,7 @@ namespace vk {
          * <li>pCode is a pointer to code that is used to create the shader module. The type and format of the code is determined from the content of the memory addressed by pCode.
          * </ul>
          */
-        VkShaderModuleCreateInfo createVkShaderModuleCreateInfo(
+        VkShaderModuleCreateInfo createShaderModuleCreateInfo(
                 const std::vector<uint8_t>        &code
         );
 
@@ -2521,7 +2696,7 @@ namespace vk {
          * After oldSwapchain is retired, the application <b>can</b> pass to vkQueuePresentKHR any images it had already acquired from oldSwapchain. E.g., an application may present an image from the old swapchain before an image from the new swapchain is ready to be presented. As usual, vkQueuePresentKHR <b>may</b> fail if oldSwapchain has entered a state that causes VK_ERROR_OUT_OF_DATE_KHR to be returned.<br><br>
          * The application <b>can</b> continue to use a shared presentable image obtained from oldSwapchain until a presentable image is acquired from the new swapchain, as long as it has not entered a state that causes it to return VK_ERROR_OUT_OF_DATE_KHR.
          */
-        VkSwapchainCreateInfoKHR createVkSwapchainCreateInfoKHR(
+        VkSwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
                 const VkSurfaceCapabilitiesKHR        &capabilities,
                 const uint32_t                        &minImageCount,
                 const VkSurfaceFormatKHR              &format,
@@ -2565,7 +2740,7 @@ namespace vk {
          * </ul>
          * The above layout definition allows the descriptor bindings to be specified sparsely such that not all binding numbers between 0 and the maximum binding number need to be specified in the pBindings array. Bindings that are not specified have a descriptorCount and stageFlags of zero, and the value of descriptorType is undefined. However, all binding numbers between 0 and the maximum binding number in the VkDescriptorSetLayoutCreateInfo::pBindings array <b>may</b> consume memory in the descriptor set layout even if not all descriptor bindings are used, though it <b>should</b> not consume additional memory from the descriptor pool.
          */
-        VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding(
+        VkDescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
                 const uint32_t                  &binding,
                 const VkDescriptorType          &descriptorType,
                 const uint32_t                  &descriptorCount,
@@ -2601,7 +2776,7 @@ namespace vk {
          * <li>pBindings is a pointer to an array of VkDescriptorSetLayoutBinding structures.
          * </ul>
          */
-        VkDescriptorSetLayoutCreateInfo createVkDescriptorSetLayoutCreateInfo(
+        VkDescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
                 const std::vector<VkDescriptorSetLayoutBinding>        &bindings
         );
 
@@ -2630,7 +2805,7 @@ namespace vk {
          *
          * @note When creating a descriptor pool that will contain descriptors for combined image samplers of multi-planar formats, an application needs to account for non-trivial descriptor consumption when choosing the descriptorCount value, as indicated by VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount.
          */
-        VkDescriptorPoolSize createVkDescriptorPoolSize(
+        VkDescriptorPoolSize createDescriptorPoolSize(
                 const VkDescriptorType        &type,
                 const uint32_t                &descriptorCount
         );
@@ -2676,7 +2851,7 @@ namespace vk {
          *
          * If flags has the VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT bit set, descriptor pool creation <b>may</b> fail with the error VK_ERROR_FRAGMENTATION if the total number of descriptors across all pools (including this one) created with this bit set exceeds maxUpdateAfterBindDescriptorsInAllPools, or if fragmentation of the underlying hardware resources occurs.
          */
-        VkDescriptorPoolCreateInfo createVkDescriptorPoolCreateInfo(
+        VkDescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
                 const uint32_t                                 &maxSets,
                 const std::vector<VkDescriptorPoolSize>        &poolSizes
         );
@@ -2708,7 +2883,7 @@ namespace vk {
          * <li>pSetLayouts is a pointer to an array of descriptor set layouts, with each member specifying how the corresponding descriptor set is allocated.
          * </ul>
          */
-        VkDescriptorSetAllocateInfo createVkDescriptorSetAllocateInfo(
+        VkDescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
                 const VkDescriptorPool                          &descriptorPool,
                 const std::vector<VkDescriptorSetLayout>        &setLayouts
         );
@@ -2742,7 +2917,7 @@ namespace vk {
          *
          * For VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC and VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC descriptor types, offset is the base offset from which the dynamic offset is applied and range is the static size used for all dynamic offsets.
          */
-        VkDescriptorBufferInfo createVkDescriptorBufferInfo(
+        VkDescriptorBufferInfo createDescriptorBufferInfo(
                 const VkBuffer            &buffer,
                 const VkDeviceSize        &offset,
                 const VkDeviceSize        &range
@@ -2793,7 +2968,7 @@ namespace vk {
          *
          * @note The same behavior applies to bindings with a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT where descriptorCount specifies the number of bytes to update while dstArrayElement specifies the starting byte offset, thus in this case if the dstBinding has a smaller byte size than the sum of dstArrayElement and descriptorCount, then the remainder will be used to update the subsequent binding - dstBinding+1 starting at offset zero. This falls out as a special case of the above rule.
          */
-        VkWriteDescriptorSet createVkWriteDescriptorSet(
+        VkWriteDescriptorSet createWriteDescriptorSet(
                 const VkDescriptorSet               &dstSet,
                 const uint32_t                      &dstBinding,
                 const uint32_t                      &dstArrayElement,
@@ -2880,7 +3055,7 @@ namespace vk {
          * @note For images created without VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for the format the image is created with.<br><br>
          * For images created with VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for at least one of the formats a VkImageView created from the image <b>can</b> have (see Image Views for more detail).
          */
-        VkImageCreateInfo createVkImageCreateInfo(
+        VkImageCreateInfo createImageCreateInfo(
                 const VkImageType                  &imageType,
                 const VkFormat                     &format,
                 const VkExtent3D                   &extent,
@@ -2941,7 +3116,7 @@ namespace vk {
          *
          * If image has a multi-planar format and the image is disjoint, then including VK_IMAGE_ASPECT_COLOR_BIT in the aspectMask member of subresourceRange is equivalent to including VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, and (for three-plane formats only) VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
-        VkImageMemoryBarrier createVkImageMemoryBarrier(
+        VkImageMemoryBarrier createImageMemoryBarrier(
                 const VkAccessFlags              &srcAccessMask,
                 const VkAccessFlags              &dstAccessMask,
                 const VkImageLayout              &oldLayout,
@@ -2994,7 +3169,7 @@ namespace vk {
          *
          * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
-        VkImageSubresourceRange createVkImageSubresourceRange(
+        VkImageSubresourceRange createImageSubresourceRange(
                 const VkImageAspectFlags        &aspectMask,
                 const uint32_t                  &baseMipLevel,
                 const uint32_t                  &levelCount,
@@ -3031,7 +3206,7 @@ namespace vk {
          * <li>imageExtent is the size in texels of the image to copy in width, height and depth.
          * </ul>
          */
-        VkBufferImageCopy createVkBufferImageCopy(
+        VkBufferImageCopy createBufferImageCopy(
                 const VkDeviceSize                    &bufferOffset,
                 const uint32_t                        &bufferRowLength,
                 const uint32_t                        &bufferImageHeight,
@@ -3063,7 +3238,7 @@ namespace vk {
          * <li>baseArrayLayer and layerCount are the starting layer and number of layers to copy.
          * </ul>
          */
-        VkImageSubresourceLayers createVkImageSubresourceLayers(
+        VkImageSubresourceLayers createImageSubresourceLayers(
                 const VkImageAspectFlags        &aspectMask,
                 const uint32_t                  &mipLevel,
                 const uint32_t                  &baseArrayLayer,
@@ -3094,7 +3269,7 @@ namespace vk {
          * <li>depth is the depth of the extent.
          * </ul>
          */
-        VkExtent3D createVkExtent3D(
+        VkExtent3D createExtent3D(
                 const uint32_t        &width,
                 const uint32_t        &height,
                 const uint32_t        &depth
@@ -3122,7 +3297,7 @@ namespace vk {
          * <li>y is the y offset.
          * </ul>
          */
-        VkOffset2D createVkOffset2D(
+        VkOffset2D createOffset2D(
                 const int32_t        &x,
                 const int32_t        &y
         );
@@ -3151,7 +3326,7 @@ namespace vk {
          * <li>z is the z offset.
          * </ul>
          */
-        VkOffset3D createVkOffset3D(
+        VkOffset3D createOffset3D(
                 const int32_t        &x,
                 const int32_t        &y,
                 const int32_t        &z
@@ -3183,7 +3358,7 @@ namespace vk {
          * <li>a is a VkComponentSwizzle specifying the component value placed in the A component of the output vector.
          * </ul>
          */
-        VkComponentMapping createVkComponentMapping(
+        VkComponentMapping createComponentMapping(
                 const VkComponentSwizzle        &r,
                 const VkComponentSwizzle        &g,
                 const VkComponentSwizzle        &b,
@@ -3269,7 +3444,7 @@ namespace vk {
          *
          * Since VkSampler is a non-dispatchable handle type, implementations <b>may</b> return the same handle for sampler state vectors that are identical. In such cases, all such objects would only count once against the maxSamplerAllocationCount limit.
          */
-        VkSamplerCreateInfo createVkSamplerCreateInfo(
+        VkSamplerCreateInfo createSamplerCreateInfo(
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
                 const VkBool32                    &anisotropyEnable,
@@ -3304,7 +3479,7 @@ namespace vk {
          * <b>Description</b><hr><br>
          * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
          */
-        VkDescriptorImageInfo createVkDescriptorImageInfo(
+        VkDescriptorImageInfo createDescriptorImageInfo(
                 const VkSampler            &sampler,
                 const VkImageView          &imageView,
                 const VkImageLayout        &imageLayout
