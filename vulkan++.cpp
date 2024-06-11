@@ -7,14 +7,14 @@ using namespace vk;
 
 Buffer vk::createBuffer(
         const Device                       &device,
-        const VkDeviceSize                 &size,
+        const DeviceSize                   &size,
         const VkBufferUsageFlags           &usage,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createBufferCreateInfo(size, usage);
 
         Buffer buffer{};
-        VkResult result = vkCreateBuffer(device, &createInfo, pAllocator, &buffer);
+        Result result = vkCreateBuffer(device, &createInfo, pAllocator, &buffer);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not create buffer!");
@@ -25,9 +25,9 @@ Buffer vk::createBuffer(
 BufferView vk::createBufferView(
         const Device                       &device,
         const Buffer                       &buffer,
-        const VkFormat                     &format,
-        const VkDeviceSize                 &offset,
-        const VkDeviceSize                 &range,
+        const Format                       &format,
+        const DeviceSize                   &offset,
+        const DeviceSize                   &range,
         const VkAllocationCallbacks        *pAllocator
 ) {
         auto createInfo = vk::createBufferViewCreateInfo(
@@ -35,7 +35,7 @@ BufferView vk::createBufferView(
         );
 
         BufferView bufferView{};
-        VkResult result = vkCreateBufferView(device, &createInfo, pAllocator, &bufferView);
+        Result result = vkCreateBufferView(device, &createInfo, pAllocator, &bufferView);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not allocate command buffer view!");
@@ -50,7 +50,7 @@ CommandBuffer vk::createCommandBuffer(
         auto allocateInfo = vk::createCommandBufferAllocateInfo(commandPool);
 
         CommandBuffer commandBuffer{};
-        VkResult result = vkAllocateCommandBuffers(
+        Result result = vkAllocateCommandBuffers(
                 device, &allocateInfo, &commandBuffer
         );
 
@@ -70,7 +70,7 @@ CommandPool vk::createCommandPool(
         );
 
         CommandPool commandPool{};
-        VkResult result = vkCreateCommandPool(device, &createInfo, pAllocator, &commandPool);
+        Result result = vkCreateCommandPool(device, &createInfo, pAllocator, &commandPool);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not create command pool!");
@@ -89,7 +89,7 @@ DescriptorPool vk::createDescriptorPool(
         );
 
         DescriptorPool descriptorPool;
-        VkResult result = vkCreateDescriptorPool(
+        Result result = vkCreateDescriptorPool(
                 device, &createInfo,
                 pAllocator, &descriptorPool
         );
@@ -110,7 +110,7 @@ std::vector<DescriptorSet> vk::createDescriptorSets(
         );
 
         std::vector<DescriptorSet> descriptorSets(descriptorSetLayouts.size());
-        VkResult result = vkAllocateDescriptorSets(
+        Result result = vkAllocateDescriptorSets(
                 device, &allocateInfo, descriptorSets.data()
         );
 
@@ -130,7 +130,7 @@ DescriptorSetLayout vk::createDescriptorSetLayout(
         );
 
         DescriptorSetLayout descriptorSetLayout;
-        VkResult result = vkCreateDescriptorSetLayout(
+        Result result = vkCreateDescriptorSetLayout(
                 device, &createInfo,
                 pAllocator, &descriptorSetLayout
         );
@@ -165,7 +165,7 @@ Device vk::createDevice(
         );
 
         Device device{};
-        VkResult result = vkCreateDevice(
+        Result result = vkCreateDevice(
                 physicalDevice, &createInfo,
                 pAllocator, &device
         );
@@ -184,7 +184,7 @@ Fence vk::createFence(
         auto createInfo = vk::createFenceCreateInfo(signaled);
 
         Fence fence{};
-        VkResult result = vkCreateFence(
+        Result result = vkCreateFence(
                 device, &createInfo,
                 pAllocator, &fence
         );
@@ -207,7 +207,7 @@ Framebuffer vk::createFramebuffer(
         );
 
         Framebuffer framebuffer{};
-        VkResult result = vkCreateFramebuffer(
+        Result result = vkCreateFramebuffer(
                 device, &createInfo,
                 pAllocator, &framebuffer
         );
@@ -221,8 +221,8 @@ Framebuffer vk::createFramebuffer(
 Image vk::createImage(
         const Device                       &device,
         const VkImageType                  &imageType,
-        const VkFormat                     &format,
-        const VkExtent3D                   &extent,
+        const Format                       &format,
+        const Extent3D                     &extent,
         const VkImageUsageFlags            &usage,
         const std::vector<uint32_t>        &queueFamilyIndices,
         const VkAllocationCallbacks        *pAllocator
@@ -232,7 +232,7 @@ Image vk::createImage(
         );
 
         Image image{};
-        VkResult result = vkCreateImage(device, &createInfo, pAllocator, &image);
+        Result result = vkCreateImage(device, &createInfo, pAllocator, &image);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not create image!");
@@ -242,7 +242,7 @@ Image vk::createImage(
 
 ImageView vk::createImageView(
         const Image                        &image,
-        const VkFormat                     &format,
+        const Format                     &format,
         const Device                       &device,
         const VkAllocationCallbacks        *pAllocator
 ) {
@@ -251,7 +251,7 @@ ImageView vk::createImageView(
         );
 
         ImageView imageView{};
-        VkResult result = vkCreateImageView(
+        Result result = vkCreateImageView(
                 device, &createInfo,
                 pAllocator, &imageView
         );
@@ -270,7 +270,7 @@ Instance vk::createInstance(
         const VkAllocationCallbacks            *pAllocator
 ) {
         uint32_t apiVersion = 0;
-        VkResult result = vkEnumerateInstanceVersion(&apiVersion);
+        Result result = vkEnumerateInstanceVersion(&apiVersion);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not get api version!");
@@ -296,7 +296,7 @@ std::vector<PhysicalDevice> vk::getPhysicalDevices(
         const Instance        &instance
 ) {
         uint32_t physicalDevicesCount = 0;
-        VkResult result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr);
+        Result result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr);
 
         if (result != VK_SUCCESS && result != VK_INCOMPLETE)
                 throw std::runtime_error("Could not get physical devices count!");
@@ -311,15 +311,15 @@ std::vector<PhysicalDevice> vk::getPhysicalDevices(
 }
 
 Pipeline vk::createPipeline(
-        const Device                                                &device,
-        const RenderPass                                            &renderPass,
-        const std::vector<VkViewport>                               &viewports,
-        const std::vector<VkRect2D>                                 &scissors,
-        const PipelineLayout                                        &layout,
-        const std::vector<VkPipelineShaderStageCreateInfo>          &shaderStages,
-        const std::vector<VkVertexInputBindingDescription>          &bindingDescriptions,
-        const std::vector<VkVertexInputAttributeDescription>        &attributeDescriptions,
-        const VkAllocationCallbacks                                 *pAllocator
+        const Device                                              &device,
+        const RenderPass                                          &renderPass,
+        const std::vector<Viewport>                               &viewports,
+        const std::vector<Rect2D>                                 &scissors,
+        const PipelineLayout                                      &layout,
+        const std::vector<PipelineShaderStageCreateInfo>          &shaderStages,
+        const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
+        const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
+        const VkAllocationCallbacks                               *pAllocator
 ) {
         auto vertexInputStateCreateInfo = vk::createPipelineVertexInputStateCreateInfo(
                 bindingDescriptions, attributeDescriptions
@@ -352,7 +352,7 @@ Pipeline vk::createPipeline(
         );
 
         Pipeline pipeline{};
-        VkResult result = vkCreateGraphicsPipelines(
+        Result result = vkCreateGraphicsPipelines(
                 device, nullptr,
                 1, &createInfo,
                 pAllocator, &pipeline
@@ -367,7 +367,7 @@ Pipeline vk::createPipeline(
 PipelineLayout vk::createPipelineLayout(
         const Device                                  &device,
         const std::vector<DescriptorSetLayout>        &setLayouts,
-        const std::vector<VkPushConstantRange>        &pushConstantRanges,
+        const std::vector<PushConstantRange>          &pushConstantRanges,
         const VkAllocationCallbacks                   *pAllocator
 ) {
         auto createInfo = vk::createPipelineLayoutCreateInfo(
@@ -375,7 +375,7 @@ PipelineLayout vk::createPipelineLayout(
         );
 
         PipelineLayout layout{};
-        VkResult result = vkCreatePipelineLayout(
+        Result result = vkCreatePipelineLayout(
                 device, &createInfo,
                 pAllocator, &layout
         );
@@ -404,11 +404,11 @@ RenderPass vk::createRenderPass(
         const PhysicalDevice               &physicalDevice,
         const Device                       &device,
         const SurfaceKHR                   &surface,
-        const VkSurfaceFormatKHR           &requiredFormat,
+        const SurfaceFormatKHR             &requiredFormat,
         const VkAllocationCallbacks        *pAllocator
 ) {
         uint32_t formatsCount = 0;
-        VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(
+        Result result = vkGetPhysicalDeviceSurfaceFormatsKHR(
                 physicalDevice, surface,
                 &formatsCount, nullptr
         );
@@ -425,7 +425,7 @@ RenderPass vk::createRenderPass(
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not get formats!");
 
-        VkFormat format = formats[0].format;
+        Format format = formats[0].format;
         for (const VkSurfaceFormatKHR &f : formats)
                 if (f.format == requiredFormat.format && f.colorSpace == requiredFormat.colorSpace) {
                         format = f.format;
@@ -463,9 +463,9 @@ Sampler vk::createSampler(
         const Device                      &device,
         const VkFilter                    &filter,
         const VkSamplerAddressMode        &addressMode,
-        const VkBool32                    &anisotropyEnable,
+        const Bool32                      &anisotropyEnable,
         const float                       &maxAnisotropy,
-        const VkBool32                    &compareEnable,
+        const Bool32                      &compareEnable,
         const VkCompareOp                 &compareOp
 ) {
         auto createInfo = vk::createSamplerCreateInfo(
@@ -474,7 +474,7 @@ Sampler vk::createSampler(
         );
 
         Sampler sampler{};
-        VkResult result = vkCreateSampler(
+        Result result = vkCreateSampler(
                 device, &createInfo,
                 nullptr, &sampler
         );
@@ -492,7 +492,7 @@ Semaphore vk::createSemaphore(
         auto createInfo = vk::createSemaphoreCreateInfo();
 
         Semaphore semaphore{};
-        VkResult result = vkCreateSemaphore(
+        Result result = vkCreateSemaphore(
                 device, &createInfo,
                 pAllocator, &semaphore
         );
@@ -513,7 +513,7 @@ ShaderModule vk::createShaderModule(
         );
 
         ShaderModule shaderModule{};
-        VkResult result = vkCreateShaderModule(
+        Result result = vkCreateShaderModule(
                 device, &createInfo,
                 pAllocator, &shaderModule
         );
@@ -556,7 +556,7 @@ SwapchainKHR vk::createSwapchainKHR(
         );
 
         SwapchainKHR swapchain{};
-        VkResult result = vkCreateSwapchainKHR(
+        Result result = vkCreateSwapchainKHR(
                 device, &createInfo,
                 pAllocator, &swapchain
         );
@@ -590,7 +590,7 @@ SurfaceCapabilitiesKHR vk::getSurfaceCapabilitiesKHR(
         const SurfaceKHR            &surface
 ) {
         SurfaceCapabilitiesKHR capabilities{};
-        VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
+        Result result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
 
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not get physical device surface capabilities!");
@@ -603,7 +603,7 @@ std::vector<SurfaceFormatKHR> vk::getSurfaceFormatKHRs(
         const SurfaceKHR            &surface
 ) {
         uint32_t formatsCount = 0;
-        VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(
+        Result result = vkGetPhysicalDeviceSurfaceFormatsKHR(
                 physicalDevice, surface,
                 &formatsCount, nullptr
         );
@@ -628,7 +628,7 @@ std::vector<PresentModeKHR> vk::getPresentModeKHR(
         const SurfaceKHR            &surface
 ) {
         uint32_t presentModesCount = 0;
-        VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(
+        Result result = vkGetPhysicalDeviceSurfacePresentModesKHR(
                 physicalDevice, surface,
                 &presentModesCount, nullptr
         );
@@ -646,4 +646,40 @@ std::vector<PresentModeKHR> vk::getPresentModeKHR(
                 throw std::runtime_error("Could not get present modes.");
 
         return presentModes;
+}
+
+std::vector<QueueFamilyProperties> vk::getQueueFamilyProperties(
+        const PhysicalDevice &physicalDevice
+) {
+        uint32_t propertyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propertyCount, nullptr);
+
+        if (propertyCount == 0)
+                throw std::runtime_error("Could not get family queue property count.");
+
+        std::vector<QueueFamilyProperties> queueFamilies(propertyCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propertyCount, queueFamilies.data());
+
+        if (queueFamilies.empty())
+                throw std::runtime_error("Could not get family queue properties.");
+
+        return queueFamilies;
+}
+
+std::vector<ExtensionProperties> vk::getExtensionProperties(
+        const PhysicalDevice &physicalDevice
+) {
+        uint32_t extensionCount = 0;
+        vkEnumerateDeviceExtensionProperties(
+                physicalDevice, nullptr,
+                &extensionCount, nullptr
+        );
+
+        std::vector<ExtensionProperties> extensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(
+                physicalDevice, nullptr,
+                &extensionCount, extensions.data()
+        );
+
+        return extensions;
 }

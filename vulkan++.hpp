@@ -1,10 +1,14 @@
 #pragma once
 
-#ifndef VULKANPP_HPP_HEADER
-#define VULKANPP_HPP_HEADER
+#ifndef VULKANPP_HPP
+#define VULKANPP_HPP
 
 #include <vulkan/vulkan.h>
 #include <vector>
+
+#ifdef VULKAN_HPP
+#error "Vulkan++ should not be used with the vulkan.hpp header."
+#endif
 
 namespace vk {
 
@@ -30,6 +34,1076 @@ namespace vk {
          * Applications <b>must</b> not pass any other values than VK_TRUE or VK_FALSE into a Vulkan implementation where a VkBool32 is expected.
          */
         using Bool32 = VkBool32;
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkResult - Vulkan command return codes<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * While the core Vulkan API is not designed to capture incorrect usage, some circumstances still require return codes. Commands in Vulkan return their status via return codes that are in one of two categories:
+         * <ul>
+         * <li>Successful completion codes are returned when a command needs to communicate success or status information. All successful completion codes are non-negative values.
+         * <li>Run time error codes are returned when a command needs to communicate a failure that could only be detected at runtime. All runtime error codes are negative values.
+         * </ul>
+         * All return codes in Vulkan are reported via VkResult return values. The possible codes are:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef enum VkResult {
+         *     VK_SUCCESS = 0,
+         *     VK_NOT_READY = 1,
+         *     VK_TIMEOUT = 2,
+         *     VK_EVENT_SET = 3,
+         *     VK_EVENT_RESET = 4,
+         *     VK_INCOMPLETE = 5,
+         *     VK_ERROR_OUT_OF_HOST_MEMORY = -1,
+         *     VK_ERROR_OUT_OF_DEVICE_MEMORY = -2,
+         *     VK_ERROR_INITIALIZATION_FAILED = -3,
+         *     VK_ERROR_DEVICE_LOST = -4,
+         *     VK_ERROR_MEMORY_MAP_FAILED = -5,
+         *     VK_ERROR_LAYER_NOT_PRESENT = -6,
+         *     VK_ERROR_EXTENSION_NOT_PRESENT = -7,
+         *     VK_ERROR_FEATURE_NOT_PRESENT = -8,
+         *     VK_ERROR_INCOMPATIBLE_DRIVER = -9,
+         *     VK_ERROR_TOO_MANY_OBJECTS = -10,
+         *     VK_ERROR_FORMAT_NOT_SUPPORTED = -11,
+         *     VK_ERROR_FRAGMENTED_POOL = -12,
+         *     VK_ERROR_UNKNOWN = -13,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_ERROR_OUT_OF_POOL_MEMORY = -1000069000,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_ERROR_INVALID_EXTERNAL_HANDLE = -1000072003,
+         *   // Provided by VK_VERSION_1_2
+         *     VK_ERROR_FRAGMENTATION = -1000161000,
+         *   // Provided by VK_VERSION_1_2
+         *     VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS = -1000257000,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_PIPELINE_COMPILE_REQUIRED = 1000297000,
+         *   // Provided by VK_KHR_surface
+         *     VK_ERROR_SURFACE_LOST_KHR = -1000000000,
+         *   // Provided by VK_KHR_surface
+         *     VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = -1000000001,
+         *   // Provided by VK_KHR_swapchain
+         *     VK_SUBOPTIMAL_KHR = 1000001003,
+         *   // Provided by VK_KHR_swapchain
+         *     VK_ERROR_OUT_OF_DATE_KHR = -1000001004,
+         *   // Provided by VK_KHR_display_swapchain
+         *     VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = -1000003001,
+         *   // Provided by VK_EXT_debug_report
+         *     VK_ERROR_VALIDATION_FAILED_EXT = -1000011001,
+         *   // Provided by VK_NV_glsl_shader
+         *     VK_ERROR_INVALID_SHADER_NV = -1000012000,
+         *   // Provided by VK_KHR_video_queue
+         *     VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR = -1000023000,
+         *   // Provided by VK_KHR_video_queue
+         *     VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR = -1000023001,
+         *   // Provided by VK_KHR_video_queue
+         *     VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR = -1000023002,
+         *   // Provided by VK_KHR_video_queue
+         *     VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR = -1000023003,
+         *   // Provided by VK_KHR_video_queue
+         *     VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR = -1000023004,
+         *   // Provided by VK_KHR_video_queue
+         *     VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR = -1000023005,
+         *   // Provided by VK_EXT_image_drm_format_modifier
+         *     VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT = -1000158000,
+         *   // Provided by VK_KHR_global_priority
+         *     VK_ERROR_NOT_PERMITTED_KHR = -1000174001,
+         *   // Provided by VK_EXT_full_screen_exclusive
+         *     VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT = -1000255000,
+         *   // Provided by VK_KHR_deferred_host_operations
+         *     VK_THREAD_IDLE_KHR = 1000268000,
+         *   // Provided by VK_KHR_deferred_host_operations
+         *     VK_THREAD_DONE_KHR = 1000268001,
+         *   // Provided by VK_KHR_deferred_host_operations
+         *     VK_OPERATION_DEFERRED_KHR = 1000268002,
+         *   // Provided by VK_KHR_deferred_host_operations
+         *     VK_OPERATION_NOT_DEFERRED_KHR = 1000268003,
+         *   // Provided by VK_KHR_video_encode_queue
+         *     VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR = -1000299000,
+         *   // Provided by VK_EXT_image_compression_control
+         *     VK_ERROR_COMPRESSION_EXHAUSTED_EXT = -1000338000,
+         *   // Provided by VK_EXT_shader_object
+         *     VK_INCOMPATIBLE_SHADER_BINARY_EXT = 1000482000,
+         *   // Provided by VK_KHR_maintenance1
+         *     VK_ERROR_OUT_OF_POOL_MEMORY_KHR = VK_ERROR_OUT_OF_POOL_MEMORY,
+         *   // Provided by VK_KHR_external_memory
+         *     VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR = VK_ERROR_INVALID_EXTERNAL_HANDLE,
+         *   // Provided by VK_EXT_descriptor_indexing
+         *     VK_ERROR_FRAGMENTATION_EXT = VK_ERROR_FRAGMENTATION,
+         *   // Provided by VK_EXT_global_priority
+         *     VK_ERROR_NOT_PERMITTED_EXT = VK_ERROR_NOT_PERMITTED_KHR,
+         *   // Provided by VK_EXT_buffer_device_address
+         *     VK_ERROR_INVALID_DEVICE_ADDRESS_EXT = VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS,
+         *   // Provided by VK_KHR_buffer_device_address
+         *     VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR = VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS,
+         *   // Provided by VK_EXT_pipeline_creation_cache_control
+         *     VK_PIPELINE_COMPILE_REQUIRED_EXT = VK_PIPELINE_COMPILE_REQUIRED,
+         *   // Provided by VK_EXT_pipeline_creation_cache_control
+         *     VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT = VK_PIPELINE_COMPILE_REQUIRED,
+         *   // Provided by VK_EXT_shader_object
+         *     VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT = VK_INCOMPATIBLE_SHADER_BINARY_EXT,
+         * } VkResult;
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         *
+         * Success Codes:
+         * <ul>
+         * <li>VK_SUCCESS Command successfully completed
+         * <li>VK_NOT_READY A fence or query has not yet completed
+         * <li>VK_TIMEOUT A wait operation has not completed in the specified time
+         * <li>VK_EVENT_SET An event is signaled
+         * <li>VK_EVENT_RESET An event is unsignaled
+         * <li>VK_INCOMPLETE A return array was too small for the result
+         * <li>VK_SUBOPTIMAL_KHR A swapchain no longer matches the surface properties exactly, but <b>can</b> still be used to present to the surface successfully.
+         * <li>VK_THREAD_IDLE_KHR A deferred operation is not complete but there is currently no work for this thread to do at the time of this call.
+         * <li>VK_THREAD_DONE_KHR A deferred operation is not complete but there is no work remaining to assign to additional threads.
+         * <li>VK_OPERATION_DEFERRED_KHR A deferred operation was requested and at least some of the work was deferred.
+         * <li>VK_OPERATION_NOT_DEFERRED_KHR A deferred operation was requested and no operations were deferred.
+         * <li>VK_PIPELINE_COMPILE_REQUIRED A requested pipeline creation would have required compilation, but the application requested compilation to not be performed.
+         * <li>VK_INCOMPATIBLE_SHADER_BINARY_EXT The provided binary shader code is not compatible with this device.
+         * </ul>
+         * @note In the initial version of the VK_EXT_shader_object extension, this return code was named VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT and improperly described as an error code. The name has been changed, but the old name is retained as an alias for compatibility with old code.
+         *
+         * Error codes:
+         * <ul>
+         * <li>VK_ERROR_OUT_OF_HOST_MEMORY A host memory allocation has failed.
+         * <li>VK_ERROR_OUT_OF_DEVICE_MEMORY A device memory allocation has failed.
+         * <li>VK_ERROR_INITIALIZATION_FAILED Initialization of an object could not be completed for implementation-specific reasons.
+         * <li>VK_ERROR_DEVICE_LOST The logical or physical device has been lost. See Lost Device
+         * <li>VK_ERROR_MEMORY_MAP_FAILED Mapping of a memory object has failed.
+         * <li>VK_ERROR_LAYER_NOT_PRESENT A requested layer is not present or could not be loaded.
+         * <li>VK_ERROR_EXTENSION_NOT_PRESENT A requested extension is not supported.
+         * <li>VK_ERROR_FEATURE_NOT_PRESENT A requested feature is not supported.
+         * <li>VK_ERROR_INCOMPATIBLE_DRIVER The requested version of Vulkan is not supported by the driver or is otherwise incompatible for implementation-specific reasons.
+         * <li>VK_ERROR_TOO_MANY_OBJECTS Too many objects of the type have already been created.
+         * <li>VK_ERROR_FORMAT_NOT_SUPPORTED A requested format is not supported on this device.
+         * <li>VK_ERROR_FRAGMENTED_POOL A pool allocation has failed due to fragmentation of the pool’s memory. This <b>must</b> only be returned if no attempt to allocate host or device memory was made to accommodate the new allocation. This <b>should</b> be returned in preference to VK_ERROR_OUT_OF_POOL_MEMORY, but only if the implementation is certain that the pool allocation failure was due to fragmentation.
+         * <li>VK_ERROR_SURFACE_LOST_KHR A surface is no longer available.
+         * <li>VK_ERROR_NATIVE_WINDOW_IN_USE_KHR The requested window is already in use by Vulkan or another API in a manner which prevents it from being used again.
+         * <li>VK_ERROR_OUT_OF_DATE_KHR A surface has changed in such a way that it is no longer compatible with the swapchain, and further presentation requests using the swapchain will fail. Applications <b>must</b> query the new surface properties and recreate their swapchain if they wish to continue presenting to the surface.
+         * <li>VK_ERROR_INCOMPATIBLE_DISPLAY_KHR The display used by a swapchain does not use the same presentable image layout, or is incompatible in a way that prevents sharing an image.
+         * <li>VK_ERROR_INVALID_SHADER_NV One or more shaders failed to compile or link. More details are reported back to the application via VK_EXT_debug_report if enabled.
+         * <li>VK_ERROR_OUT_OF_POOL_MEMORY A pool memory allocation has failed. This <b>must</b> only be returned if no attempt to allocate host or device memory was made to accommodate the new allocation. If the failure was definitely due to fragmentation of the pool, VK_ERROR_FRAGMENTED_POOL <b>should</b> be returned instead.
+         * <li>VK_ERROR_INVALID_EXTERNAL_HANDLE An external handle is not a valid handle of the specified type.
+         * <li>VK_ERROR_FRAGMENTATION A descriptor pool creation has failed due to fragmentation.
+         * <li>VK_ERROR_INVALID_DEVICE_ADDRESS_EXT A buffer creation failed because the requested address is not available.
+         * <li>VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS A buffer creation or memory allocation failed because the requested address is not available. A shader group handle assignment failed because the requested shader group handle information is no longer valid.
+         * <li>VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT An operation on a swapchain created with VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT failed as it did not have exclusive full-screen access. This <b>may</b> occur due to implementation-dependent reasons, outside of the application’s control.
+         * <li>VK_ERROR_VALIDATION_FAILED_EXT A command failed because invalid usage was detected by the implementation or a validation-layer.
+         * <li>VK_ERROR_COMPRESSION_EXHAUSTED_EXT An image creation failed because internal resources required for compression are exhausted. This <b>must</b> only be returned when fixed-rate compression is requested.
+         * <li>VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR The requested VkImageUsageFlags are not supported.
+         * <li>VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR The requested video picture layout is not supported.
+         * <li>VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR A video profile operation specified via VkVideoProfileInfoKHR::videoCodecOperation is not supported.
+         * <li>VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR Format parameters in a requested VkVideoProfileInfoKHR chain are not supported.
+         * <li>VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR Codec-specific parameters in a requested VkVideoProfileInfoKHR chain are not supported.
+         * <li>VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR The specified video Std header version is not supported.
+         * <li>VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR The specified Video Std parameters do not adhere to the syntactic or semantic requirements of the used video compression standard, or values derived from parameters according to the rules defined by the used video compression standard do not adhere to the capabilities of the video compression standard or the implementation.
+         * <li>VK_ERROR_NOT_PERMITTED_KHR The driver implementation has denied a request to acquire a priority above the default priority (VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_EXT) because the application does not have sufficient privileges.
+         * <li>VK_ERROR_UNKNOWN An unknown error has occurred; either the application has provided invalid input, or an implementation failure has occurred.
+         * </ul>
+         * If a command returns a runtime error, unless otherwise specified any output parameters will have undefined contents, except that if the output parameter is a structure with sType and pNext fields, those fields will be unmodified. Any structures chained from pNext will also have undefined contents, except that sType and pNext will be unmodified.<br><br>
+         * VK_ERROR_OUT_OF_*_MEMORY errors do not modify any currently existing Vulkan objects. Objects that have already been successfully created <b>can</b> still be used by the application.
+         *
+         * @note As a general rule, Free, Release, and Reset commands do not return VK_ERROR_OUT_OF_HOST_MEMORY, while any other command with a return code <b>may</b> return it. Any exceptions from this rule are described for those commands.
+         *
+         * VK_ERROR_UNKNOWN will be returned by an implementation when an unexpected error occurs that cannot be attributed to valid behavior of the application and implementation. Under these conditions, it <b>may</b> be returned from any command returning a VkResult.
+         *
+         * @note VK_ERROR_UNKNOWN is not expected to ever be returned if the application behavior is valid, and if the implementation is bug-free. If VK_ERROR_UNKNOWN is received, the application should be checked against the latest validation layers to verify correct behavior as much as possible. If no issues are identified it could be an implementation issue, and the implementor should be contacted for support.
+         *
+         * Any command returning a VkResult <b>may</b> return VK_ERROR_VALIDATION_FAILED_EXT if a violation of valid usage is detected, even though commands do not explicitly list this as a possible return code.<br><br>
+         *
+         * Performance-critical commands generally do not have return codes. If a runtime error occurs in such commands, the implementation will defer reporting the error until a specified point. For commands that record into command buffers (vkCmd*) runtime errors are reported by vkEndCommandBuffer.
+         */
+        using Result = VkResult;
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkFormat - Available image formats<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The following image formats <b>can</b> be passed to, and <b>may</b> be returned from Vulkan commands. The memory required to store each format is discussed with that format, and also summarized in the Representation and Texel Block Size section and the Compatible formats table.
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef enum VkFormat {
+         *     VK_FORMAT_UNDEFINED = 0,
+         *     VK_FORMAT_R4G4_UNORM_PACK8 = 1,
+         *     VK_FORMAT_R4G4B4A4_UNORM_PACK16 = 2,
+         *     VK_FORMAT_B4G4R4A4_UNORM_PACK16 = 3,
+         *     VK_FORMAT_R5G6B5_UNORM_PACK16 = 4,
+         *     VK_FORMAT_B5G6R5_UNORM_PACK16 = 5,
+         *     VK_FORMAT_R5G5B5A1_UNORM_PACK16 = 6,
+         *     VK_FORMAT_B5G5R5A1_UNORM_PACK16 = 7,
+         *     VK_FORMAT_A1R5G5B5_UNORM_PACK16 = 8,
+         *     VK_FORMAT_R8_UNORM = 9,
+         *     VK_FORMAT_R8_SNORM = 10,
+         *     VK_FORMAT_R8_USCALED = 11,
+         *     VK_FORMAT_R8_SSCALED = 12,
+         *     VK_FORMAT_R8_UINT = 13,
+         *     VK_FORMAT_R8_SINT = 14,
+         *     VK_FORMAT_R8_SRGB = 15,
+         *     VK_FORMAT_R8G8_UNORM = 16,
+         *     VK_FORMAT_R8G8_SNORM = 17,
+         *     VK_FORMAT_R8G8_USCALED = 18,
+         *     VK_FORMAT_R8G8_SSCALED = 19,
+         *     VK_FORMAT_R8G8_UINT = 20,
+         *     VK_FORMAT_R8G8_SINT = 21,
+         *     VK_FORMAT_R8G8_SRGB = 22,
+         *     VK_FORMAT_R8G8B8_UNORM = 23,
+         *     VK_FORMAT_R8G8B8_SNORM = 24,
+         *     VK_FORMAT_R8G8B8_USCALED = 25,
+         *     VK_FORMAT_R8G8B8_SSCALED = 26,
+         *     VK_FORMAT_R8G8B8_UINT = 27,
+         *     VK_FORMAT_R8G8B8_SINT = 28,
+         *     VK_FORMAT_R8G8B8_SRGB = 29,
+         *     VK_FORMAT_B8G8R8_UNORM = 30,
+         *     VK_FORMAT_B8G8R8_SNORM = 31,
+         *     VK_FORMAT_B8G8R8_USCALED = 32,
+         *     VK_FORMAT_B8G8R8_SSCALED = 33,
+         *     VK_FORMAT_B8G8R8_UINT = 34,
+         *     VK_FORMAT_B8G8R8_SINT = 35,
+         *     VK_FORMAT_B8G8R8_SRGB = 36,
+         *     VK_FORMAT_R8G8B8A8_UNORM = 37,
+         *     VK_FORMAT_R8G8B8A8_SNORM = 38,
+         *     VK_FORMAT_R8G8B8A8_USCALED = 39,
+         *     VK_FORMAT_R8G8B8A8_SSCALED = 40,
+         *     VK_FORMAT_R8G8B8A8_UINT = 41,
+         *     VK_FORMAT_R8G8B8A8_SINT = 42,
+         *     VK_FORMAT_R8G8B8A8_SRGB = 43,
+         *     VK_FORMAT_B8G8R8A8_UNORM = 44,
+         *     VK_FORMAT_B8G8R8A8_SNORM = 45,
+         *     VK_FORMAT_B8G8R8A8_USCALED = 46,
+         *     VK_FORMAT_B8G8R8A8_SSCALED = 47,
+         *     VK_FORMAT_B8G8R8A8_UINT = 48,
+         *     VK_FORMAT_B8G8R8A8_SINT = 49,
+         *     VK_FORMAT_B8G8R8A8_SRGB = 50,
+         *     VK_FORMAT_A8B8G8R8_UNORM_PACK32 = 51,
+         *     VK_FORMAT_A8B8G8R8_SNORM_PACK32 = 52,
+         *     VK_FORMAT_A8B8G8R8_USCALED_PACK32 = 53,
+         *     VK_FORMAT_A8B8G8R8_SSCALED_PACK32 = 54,
+         *     VK_FORMAT_A8B8G8R8_UINT_PACK32 = 55,
+         *     VK_FORMAT_A8B8G8R8_SINT_PACK32 = 56,
+         *     VK_FORMAT_A8B8G8R8_SRGB_PACK32 = 57,
+         *     VK_FORMAT_A2R10G10B10_UNORM_PACK32 = 58,
+         *     VK_FORMAT_A2R10G10B10_SNORM_PACK32 = 59,
+         *     VK_FORMAT_A2R10G10B10_USCALED_PACK32 = 60,
+         *     VK_FORMAT_A2R10G10B10_SSCALED_PACK32 = 61,
+         *     VK_FORMAT_A2R10G10B10_UINT_PACK32 = 62,
+         *     VK_FORMAT_A2R10G10B10_SINT_PACK32 = 63,
+         *     VK_FORMAT_A2B10G10R10_UNORM_PACK32 = 64,
+         *     VK_FORMAT_A2B10G10R10_SNORM_PACK32 = 65,
+         *     VK_FORMAT_A2B10G10R10_USCALED_PACK32 = 66,
+         *     VK_FORMAT_A2B10G10R10_SSCALED_PACK32 = 67,
+         *     VK_FORMAT_A2B10G10R10_UINT_PACK32 = 68,
+         *     VK_FORMAT_A2B10G10R10_SINT_PACK32 = 69,
+         *     VK_FORMAT_R16_UNORM = 70,
+         *     VK_FORMAT_R16_SNORM = 71,
+         *     VK_FORMAT_R16_USCALED = 72,
+         *     VK_FORMAT_R16_SSCALED = 73,
+         *     VK_FORMAT_R16_UINT = 74,
+         *     VK_FORMAT_R16_SINT = 75,
+         *     VK_FORMAT_R16_SFLOAT = 76,
+         *     VK_FORMAT_R16G16_UNORM = 77,
+         *     VK_FORMAT_R16G16_SNORM = 78,
+         *     VK_FORMAT_R16G16_USCALED = 79,
+         *     VK_FORMAT_R16G16_SSCALED = 80,
+         *     VK_FORMAT_R16G16_UINT = 81,
+         *     VK_FORMAT_R16G16_SINT = 82,
+         *     VK_FORMAT_R16G16_SFLOAT = 83,
+         *     VK_FORMAT_R16G16B16_UNORM = 84,
+         *     VK_FORMAT_R16G16B16_SNORM = 85,
+         *     VK_FORMAT_R16G16B16_USCALED = 86,
+         *     VK_FORMAT_R16G16B16_SSCALED = 87,
+         *     VK_FORMAT_R16G16B16_UINT = 88,
+         *     VK_FORMAT_R16G16B16_SINT = 89,
+         *     VK_FORMAT_R16G16B16_SFLOAT = 90,
+         *     VK_FORMAT_R16G16B16A16_UNORM = 91,
+         *     VK_FORMAT_R16G16B16A16_SNORM = 92,
+         *     VK_FORMAT_R16G16B16A16_USCALED = 93,
+         *     VK_FORMAT_R16G16B16A16_SSCALED = 94,
+         *     VK_FORMAT_R16G16B16A16_UINT = 95,
+         *     VK_FORMAT_R16G16B16A16_SINT = 96,
+         *     VK_FORMAT_R16G16B16A16_SFLOAT = 97,
+         *     VK_FORMAT_R32_UINT = 98,
+         *     VK_FORMAT_R32_SINT = 99,
+         *     VK_FORMAT_R32_SFLOAT = 100,
+         *     VK_FORMAT_R32G32_UINT = 101,
+         *     VK_FORMAT_R32G32_SINT = 102,
+         *     VK_FORMAT_R32G32_SFLOAT = 103,
+         *     VK_FORMAT_R32G32B32_UINT = 104,
+         *     VK_FORMAT_R32G32B32_SINT = 105,
+         *     VK_FORMAT_R32G32B32_SFLOAT = 106,
+         *     VK_FORMAT_R32G32B32A32_UINT = 107,
+         *     VK_FORMAT_R32G32B32A32_SINT = 108,
+         *     VK_FORMAT_R32G32B32A32_SFLOAT = 109,
+         *     VK_FORMAT_R64_UINT = 110,
+         *     VK_FORMAT_R64_SINT = 111,
+         *     VK_FORMAT_R64_SFLOAT = 112,
+         *     VK_FORMAT_R64G64_UINT = 113,
+         *     VK_FORMAT_R64G64_SINT = 114,
+         *     VK_FORMAT_R64G64_SFLOAT = 115,
+         *     VK_FORMAT_R64G64B64_UINT = 116,
+         *     VK_FORMAT_R64G64B64_SINT = 117,
+         *     VK_FORMAT_R64G64B64_SFLOAT = 118,
+         *     VK_FORMAT_R64G64B64A64_UINT = 119,
+         *     VK_FORMAT_R64G64B64A64_SINT = 120,
+         *     VK_FORMAT_R64G64B64A64_SFLOAT = 121,
+         *     VK_FORMAT_B10G11R11_UFLOAT_PACK32 = 122,
+         *     VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 = 123,
+         *     VK_FORMAT_D16_UNORM = 124,
+         *     VK_FORMAT_X8_D24_UNORM_PACK32 = 125,
+         *     VK_FORMAT_D32_SFLOAT = 126,
+         *     VK_FORMAT_S8_UINT = 127,
+         *     VK_FORMAT_D16_UNORM_S8_UINT = 128,
+         *     VK_FORMAT_D24_UNORM_S8_UINT = 129,
+         *     VK_FORMAT_D32_SFLOAT_S8_UINT = 130,
+         *     VK_FORMAT_BC1_RGB_UNORM_BLOCK = 131,
+         *     VK_FORMAT_BC1_RGB_SRGB_BLOCK = 132,
+         *     VK_FORMAT_BC1_RGBA_UNORM_BLOCK = 133,
+         *     VK_FORMAT_BC1_RGBA_SRGB_BLOCK = 134,
+         *     VK_FORMAT_BC2_UNORM_BLOCK = 135,
+         *     VK_FORMAT_BC2_SRGB_BLOCK = 136,
+         *     VK_FORMAT_BC3_UNORM_BLOCK = 137,
+         *     VK_FORMAT_BC3_SRGB_BLOCK = 138,
+         *     VK_FORMAT_BC4_UNORM_BLOCK = 139,
+         *     VK_FORMAT_BC4_SNORM_BLOCK = 140,
+         *     VK_FORMAT_BC5_UNORM_BLOCK = 141,
+         *     VK_FORMAT_BC5_SNORM_BLOCK = 142,
+         *     VK_FORMAT_BC6H_UFLOAT_BLOCK = 143,
+         *     VK_FORMAT_BC6H_SFLOAT_BLOCK = 144,
+         *     VK_FORMAT_BC7_UNORM_BLOCK = 145,
+         *     VK_FORMAT_BC7_SRGB_BLOCK = 146,
+         *     VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK = 147,
+         *     VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK = 148,
+         *     VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK = 149,
+         *     VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK = 150,
+         *     VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK = 151,
+         *     VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK = 152,
+         *     VK_FORMAT_EAC_R11_UNORM_BLOCK = 153,
+         *     VK_FORMAT_EAC_R11_SNORM_BLOCK = 154,
+         *     VK_FORMAT_EAC_R11G11_UNORM_BLOCK = 155,
+         *     VK_FORMAT_EAC_R11G11_SNORM_BLOCK = 156,
+         *     VK_FORMAT_ASTC_4x4_UNORM_BLOCK = 157,
+         *     VK_FORMAT_ASTC_4x4_SRGB_BLOCK = 158,
+         *     VK_FORMAT_ASTC_5x4_UNORM_BLOCK = 159,
+         *     VK_FORMAT_ASTC_5x4_SRGB_BLOCK = 160,
+         *     VK_FORMAT_ASTC_5x5_UNORM_BLOCK = 161,
+         *     VK_FORMAT_ASTC_5x5_SRGB_BLOCK = 162,
+         *     VK_FORMAT_ASTC_6x5_UNORM_BLOCK = 163,
+         *     VK_FORMAT_ASTC_6x5_SRGB_BLOCK = 164,
+         *     VK_FORMAT_ASTC_6x6_UNORM_BLOCK = 165,
+         *     VK_FORMAT_ASTC_6x6_SRGB_BLOCK = 166,
+         *     VK_FORMAT_ASTC_8x5_UNORM_BLOCK = 167,
+         *     VK_FORMAT_ASTC_8x5_SRGB_BLOCK = 168,
+         *     VK_FORMAT_ASTC_8x6_UNORM_BLOCK = 169,
+         *     VK_FORMAT_ASTC_8x6_SRGB_BLOCK = 170,
+         *     VK_FORMAT_ASTC_8x8_UNORM_BLOCK = 171,
+         *     VK_FORMAT_ASTC_8x8_SRGB_BLOCK = 172,
+         *     VK_FORMAT_ASTC_10x5_UNORM_BLOCK = 173,
+         *     VK_FORMAT_ASTC_10x5_SRGB_BLOCK = 174,
+         *     VK_FORMAT_ASTC_10x6_UNORM_BLOCK = 175,
+         *     VK_FORMAT_ASTC_10x6_SRGB_BLOCK = 176,
+         *     VK_FORMAT_ASTC_10x8_UNORM_BLOCK = 177,
+         *     VK_FORMAT_ASTC_10x8_SRGB_BLOCK = 178,
+         *     VK_FORMAT_ASTC_10x10_UNORM_BLOCK = 179,
+         *     VK_FORMAT_ASTC_10x10_SRGB_BLOCK = 180,
+         *     VK_FORMAT_ASTC_12x10_UNORM_BLOCK = 181,
+         *     VK_FORMAT_ASTC_12x10_SRGB_BLOCK = 182,
+         *     VK_FORMAT_ASTC_12x12_UNORM_BLOCK = 183,
+         *     VK_FORMAT_ASTC_12x12_SRGB_BLOCK = 184,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G8B8G8R8_422_UNORM = 1000156000,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_B8G8R8G8_422_UNORM = 1000156001,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM = 1000156002,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G8_B8R8_2PLANE_420_UNORM = 1000156003,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM = 1000156004,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G8_B8R8_2PLANE_422_UNORM = 1000156005,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM = 1000156006,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_R10X6_UNORM_PACK16 = 1000156007,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_R10X6G10X6_UNORM_2PACK16 = 1000156008,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16 = 1000156009,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 = 1000156010,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 = 1000156011,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 = 1000156012,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 = 1000156013,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 = 1000156014,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 = 1000156015,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 = 1000156016,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_R12X4_UNORM_PACK16 = 1000156017,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_R12X4G12X4_UNORM_2PACK16 = 1000156018,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16 = 1000156019,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 = 1000156020,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 = 1000156021,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 = 1000156022,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 = 1000156023,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 = 1000156024,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 = 1000156025,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 = 1000156026,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G16B16G16R16_422_UNORM = 1000156027,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_B16G16R16G16_422_UNORM = 1000156028,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM = 1000156029,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G16_B16R16_2PLANE_420_UNORM = 1000156030,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM = 1000156031,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G16_B16R16_2PLANE_422_UNORM = 1000156032,
+         *   // Provided by VK_VERSION_1_1
+         *     VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM = 1000156033,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_G8_B8R8_2PLANE_444_UNORM = 1000330000,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 = 1000330001,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 = 1000330002,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_G16_B16R16_2PLANE_444_UNORM = 1000330003,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_A4R4G4B4_UNORM_PACK16 = 1000340000,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_A4B4G4R4_UNORM_PACK16 = 1000340001,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK = 1000066000,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK = 1000066001,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK = 1000066002,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK = 1000066003,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK = 1000066004,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK = 1000066005,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK = 1000066006,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK = 1000066007,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK = 1000066008,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK = 1000066009,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK = 1000066010,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK = 1000066011,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK = 1000066012,
+         *   // Provided by VK_VERSION_1_3
+         *     VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK = 1000066013,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG = 1000054000,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG = 1000054001,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG = 1000054002,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG = 1000054003,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG = 1000054004,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG = 1000054005,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG = 1000054006,
+         *   // Provided by VK_IMG_format_pvrtc
+         *     VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG = 1000054007,
+         *   // Provided by VK_NV_optical_flow
+         *     VK_FORMAT_R16G16_SFIXED5_NV = 1000464000,
+         *   // Provided by VK_KHR_maintenance5
+         *     VK_FORMAT_A1B5G5R5_UNORM_PACK16_KHR = 1000470000,
+         *   // Provided by VK_KHR_maintenance5
+         *     VK_FORMAT_A8_UNORM_KHR = 1000470001,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK,
+         *   // Provided by VK_EXT_texture_compression_astc_hdr
+         *     VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK_EXT = VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G8B8G8R8_422_UNORM_KHR = VK_FORMAT_G8B8G8R8_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_B8G8R8G8_422_UNORM_KHR = VK_FORMAT_B8G8R8G8_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM_KHR = VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G8_B8R8_2PLANE_420_UNORM_KHR = VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM_KHR = VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G8_B8R8_2PLANE_422_UNORM_KHR = VK_FORMAT_G8_B8R8_2PLANE_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM_KHR = VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_R10X6_UNORM_PACK16_KHR = VK_FORMAT_R10X6_UNORM_PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_R10X6G10X6_UNORM_2PACK16_KHR = VK_FORMAT_R10X6G10X6_UNORM_2PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16_KHR = VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16_KHR = VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16_KHR = VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16_KHR = VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16_KHR = VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16_KHR = VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16_KHR = VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16_KHR = VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_R12X4_UNORM_PACK16_KHR = VK_FORMAT_R12X4_UNORM_PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_R12X4G12X4_UNORM_2PACK16_KHR = VK_FORMAT_R12X4G12X4_UNORM_2PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16_KHR = VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16_KHR = VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16_KHR = VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16_KHR = VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16_KHR = VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16_KHR = VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16_KHR = VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16_KHR = VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G16B16G16R16_422_UNORM_KHR = VK_FORMAT_G16B16G16R16_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_B16G16R16G16_422_UNORM_KHR = VK_FORMAT_B16G16R16G16_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM_KHR = VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G16_B16R16_2PLANE_420_UNORM_KHR = VK_FORMAT_G16_B16R16_2PLANE_420_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM_KHR = VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G16_B16R16_2PLANE_422_UNORM_KHR = VK_FORMAT_G16_B16R16_2PLANE_422_UNORM,
+         *   // Provided by VK_KHR_sampler_ycbcr_conversion
+         *     VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM_KHR = VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM,
+         *   // Provided by VK_EXT_ycbcr_2plane_444_formats
+         *     VK_FORMAT_G8_B8R8_2PLANE_444_UNORM_EXT = VK_FORMAT_G8_B8R8_2PLANE_444_UNORM,
+         *   // Provided by VK_EXT_ycbcr_2plane_444_formats
+         *     VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16_EXT = VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16,
+         *   // Provided by VK_EXT_ycbcr_2plane_444_formats
+         *     VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16_EXT = VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16,
+         *   // Provided by VK_EXT_ycbcr_2plane_444_formats
+         *     VK_FORMAT_G16_B16R16_2PLANE_444_UNORM_EXT = VK_FORMAT_G16_B16R16_2PLANE_444_UNORM,
+         *   // Provided by VK_EXT_4444_formats
+         *     VK_FORMAT_A4R4G4B4_UNORM_PACK16_EXT = VK_FORMAT_A4R4G4B4_UNORM_PACK16,
+         *   // Provided by VK_EXT_4444_formats
+         *     VK_FORMAT_A4B4G4R4_UNORM_PACK16_EXT = VK_FORMAT_A4B4G4R4_UNORM_PACK16,
+         *   // Provided by VK_NV_optical_flow
+         *     VK_FORMAT_R16G16_S10_5_NV = VK_FORMAT_R16G16_SFIXED5_NV,
+         * } VkFormat;
+         * @endcode
+         *
+         * <b>Description</b><hr><br>
+         * <ul>
+         * <li>VK_FORMAT_UNDEFINED specifies that the format is not specified.
+         * <li>VK_FORMAT_R4G4_UNORM_PACK8 specifies a two-component, 8-bit packed unsigned normalized format that has a 4-bit R component in bits 4..7, and a 4-bit G component in bits 0..3.
+         * <li>VK_FORMAT_R4G4B4A4_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 4-bit R component in bits 12..15, a 4-bit G component in bits 8..11, a 4-bit B component in bits 4..7, and a 4-bit A component in bits 0..3.
+         * <li>VK_FORMAT_B4G4R4A4_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 4-bit B component in bits 12..15, a 4-bit G component in bits 8..11, a 4-bit R component in bits 4..7, and a 4-bit A component in bits 0..3.
+         * <li>VK_FORMAT_A4R4G4B4_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 4-bit A component in bits 12..15, a 4-bit R component in bits 8..11, a 4-bit G component in bits 4..7, and a 4-bit B component in bits 0..3.
+         * <li>VK_FORMAT_A4B4G4R4_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 4-bit A component in bits 12..15, a 4-bit B component in bits 8..11, a 4-bit G component in bits 4..7, and a 4-bit R component in bits 0..3.
+         * <li>VK_FORMAT_R5G6B5_UNORM_PACK16 specifies a three-component, 16-bit packed unsigned normalized format that has a 5-bit R component in bits 11..15, a 6-bit G component in bits 5..10, and a 5-bit B component in bits 0..4.
+         * <li>VK_FORMAT_B5G6R5_UNORM_PACK16 specifies a three-component, 16-bit packed unsigned normalized format that has a 5-bit B component in bits 11..15, a 6-bit G component in bits 5..10, and a 5-bit R component in bits 0..4.
+         * <li>VK_FORMAT_R5G5B5A1_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 5-bit R component in bits 11..15, a 5-bit G component in bits 6..10, a 5-bit B component in bits 1..5, and a 1-bit A component in bit 0.
+         * <li>VK_FORMAT_B5G5R5A1_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 5-bit B component in bits 11..15, a 5-bit G component in bits 6..10, a 5-bit R component in bits 1..5, and a 1-bit A component in bit 0.
+         * <li>VK_FORMAT_A1R5G5B5_UNORM_PACK16 specifies a four-component, 16-bit packed unsigned normalized format that has a 1-bit A component in bit 15, a 5-bit R component in bits 10..14, a 5-bit G component in bits 5..9, and a 5-bit B component in bits 0..4.
+         * <li>VK_FORMAT_A1B5G5R5_UNORM_PACK16_KHR specifies a four-component, 16-bit packed unsigned normalized format that has a 1-bit A component in bit 15, a 5-bit B component in bits 10..14, a 5-bit G component in bits 5..9, and a 5-bit R component in bits 0..4.
+         * <li>VK_FORMAT_A8_UNORM_KHR specifies a one-component, 8-bit unsigned normalized format that has a single 8-bit A component.
+         * <li>VK_FORMAT_R8_UNORM specifies a one-component, 8-bit unsigned normalized format that has a single 8-bit R component.
+         * <li>VK_FORMAT_R8_SNORM specifies a one-component, 8-bit signed normalized format that has a single 8-bit R component.
+         * <li>VK_FORMAT_R8_USCALED specifies a one-component, 8-bit unsigned scaled integer format that has a single 8-bit R component.
+         * <li>VK_FORMAT_R8_SSCALED specifies a one-component, 8-bit signed scaled integer format that has a single 8-bit R component.
+         * <li>VK_FORMAT_R8_UINT specifies a one-component, 8-bit unsigned integer format that has a single 8-bit R component.
+         * <li>VK_FORMAT_R8_SINT specifies a one-component, 8-bit signed integer format that has a single 8-bit R component.
+         * <li>VK_FORMAT_R8_SRGB specifies a one-component, 8-bit unsigned normalized format that has a single 8-bit R component stored with sRGB nonlinear encoding.
+         * <li>VK_FORMAT_R8G8_UNORM specifies a two-component, 16-bit unsigned normalized format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+         * <li>VK_FORMAT_R8G8_SNORM specifies a two-component, 16-bit signed normalized format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+         * <li>VK_FORMAT_R8G8_USCALED specifies a two-component, 16-bit unsigned scaled integer format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+         * <li>VK_FORMAT_R8G8_SSCALED specifies a two-component, 16-bit signed scaled integer format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+         * <li>VK_FORMAT_R8G8_UINT specifies a two-component, 16-bit unsigned integer format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+         * <li>VK_FORMAT_R8G8_SINT specifies a two-component, 16-bit signed integer format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+         * <li>VK_FORMAT_R8G8_SRGB specifies a two-component, 16-bit unsigned normalized format that has an 8-bit R component stored with sRGB nonlinear encoding in byte 0, and an 8-bit G component stored with sRGB nonlinear encoding in byte 1.
+         * <li>VK_FORMAT_R8G8B8_UNORM specifies a three-component, 24-bit unsigned normalized format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+         * <li>VK_FORMAT_R8G8B8_SNORM specifies a three-component, 24-bit signed normalized format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+         * <li>VK_FORMAT_R8G8B8_USCALED specifies a three-component, 24-bit unsigned scaled format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+         * <li>VK_FORMAT_R8G8B8_SSCALED specifies a three-component, 24-bit signed scaled format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+         * <li>VK_FORMAT_R8G8B8_UINT specifies a three-component, 24-bit unsigned integer format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+         * <li>VK_FORMAT_R8G8B8_SINT specifies a three-component, 24-bit signed integer format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+         * <li>VK_FORMAT_R8G8B8_SRGB specifies a three-component, 24-bit unsigned normalized format that has an 8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component stored with sRGB nonlinear encoding in byte 1, and an 8-bit B component stored with sRGB nonlinear encoding in byte 2.
+         * <li>VK_FORMAT_B8G8R8_UNORM specifies a three-component, 24-bit unsigned normalized format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+         * <li>VK_FORMAT_B8G8R8_SNORM specifies a three-component, 24-bit signed normalized format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+         * <li>VK_FORMAT_B8G8R8_USCALED specifies a three-component, 24-bit unsigned scaled format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+         * <li>VK_FORMAT_B8G8R8_SSCALED specifies a three-component, 24-bit signed scaled format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+         * <li>VK_FORMAT_B8G8R8_UINT specifies a three-component, 24-bit unsigned integer format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+         * <li>VK_FORMAT_B8G8R8_SINT specifies a three-component, 24-bit signed integer format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+         * <li>VK_FORMAT_B8G8R8_SRGB specifies a three-component, 24-bit unsigned normalized format that has an 8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component stored with sRGB nonlinear encoding in byte 1, and an 8-bit R component stored with sRGB nonlinear encoding in byte 2.
+         * <li>VK_FORMAT_R8G8B8A8_UNORM specifies a four-component, 32-bit unsigned normalized format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_R8G8B8A8_SNORM specifies a four-component, 32-bit signed normalized format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_R8G8B8A8_USCALED specifies a four-component, 32-bit unsigned scaled format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_R8G8B8A8_SSCALED specifies a four-component, 32-bit signed scaled format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_R8G8B8A8_UINT specifies a four-component, 32-bit unsigned integer format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_R8G8B8A8_SINT specifies a four-component, 32-bit signed integer format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_R8G8B8A8_SRGB specifies a four-component, 32-bit unsigned normalized format that has an 8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component stored with sRGB nonlinear encoding in byte 1, an 8-bit B component stored with sRGB nonlinear encoding in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_UNORM specifies a four-component, 32-bit unsigned normalized format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_SNORM specifies a four-component, 32-bit signed normalized format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_USCALED specifies a four-component, 32-bit unsigned scaled format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_SSCALED specifies a four-component, 32-bit signed scaled format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_UINT specifies a four-component, 32-bit unsigned integer format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_SINT specifies a four-component, 32-bit signed integer format that has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_B8G8R8A8_SRGB specifies a four-component, 32-bit unsigned normalized format that has an 8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component stored with sRGB nonlinear encoding in byte 1, an 8-bit R component stored with sRGB nonlinear encoding in byte 2, and an 8-bit A component in byte 3.
+         * <li>VK_FORMAT_A8B8G8R8_UNORM_PACK32 specifies a four-component, 32-bit packed unsigned normalized format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+         * <li>VK_FORMAT_A8B8G8R8_SNORM_PACK32 specifies a four-component, 32-bit packed signed normalized format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+         * <li>VK_FORMAT_A8B8G8R8_USCALED_PACK32 specifies a four-component, 32-bit packed unsigned scaled integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+         * <li>VK_FORMAT_A8B8G8R8_SSCALED_PACK32 specifies a four-component, 32-bit packed signed scaled integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+         * <li>VK_FORMAT_A8B8G8R8_UINT_PACK32 specifies a four-component, 32-bit packed unsigned integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+         * <li>VK_FORMAT_A8B8G8R8_SINT_PACK32 specifies a four-component, 32-bit packed signed integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+         * <li>VK_FORMAT_A8B8G8R8_SRGB_PACK32 specifies a four-component, 32-bit packed unsigned normalized format that has an 8-bit A component in bits 24..31, an 8-bit B component stored with sRGB nonlinear encoding in bits 16..23, an 8-bit G component stored with sRGB nonlinear encoding in bits 8..15, and an 8-bit R component stored with sRGB nonlinear encoding in bits 0..7.
+         * <li>VK_FORMAT_A2R10G10B10_UNORM_PACK32 specifies a four-component, 32-bit packed unsigned normalized format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+         * <li>VK_FORMAT_A2R10G10B10_SNORM_PACK32 specifies a four-component, 32-bit packed signed normalized format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+         * <li>VK_FORMAT_A2R10G10B10_USCALED_PACK32 specifies a four-component, 32-bit packed unsigned scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+         * <li>VK_FORMAT_A2R10G10B10_SSCALED_PACK32 specifies a four-component, 32-bit packed signed scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+         * <li>VK_FORMAT_A2R10G10B10_UINT_PACK32 specifies a four-component, 32-bit packed unsigned integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+         * <li>VK_FORMAT_A2R10G10B10_SINT_PACK32 specifies a four-component, 32-bit packed signed integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+         * <li>VK_FORMAT_A2B10G10R10_UNORM_PACK32 specifies a four-component, 32-bit packed unsigned normalized format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+         * <li>VK_FORMAT_A2B10G10R10_SNORM_PACK32 specifies a four-component, 32-bit packed signed normalized format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+         * <li>VK_FORMAT_A2B10G10R10_USCALED_PACK32 specifies a four-component, 32-bit packed unsigned scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+         * <li>VK_FORMAT_A2B10G10R10_SSCALED_PACK32 specifies a four-component, 32-bit packed signed scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+         * <li>VK_FORMAT_A2B10G10R10_UINT_PACK32 specifies a four-component, 32-bit packed unsigned integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+         * <li>VK_FORMAT_A2B10G10R10_SINT_PACK32 specifies a four-component, 32-bit packed signed integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+         * <li>VK_FORMAT_R16_UNORM specifies a one-component, 16-bit unsigned normalized format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16_SNORM specifies a one-component, 16-bit signed normalized format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16_USCALED specifies a one-component, 16-bit unsigned scaled integer format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16_SSCALED specifies a one-component, 16-bit signed scaled integer format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16_UINT specifies a one-component, 16-bit unsigned integer format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16_SINT specifies a one-component, 16-bit signed integer format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16_SFLOAT specifies a one-component, 16-bit signed floating-point format that has a single 16-bit R component.
+         * <li>VK_FORMAT_R16G16_UNORM specifies a two-component, 32-bit unsigned normalized format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16_SNORM specifies a two-component, 32-bit signed normalized format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16_USCALED specifies a two-component, 32-bit unsigned scaled integer format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16_SSCALED specifies a two-component, 32-bit signed scaled integer format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16_UINT specifies a two-component, 32-bit unsigned integer format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16_SINT specifies a two-component, 32-bit signed integer format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16_SFLOAT specifies a two-component, 32-bit signed floating-point format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+         * <li>VK_FORMAT_R16G16B16_UNORM specifies a three-component, 48-bit unsigned normalized format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16_SNORM specifies a three-component, 48-bit signed normalized format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16_USCALED specifies a three-component, 48-bit unsigned scaled integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16_SSCALED specifies a three-component, 48-bit signed scaled integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16_UINT specifies a three-component, 48-bit unsigned integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16_SINT specifies a three-component, 48-bit signed integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16_SFLOAT specifies a three-component, 48-bit signed floating-point format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in bytes 4..5.
+         * <li>VK_FORMAT_R16G16B16A16_UNORM specifies a four-component, 64-bit unsigned normalized format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R16G16B16A16_SNORM specifies a four-component, 64-bit signed normalized format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R16G16B16A16_USCALED specifies a four-component, 64-bit unsigned scaled integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R16G16B16A16_SSCALED specifies a four-component, 64-bit signed scaled integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R16G16B16A16_UINT specifies a four-component, 64-bit unsigned integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R16G16B16A16_SINT specifies a four-component, 64-bit signed integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R16G16B16A16_SFLOAT specifies a four-component, 64-bit signed floating-point format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+         * <li>VK_FORMAT_R32_UINT specifies a one-component, 32-bit unsigned integer format that has a single 32-bit R component.
+         * <li>VK_FORMAT_R32_SINT specifies a one-component, 32-bit signed integer format that has a single 32-bit R component.
+         * <li>VK_FORMAT_R32_SFLOAT specifies a one-component, 32-bit signed floating-point format that has a single 32-bit R component.
+         * <li>VK_FORMAT_R32G32_UINT specifies a two-component, 64-bit unsigned integer format that has a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+         * <li>VK_FORMAT_R32G32_SINT specifies a two-component, 64-bit signed integer format that has a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+         * <li>VK_FORMAT_R32G32_SFLOAT specifies a two-component, 64-bit signed floating-point format that has a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+         * <li>VK_FORMAT_R32G32B32_UINT specifies a three-component, 96-bit unsigned integer format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in bytes 8..11.
+         * <li>VK_FORMAT_R32G32B32_SINT specifies a three-component, 96-bit signed integer format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in bytes 8..11.
+         * <li>VK_FORMAT_R32G32B32_SFLOAT specifies a three-component, 96-bit signed floating-point format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in bytes 8..11.
+         * <li>VK_FORMAT_R32G32B32A32_UINT specifies a four-component, 128-bit unsigned integer format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11, and a 32-bit A component in bytes 12..15.
+         * <li>VK_FORMAT_R32G32B32A32_SINT specifies a four-component, 128-bit signed integer format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11, and a 32-bit A component in bytes 12..15.
+         * <li>VK_FORMAT_R32G32B32A32_SFLOAT specifies a four-component, 128-bit signed floating-point format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11, and a 32-bit A component in bytes 12..15.
+         * <li>VK_FORMAT_R64_UINT specifies a one-component, 64-bit unsigned integer format that has a single 64-bit R component.
+         * <li>VK_FORMAT_R64_SINT specifies a one-component, 64-bit signed integer format that has a single 64-bit R component.
+         * <li>VK_FORMAT_R64_SFLOAT specifies a one-component, 64-bit signed floating-point format that has a single 64-bit R component.
+         * <li>VK_FORMAT_R64G64_UINT specifies a two-component, 128-bit unsigned integer format that has a 64-bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
+         * <li>VK_FORMAT_R64G64_SINT specifies a two-component, 128-bit signed integer format that has a 64-bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
+         * <li>VK_FORMAT_R64G64_SFLOAT specifies a two-component, 128-bit signed floating-point format that has a 64-bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
+         * <li>VK_FORMAT_R64G64B64_UINT specifies a three-component, 192-bit unsigned integer format that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component in bytes 16..23.
+         * <li>VK_FORMAT_R64G64B64_SINT specifies a three-component, 192-bit signed integer format that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component in bytes 16..23.
+         * <li>VK_FORMAT_R64G64B64_SFLOAT specifies a three-component, 192-bit signed floating-point format that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component in bytes 16..23.
+         * <li>VK_FORMAT_R64G64B64A64_UINT specifies a four-component, 256-bit unsigned integer format that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component in bytes 16..23, and a 64-bit A component in bytes 24..31.
+         * <li>VK_FORMAT_R64G64B64A64_SINT specifies a four-component, 256-bit signed integer format that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component in bytes 16..23, and a 64-bit A component in bytes 24..31.
+         * <li>VK_FORMAT_R64G64B64A64_SFLOAT specifies a four-component, 256-bit signed floating-point format that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component in bytes 16..23, and a 64-bit A component in bytes 24..31.
+         * <li>VK_FORMAT_B10G11R11_UFLOAT_PACK32 specifies a three-component, 32-bit packed unsigned floating-point format that has a 10-bit B component in bits 22..31, an 11-bit G component in bits 11..21, an 11-bit R component in bits 0..10. See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#fundamentals-fp10 and https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#fundamentals-fp11.
+         * <li>VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 specifies a three-component, 32-bit packed unsigned floating-point format that has a 5-bit shared exponent in bits 27..31, a 9-bit B component mantissa in bits 18..26, a 9-bit G component mantissa in bits 9..17, and a 9-bit R component mantissa in bits 0..8.
+         * <li>VK_FORMAT_D16_UNORM specifies a one-component, 16-bit unsigned normalized format that has a single 16-bit depth component.
+         * <li>VK_FORMAT_X8_D24_UNORM_PACK32 specifies a two-component, 32-bit format that has 24 unsigned normalized bits in the depth component and, optionally, 8 bits that are unused.
+         * <li>VK_FORMAT_D32_SFLOAT specifies a one-component, 32-bit signed floating-point format that has 32 bits in the depth component.
+         * <li>VK_FORMAT_S8_UINT specifies a one-component, 8-bit unsigned integer format that has 8 bits in the stencil component.
+         * <li>VK_FORMAT_D16_UNORM_S8_UINT specifies a two-component, 24-bit format that has 16 unsigned normalized bits in the depth component and 8 unsigned integer bits in the stencil component.
+         * <li>VK_FORMAT_D24_UNORM_S8_UINT specifies a two-component, 32-bit packed format that has 8 unsigned integer bits in the stencil component, and 24 unsigned normalized bits in the depth component.
+         * <li>VK_FORMAT_D32_SFLOAT_S8_UINT specifies a two-component format that has 32 signed float bits in the depth component and 8 unsigned integer bits in the stencil component. There are optionally 24 bits that are unused.
+         * <li>VK_FORMAT_BC1_RGB_UNORM_BLOCK specifies a three-component, block-compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data. This format has no alpha and is considered opaque.
+         * <li>VK_FORMAT_BC1_RGB_SRGB_BLOCK specifies a three-component, block-compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding. This format has no alpha and is considered opaque.
+         * <li>VK_FORMAT_BC1_RGBA_UNORM_BLOCK specifies a four-component, block-compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data, and provides 1 bit of alpha.
+         * <li>VK_FORMAT_BC1_RGBA_SRGB_BLOCK specifies a four-component, block-compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding, and provides 1 bit of alpha.
+         * <li>VK_FORMAT_BC2_UNORM_BLOCK specifies a four-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
+         * <li>VK_FORMAT_BC2_SRGB_BLOCK specifies a four-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB nonlinear encoding.
+         * <li>VK_FORMAT_BC3_UNORM_BLOCK specifies a four-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
+         * <li>VK_FORMAT_BC3_SRGB_BLOCK specifies a four-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB nonlinear encoding.
+         * <li>VK_FORMAT_BC4_UNORM_BLOCK specifies a one-component, block-compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized red texel data.
+         * <li>VK_FORMAT_BC4_SNORM_BLOCK specifies a one-component, block-compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of signed normalized red texel data.
+         * <li>VK_FORMAT_BC5_UNORM_BLOCK specifies a two-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RG texel data with the first 64 bits encoding red values followed by 64 bits encoding green values.
+         * <li>VK_FORMAT_BC5_SNORM_BLOCK specifies a two-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of signed normalized RG texel data with the first 64 bits encoding red values followed by 64 bits encoding green values.
+         * <li>VK_FORMAT_BC6H_UFLOAT_BLOCK specifies a three-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned floating-point RGB texel data.
+         * <li>VK_FORMAT_BC6H_SFLOAT_BLOCK specifies a three-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of signed floating-point RGB texel data.
+         * <li>VK_FORMAT_BC7_UNORM_BLOCK specifies a four-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_BC7_SRGB_BLOCK specifies a four-component, block-compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK specifies a three-component, ETC2 compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data. This format has no alpha and is considered opaque.
+         * <li>VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK specifies a three-component, ETC2 compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding. This format has no alpha and is considered opaque.
+         * <li>VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK specifies a four-component, ETC2 compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data, and provides 1 bit of alpha.
+         * <li>VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK specifies a four-component, ETC2 compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding, and provides 1 bit of alpha.
+         * <li>VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK specifies a four-component, ETC2 compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
+         * <li>VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK specifies a four-component, ETC2 compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB nonlinear encoding applied.
+         * <li>VK_FORMAT_EAC_R11_UNORM_BLOCK specifies a one-component, ETC2 compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized red texel data.
+         * <li>VK_FORMAT_EAC_R11_SNORM_BLOCK specifies a one-component, ETC2 compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of signed normalized red texel data.
+         * <li>VK_FORMAT_EAC_R11G11_UNORM_BLOCK specifies a two-component, ETC2 compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RG texel data with the first 64 bits encoding red values followed by 64 bits encoding green values.
+         * <li>VK_FORMAT_EAC_R11G11_SNORM_BLOCK specifies a two-component, ETC2 compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of signed normalized RG texel data with the first 64 bits encoding red values followed by 64 bits encoding green values.
+         * <li>VK_FORMAT_ASTC_4x4_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_4x4_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 4×4 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_5x4_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 5×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_5x4_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 5×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 5×4 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_5x5_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 5×5 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_5x5_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 5×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 5×5 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_6x5_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 6×5 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_6x5_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 6×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 6×5 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_6x6_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 6×6 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_6x6_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 6×6 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 6×6 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_8x5_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes an 8×5 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_8x5_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes an 8×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 8×5 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_8x6_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes an 8×6 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_8x6_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes an 8×6 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 8×6 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_8x8_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes an 8×8 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_8x8_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes an 8×8 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 8×8 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x5_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×5 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x5_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×5 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x6_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×6 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x6_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×6 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×6 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x8_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×8 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x8_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×8 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×8 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x10_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×10 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_10x10_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×10 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 10×10 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_12x10_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 12×10 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_12x10_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 12×10 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 12×10 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_ASTC_12x12_UNORM_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 12×12 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_ASTC_12x12_SRGB_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 12×12 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK specifies a four-component, ASTC compressed format where each 128-bit compressed texel block encodes a 12×12 rectangle of signed floating-point RGBA texel data.
+         * <li>VK_FORMAT_G8B8G8R8_422_UNORM specifies a four-component, 32-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has an 8-bit G component for the even i coordinate in byte 0, an 8-bit B component in byte 1, an 8-bit G component for the odd i coordinate in byte 2, and an 8-bit R component in byte 3. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_B8G8R8G8_422_UNORM specifies a four-component, 32-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has an 8-bit B component in byte 0, an 8-bit G component for the even i coordinate in byte 1, an 8-bit R component in byte 2, and an 8-bit G component for the odd i coordinate in byte 3. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM specifies an unsigned normalized multi-planar format that has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component in plane 2. The horizontal and vertical dimensions of the R and B planes are halved relative to the image dimensions, and each R and B component is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB =jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G8_B8R8_2PLANE_420_UNORM specifies an unsigned normalized multi-planar format that has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-bit B component in byte 0 and an 8-bit R component in byte 1. The horizontal and vertical dimensions of the BR plane are halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM specifies an unsigned normalized multi-planar format that has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component in plane 2. The horizontal dimension of the R and B plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G8_B8R8_2PLANE_422_UNORM specifies an unsigned normalized multi-planar format that has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-bit B component in byte 0 and an 8-bit R component in byte 1. The horizontal dimension of the BR plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM specifies an unsigned normalized multi-planar format that has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component in plane 2. Each plane has the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+         * <li>VK_FORMAT_R10X6_UNORM_PACK16 specifies a one-component, 16-bit unsigned normalized format that has a single 10-bit R component in the top 10 bits of a 16-bit word, with the bottom 6 bits unused.
+         * <li>VK_FORMAT_R10X6G10X6_UNORM_2PACK16 specifies a two-component, 32-bit unsigned normalized format that has a 10-bit R component in the top 10 bits of the word in bytes 0..1, and a 10-bit G component in the top 10 bits of the word in bytes 2..3, with the bottom 6 bits of each word unused.
+         * <li>VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16 specifies a four-component, 64-bit unsigned normalized format that has a 10-bit R component in the top 10 bits of the word in bytes 0..1, a 10-bit G component in the top 10 bits of the word in bytes 2..3, a 10-bit B component in the top 10 bits of the word in bytes 4..5, and a 10-bit A component in the top 10 bits of the word in bytes 6..7, with the bottom 6 bits of each word unused.
+         * <li>VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 specifies a four-component, 64-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has a 10-bit G component for the even i coordinate in the top 10 bits of the word in bytes 0..1, a 10-bit B component in the top 10 bits of the word in bytes 2..3, a 10-bit G component for the odd i coordinate in the top 10 bits of the word in bytes 4..5, and a 10-bit R component in the top 10 bits of the word in bytes 6..7, with the bottom 6 bits of each word unused. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 specifies a four-component, 64-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has a 10-bit B component in the top 10 bits of the word in bytes 0..1, a 10-bit G component for the even i coordinate in the top 10 bits of the word in bytes 2..3, a 10-bit R component in the top 10 bits of the word in bytes 4..5, and a 10-bit G component for the odd i coordinate in the top 10 bits of the word in bytes 6..7, with the bottom 6 bits of each word unused. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a 10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. The horizontal and vertical dimensions of the R and B planes are halved relative to the image dimensions, and each R and B component is shared with the G components for which ⌊iG × 0.5⌋ =iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, with the bottom 6 bits of each word unused. The horizontal and vertical dimensions of the BR plane are halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG ×0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a 10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. The horizontal dimension of the R and B plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, with the bottom 6 bits of each word unused. The horizontal dimension of the BR plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a 10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. Each plane has the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+         * <li>VK_FORMAT_R12X4_UNORM_PACK16 specifies a one-component, 16-bit unsigned normalized format that has a single 12-bit R component in the top 12 bits of a 16-bit word, with the bottom 4 bits unused.
+         * <li>VK_FORMAT_R12X4G12X4_UNORM_2PACK16 specifies a two-component, 32-bit unsigned normalized format that has a 12-bit R component in the top 12 bits of the word in bytes 0..1, and a 12-bit G component in the top 12 bits of the word in bytes 2..3, with the bottom 4 bits of each word unused.
+         * <li>VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16 specifies a four-component, 64-bit unsigned normalized format that has a 12-bit R component in the top 12 bits of the word in bytes 0..1, a 12-bit G component in the top 12 bits of the word in bytes 2..3, a 12-bit B component in the top 12 bits of the word in bytes 4..5, and a 12-bit A component in the top 12 bits of the word in bytes 6..7, with the bottom 4 bits of each word unused.
+         * <li>VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 specifies a four-component, 64-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has a 12-bit G component for the even i coordinate in the top 12 bits of the word in bytes 0..1, a 12-bit B component in the top 12 bits of the word in bytes 2..3, a 12-bit G component for the odd i coordinate in the top 12 bits of the word in bytes 4..5, and a 12-bit R component in the top 12 bits of the word in bytes 6..7, with the bottom 4 bits of each word unused. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 specifies a four-component, 64-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has a 12-bit B component in the top 12 bits of the word in bytes 0..1, a 12-bit G component for the even i coordinate in the top 12 bits of the word in bytes 2..3, a 12-bit R component in the top 12 bits of the word in bytes 4..5, and a 12-bit G component for the odd i coordinate in the top 12 bits of the word in bytes 6..7, with the bottom 4 bits of each word unused. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a 12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. The horizontal and vertical dimensions of the R and B planes are halved relative to the image dimensions, and each R and B component is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, with the bottom 4 bits of each word unused. The horizontal and vertical dimensions of the BR plane are halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a 12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. The horizontal dimension of the R and B plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, with the bottom 4 bits of each word unused. The horizontal dimension of the BR plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a 12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. Each plane has the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+         * <li>VK_FORMAT_G16B16G16R16_422_UNORM specifies a four-component, 64-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has a 16-bit G component for the even i coordinate in the word in bytes 0..1, a 16-bit B component in the word in bytes 2..3, a 16-bit G component for the odd i coordinate in the word in bytes 4..5, and a 16-bit R component in the word in bytes 6..7. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_B16G16R16G16_422_UNORM specifies a four-component, 64-bit format containing a pair of G components, an R component, and a B component, collectively encoding a 2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and R values shared across both G values and thus recorded at half the horizontal resolution of the image. This format has a 16-bit B component in the word in bytes 0..1, a 16-bit G component for the even i coordinate in the word in bytes 2..3, a 16-bit R component in the word in bytes 4..5, and a 16-bit G component for the odd i coordinate in the word in bytes 6..7. This format only supports images with a width that is a multiple of two. For the purposes of the constraints on copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
+         * <li>VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM specifies an unsigned normalized multi-planar format that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. The horizontal and vertical dimensions of the R and B planes are halved relative to the image dimensions, and each R and B component is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G16_B16R16_2PLANE_420_UNORM specifies an unsigned normalized multi-planar format that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in the word in bytes 2..3. The horizontal and vertical dimensions of the BR plane are halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR and ⌊jG × 0.5⌋ = jB = jR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width and height that is a multiple of two.
+         * <li>VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM specifies an unsigned normalized multi-planar format that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. The horizontal dimension of the R and B plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G16_B16R16_2PLANE_422_UNORM specifies an unsigned normalized multi-planar format that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in the word in bytes 2..3. The horizontal dimension of the BR plane is halved relative to the image dimensions, and each R and B value is shared with the G components for which ⌊iG × 0.5⌋ = iB = iR. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width that is a multiple of two.
+         * <li>VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM specifies an unsigned normalized multi-planar format that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. Each plane has the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+         * <li>VK_FORMAT_G8_B8R8_2PLANE_444_UNORM specifies an unsigned normalized multi-planar format that has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-bit B component in byte 0 and an 8-bit R component in byte 1. Both planes have the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+         * <li>VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, the bottom 6 bits of each word unused. Both planes have the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+         * <li>VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 specifies an unsigned normalized multi-planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, the bottom 4 bits of each word unused. Both planes have the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+         * <li>VK_FORMAT_G16_B16R16_2PLANE_444_UNORM specifies an unsigned normalized multi-planar format that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in the word in bytes 2..3. Both planes have the same dimensions and each R, G and B component contributes to a single texel. The location of each plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+         * <li>VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data.
+         * <li>VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG specifies a four-component, PVRTC compressed format where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+         * <li>VK_FORMAT_R16G16_SFIXED5_NV specifies a two-component, 16-bit signed fixed-point format with linear encoding. The components are signed two’s-complement integers where the most significant bit specifies the sign bit, the next 10 bits specify the integer value, and the last 5 bits represent the fractional value. The signed 16-bit values can be converted to floats in the range [-1024,1023.96875] by dividing the value by 32 (25).
+         * </ul>
+         */
+        using Format = VkFormat;
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDeviceSize - Vulkan device memory size and offsets<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * VkDeviceSize represents device memory size and offset values:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef uint64_t VkDeviceSize;
+         * @endcode
+         */
+        using DeviceSize = VkDeviceSize;
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkClearColorValue - Structure specifying a clear color value<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkClearColorValue structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * // Provided by VK_VERSION_1_0
+         * typedef union VkClearColorValue {
+         *     float       float32[4];
+         *     int32_t     int32[4];
+         *     uint32_t    uint32[4];
+         * } VkClearColorValue;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>float32 are the color clear values when the format of the image or attachment is one of the numeric formats with a numeric type that is floating-point. Floating point values are automatically converted to the format of the image, with the clear value being treated as linear if the image is sRGB.
+         * <li>int32 are the color clear values when the format of the image or attachment has a numeric type that is signed integer (SINT). Signed integer values are converted to the format of the image by casting to the smaller type (with negative 32-bit values mapping to negative values in the smaller type). If the integer clear value is not representable in the target type (e.g. would overflow in conversion to that type), the clear value is undefined.
+         * <li>uint32 are the color clear values when the format of the image or attachment has a numeric type that is unsigned integer (UINT). Unsigned integer values are converted to the format of the image by casting to the integer type with fewer bits.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The four array elements of the clear color map to R, G, B, and A components of image formats, in order.<br><br>
+         *
+         * If the image has more than one sample, the same value is written to all samples for any pixels being cleared.<br><br>
+         *
+         * If the image or attachment format has a 64-bit component width, the first 2 array elements of each of the arrays above are reinterpreted as a single 64-bit element for the R component. The next 2 array elements are used in the same way for the G component. In other words, the union behaves as if it had the following additional members:
+         *
+         * @code
+         * double float64[2];
+         * int64_t int64[2];
+         * uint64_t uint64[2];
+         * @endcode
+         */
+        using ClearColorValue = VkClearColorValue;
+        constexpr ClearColorValue createClearColorValue(
+                const float        float32[4]
+        ) {
+                return {
+                        .float32 = { float32[0], float32[1], float32[2], float32[3] }
+                };
+        }
+        constexpr ClearColorValue createClearColorValue(
+                const int32_t        int32[4]
+        ) {
+                return {
+                        .int32 = { int32[0], int32[1], int32[2], int32[3] }
+                };
+        }
+        constexpr ClearColorValue createClearColorValue(
+                const uint32_t        uint32[4]
+        ) {
+                return {
+                        .uint32 = { uint32[0], uint32[1], uint32[2], uint32[3] }
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkClearDepthStencilValue - Structure specifying a clear depth stencil value<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkClearDepthStencilValue structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkClearDepthStencilValue {
+         *     float       depth;
+         *     uint32_t    stencil;
+         * } VkClearDepthStencilValue;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>depth is the clear value for the depth aspect of the depth/stencil attachment. It is a floating-point value which is automatically converted to the attachment’s format.
+         * <li>stencil is the clear value for the stencil aspect of the depth/stencil attachment. It is a 32-bit integer value which is converted to the attachment’s format by taking the appropriate number of LSBs.
+         * </ul>
+         */
+        using ClearDepthStencilValue = VkClearDepthStencilValue;
+        constexpr ClearDepthStencilValue createClearDepthStencilValue(
+                const float           &depth,
+                const uint32_t        &stencil
+        ) {
+                return {
+                        .depth = depth,
+                        .stencil = stencil
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkClearValue - Structure specifying a clear value<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkClearValue union is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef union VkClearValue {
+         *     VkClearColorValue           color;
+         *     VkClearDepthStencilValue    depthStencil;
+         * } VkClearValue;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>color specifies the color image clear values to use when clearing a color image or attachment.
+         * <li>depthStencil specifies the depth and stencil clear values to use when clearing a depth/stencil image or attachment.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * This union is used where part of the API requires either color or depth/stencil clear values, depending on the attachment, and defines the initial clear values in the VkRenderPassBeginInfo structure.
+         */
+        using ClearValue = VkClearValue;
+        constexpr ClearValue createClearValue(
+                const VkClearColorValue        &clearColorValue
+        ) {
+                return {
+                        .color = clearColorValue
+                };
+        }
+        constexpr ClearValue createClearValue(
+                const ClearDepthStencilValue        &depthStencil
+        ) {
+                return {
+                        .depthStencil = depthStencil
+                };
+        }
+        constexpr ClearValue createClearValue(
+                const float        &r,
+                const float        &g,
+                const float        &b,
+                const float        &a
+        ) {
+                const float float32[4]{r, g, b ,a};
+                return {
+                        .color = vk::createClearColorValue(float32)
+                };
+        }
+        constexpr ClearValue createClearValue(
+                const int32_t        &r,
+                const int32_t        &g,
+                const int32_t        &b,
+                const int32_t        &a
+        ) {
+                const int32_t int32[4]{r, g, b ,a};
+                return {
+                        .color = vk::createClearColorValue(int32)
+                };
+        }
+        constexpr ClearValue createClearValue(
+                const uint32_t        &r,
+                const uint32_t        &g,
+                const uint32_t        &b,
+                const uint32_t        &a
+        ) {
+                const uint32_t uint32[4]{r, g, b ,a};
+                return {
+                        .color = vk::createClearColorValue(uint32)
+                };
+        }
+        constexpr ClearValue createClearValue(
+                const float           &depth,
+                const uint32_t        &stencil
+        ) {
+                return {
+                        .depthStencil = vk::createClearDepthStencilValue(depth, stencil)
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -470,7 +1544,7 @@ namespace vk {
         using Buffer = VkBuffer;
         Buffer createBuffer(
                 const Device                       &device,
-                const VkDeviceSize                 &size,
+                const DeviceSize                   &size,
                 const VkBufferUsageFlags           &usage,
                 const VkAllocationCallbacks        *pAllocator
         );
@@ -497,9 +1571,9 @@ namespace vk {
         BufferView createBufferView(
                 const Device                       &device,
                 const Buffer                       &buffer,
-                const VkFormat                     &format,
-                const VkDeviceSize                 &offset,
-                const VkDeviceSize                 &range,
+                const Format                       &format,
+                const DeviceSize                   &offset,
+                const DeviceSize                   &range,
                 const VkAllocationCallbacks        *pAllocator
         );
 
@@ -676,7 +1750,7 @@ namespace vk {
         Image createImage(
                 const Device                       &device,
                 const VkImageType                  &imageType,
-                const VkFormat                     &format,
+                const Format                       &format,
                 const Extent3D                     &extent,
                 const VkImageUsageFlags            &usage,
                 const std::vector<uint32_t>        &queueFamilyIndices,
@@ -701,7 +1775,7 @@ namespace vk {
         using ImageView = VkImageView;
         ImageView createImageView(
                 const Image                        &image,
-                const VkFormat                     &format,
+                const Format                       &format,
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator
         );
@@ -929,7 +2003,7 @@ namespace vk {
         constexpr VertexInputAttributeDescription createVertexInputAttributeDescription(
                 const uint32_t        &location,
                 const uint32_t        &binding,
-                const VkFormat        &format,
+                const Format          &format,
                 const uint32_t        &offset
         ) {
                 return {
@@ -1630,7 +2704,7 @@ namespace vk {
          */
         using AccelerationStructureCreateInfoNV = VkAccelerationStructureCreateInfoNV;
         constexpr AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
-                const VkDeviceSize                         &compactedSize,
+                const DeviceSize                           &compactedSize,
                 const AccelerationStructureInfoNV          &info
         ) {
                 return {
@@ -1744,10 +2818,10 @@ namespace vk {
          */
         using BufferViewCreateInfo = VkBufferViewCreateInfo;
         constexpr BufferViewCreateInfo createBufferViewCreateInfo(
-                const Buffer              &buffer,
-                const VkFormat            &format,
-                const VkDeviceSize        &offset,
-                const VkDeviceSize        &range
+                const Buffer            &buffer,
+                const Format            &format,
+                const DeviceSize        &offset,
+                const DeviceSize        &range
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO,
@@ -2178,7 +3252,7 @@ namespace vk {
          */
         using AttachmentDescription = VkAttachmentDescription;
         constexpr AttachmentDescription createAttachmentDescription(
-                const VkFormat        &format
+                const Format        &format
         ) {
                 return {
                         .flags = VkAttachmentDescriptionFlags(),
@@ -2582,8 +3656,8 @@ namespace vk {
          */
         using MemoryAllocateInfo = VkMemoryAllocateInfo;
         constexpr MemoryAllocateInfo createMemoryAllocateInfo(
-                const uint64_t        &allocationSize,
-                const uint32_t        &memoryTypeIndex
+                const DeviceSize        &allocationSize,
+                const uint32_t          &memoryTypeIndex
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -2619,7 +3693,7 @@ namespace vk {
          */
         using BufferCopy = VkBufferCopy;
         constexpr BufferCopy createBufferCopy(
-                const size_t        &size
+                const DeviceSize        &size
         ) {
                 return {
                         .srcOffset = 0,
@@ -2667,7 +3741,7 @@ namespace vk {
          */
         using BufferCreateInfo = VkBufferCreateInfo;
         constexpr BufferCreateInfo createBufferCreateInfo(
-                const VkDeviceSize              &size,
+                const DeviceSize                &size,
                 const VkBufferUsageFlags        &usage
         ) {
                 return {
@@ -3135,7 +4209,7 @@ namespace vk {
         using ImageViewCreateInfo = VkImageViewCreateInfo;
         constexpr ImageViewCreateInfo createImageViewCreateInfo(
                 const Image           &image,
-                const VkFormat        &format
+                const Format          &format
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -3920,9 +4994,9 @@ namespace vk {
          */
         using DescriptorBufferInfo = VkDescriptorBufferInfo;
         constexpr DescriptorBufferInfo createDescriptorBufferInfo(
-                const Buffer              &buffer,
-                const VkDeviceSize        &offset,
-                const VkDeviceSize        &range
+                const Buffer            &buffer,
+                const DeviceSize        &offset,
+                const DeviceSize        &range
         ) {
                 return {
                         .buffer = buffer,
@@ -4080,7 +5154,7 @@ namespace vk {
         using ImageCreateInfo = VkImageCreateInfo;
         constexpr ImageCreateInfo createImageCreateInfo(
                 const VkImageType                  &imageType,
-                const VkFormat                     &format,
+                const Format                       &format,
                 const Extent3D                     &extent,
                 const VkImageUsageFlags            &usage,
                 const std::vector<uint32_t>        &queueFamilyIndices
@@ -4291,10 +5365,10 @@ namespace vk {
          */
         using BufferImageCopy = VkBufferImageCopy;
         constexpr BufferImageCopy createBufferImageCopy(
-                const VkDeviceSize                    &bufferOffset,
-                const uint32_t                        &bufferRowLength,
-                const uint32_t                        &bufferImageHeight,
-                const Extent3D                        &imageExtent
+                const DeviceSize                    &bufferOffset,
+                const uint32_t                      &bufferRowLength,
+                const uint32_t                      &bufferImageHeight,
+                const Extent3D                      &imageExtent
         ) {
                 return {
                         .bufferOffset = bufferOffset,
@@ -4442,6 +5516,7 @@ namespace vk {
          * <li>imageLayout is the layout that the image subresources accessible from imageView will be in at the time this descriptor is accessed. imageLayout is used in descriptor updates for types VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, and VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT.
          * </ul><br>
          * <b>Description</b><hr><br>
+         *
          * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
          */
         using DescriptorImageInfo = VkDescriptorImageInfo;
@@ -4468,8 +5543,8 @@ namespace vk {
          * @code
          * // Provided by VK_VERSION_1_0
          * typedef struct VkPhysicalDeviceFeatures {
-         *     Bool32    robustBufferAccess;
-         *     Bool32    fullDrawIndexUint32;
+         *     VkBool32    robustBufferAccess;
+         *     VkBool32    fullDrawIndexUint32;
          *     VkBool32    imageCubeArray;
          *     VkBool32    independentBlend;
          *     VkBool32    geometryShader;
@@ -4549,8 +5624,8 @@ namespace vk {
          * <li>If the access is a load that reads from the same memory locations as a prior store in the same shader invocation, with no other intervening accesses to the same memory locations in that shader invocation, then the result of the load <b>may</b> be the value stored by the store instruction, even if the access is out of bounds. If the load is Volatile, then an out of bounds load <b>must</b> return the appropriate out of bounds value.
          *     <ul>
          *     <li>Accesses to descriptors written with a VK_NULL_HANDLE resource or view are not considered to be out of bounds. Instead, each type of descriptor access defines a specific behavior for accesses to a null descriptor.
+         *     <li>Out-of-bounds buffer loads will return any of the following values:
          *     </ul>
-         * <li>Out-of-bounds buffer loads will return any of the following values:
          * <li>If the access is to a uniform buffer and robustBufferAccess2 is enabled, loads of offsets between the end of the descriptor range and the end of the descriptor range rounded up to a multiple of robustUniformBufferAccessSizeAlignment bytes <b>must</b> return either zero values or the contents of the memory at the offset being loaded. Loads of offsets past the descriptor range rounded up to a multiple of robustUniformBufferAccessSizeAlignment bytes <b>must</b> return zero values.
          * <li>If the access is to a storage buffer and robustBufferAccess2 is enabled, loads of offsets between the end of the descriptor range and the end of the descriptor range rounded up to a multiple of robustStorageBufferAccessSizeAlignment bytes <b>must</b> return either zero values or the contents of the memory at the offset being loaded. Loads of offsets past the descriptor range rounded up to a multiple of robustStorageBufferAccessSizeAlignment bytes <b>must</b> return zero values. Similarly, stores to addresses between the end of the descriptor range and the end of the descriptor range rounded up to a multiple of robustStorageBufferAccessSizeAlignment bytes <b>may</b> be discarded.
          * <li>Non-atomic accesses to storage buffers that are a multiple of 32 bits <b>may</b> be decomposed into 32-bit accesses that are individually bounds-checked.
@@ -4588,35 +5663,35 @@ namespace vk {
          * <li>If a vertex input attribute is out of bounds, the raw data extracted are zero values, and missing G, B, or A components are filled with (0,0,1).
          *     <ul>
          *     <li>If robustBufferAccess is not enabled, applications <b>must</b> not perform out of bounds accesses except under the conditions enabled by the pipelineRobustness feature.
-         *         <ul>
-         *         <li>fullDrawIndexUint32 specifies the full 32-bit range of indices is supported for indexed draw calls when using a VkIndexType of VK_INDEX_TYPE_UINT32. maxDrawIndexedIndexValue is the maximum index value that <b>may</b> be used (aside from the primitive restart index, which is always 2^32-1 when the VkIndexType is VK_INDEX_TYPE_UINT32). If this feature is supported, maxDrawIndexedIndexValue <b>must</b> be 2^32-1; otherwise it <b>must</b> be no smaller than 2^24-1. See maxDrawIndexedIndexValue.
-         *         <li>imageCubeArray specifies whether image views with a VkImageViewType of VK_IMAGE_VIEW_TYPE_CUBE_ARRAY <b>can</b> be created, and that the corresponding SampledCubeArray and ImageCubeArray SPIR-V capabilities <b>can</b> be used in shader code.
-         *         <li>independentBlend specifies whether the VkPipelineColorBlendAttachmentState settings are controlled independently per-attachment. If this feature is not enabled, the VkPipelineColorBlendAttachmentState settings for all color attachments must be identical. Otherwise, a different VkPipelineColorBlendAttachmentState <b>can</b> be provided for each bound color attachment.
-         *         <li>geometryShader specifies whether geometry shaders are supported. If this feature is not enabled, the VK_SHADER_STAGE_GEOMETRY_BIT and VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT enum values <b>must</b> not be used. This also specifies whether shader modules <b>can</b> declare the Geometry capability.
-         *         <li>tessellationShader specifies whether tessellation control and evaluation shaders are supported. If this feature is not enabled, the VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT, VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT, and VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO enum values <b>must</b> not be used. This also specifies whether shader modules <b>can</b> declare the Tessellation capability.
-         *         <li>sampleRateShading specifies whether Sample Shading and multisample interpolation are supported. If this feature is not enabled, the sampleShadingEnable member of the VkPipelineMultisampleStateCreateInfo structure <b>must</b> be set to VK_FALSE and the minSampleShading member is ignored. This also specifies whether shader modules <b>can</b> declare the SampleRateShading capability.
-         *         <li>dualSrcBlend specifies whether blend operations which take two sources are supported. If this feature is not enabled, the VK_BLEND_FACTOR_SRC1_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR, VK_BLEND_FACTOR_SRC1_ALPHA, and VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA enum values <b>must</b> not be used as source or destination blending factors. See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#framebuffer-dsb.
-         *         <li>logicOp specifies whether logic operations are supported. If this feature is not enabled, the logicOpEnable member of the VkPipelineColorBlendStateCreateInfo structure <b>must</b> be set to VK_FALSE, and the logicOp member is ignored.
-         *         <li>multiDrawIndirect specifies whether multiple draw indirect is supported. If this feature is not enabled, the drawCount parameter to the vkCmdDrawIndirect and vkCmdDrawIndexedIndirect commands <b>must</b> be 0 or 1. The maxDrawIndirectCount member of the VkPhysicalDeviceLimits structure <b>must</b> also be 1 if this feature is not supported. See maxDrawIndirectCount.
-         *         <li>drawIndirectFirstInstance specifies whether indirect drawing calls support the firstInstance parameter. If this feature is not enabled, the firstInstance member of all VkDrawIndirectCommand and VkDrawIndexedIndirectCommand structures that are provided to the vkCmdDrawIndirect and vkCmdDrawIndexedIndirect commands <b>must</b> be 0.
-         *         <li>depthClamp specifies whether depth clamping is supported. If this feature is not enabled, the depthClampEnable member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to VK_FALSE. Otherwise, setting depthClampEnable to VK_TRUE will enable depth clamping.
-         *         <li>depthBiasClamp specifies whether depth bias clamping is supported. If this feature is not enabled, the depthBiasClamp member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to 0.0 unless the VK_DYNAMIC_STATE_DEPTH_BIAS dynamic state is enabled, and the depthBiasClamp parameter to vkCmdSetDepthBias <b>must</b> be set to 0.0.
-         *         <li>fillModeNonSolid specifies whether point and wireframe fill modes are supported. If this feature is not enabled, the VK_POLYGON_MODE_POINT and VK_POLYGON_MODE_LINE enum values <b>must</b> not be used.
-         *         <li>depthBounds specifies whether depth bounds tests are supported. If this feature is not enabled, the depthBoundsTestEnable member of the VkPipelineDepthStencilStateCreateInfo structure <b>must</b> be set to VK_FALSE. When depthBoundsTestEnable is set to VK_FALSE, the minDepthBounds and maxDepthBounds members of the VkPipelineDepthStencilStateCreateInfo structure are ignored.
-         *         <li>wideLines specifies whether lines with width other than 1.0 are supported. If this feature is not enabled, the lineWidth member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to 1.0 unless the VK_DYNAMIC_STATE_LINE_WIDTH dynamic state is enabled, and the lineWidth parameter to vkCmdSetLineWidth <b>must</b> be set to 1.0. When this feature is supported, the range and granularity of supported line widths are indicated by the lineWidthRange and lineWidthGranularity members of the VkPhysicalDeviceLimits structure, respectively.
-         *         <li>largePoints specifies whether points with size greater than 1.0 are supported. If this feature is not enabled, only a point size of 1.0 written by a shader is supported. The range and granularity of supported point sizes are indicated by the pointSizeRange and pointSizeGranularity members of the VkPhysicalDeviceLimits structure, respectively.
-         *         <li>alphaToOne specifies whether the implementation is able to replace the alpha value of the fragment shader color output in the Multisample Coverage fragment operation. If this feature is not enabled, then the alphaToOneEnable member of the VkPipelineMultisampleStateCreateInfo structure <b>must</b> be set to VK_FALSE. Otherwise setting alphaToOneEnable to VK_TRUE will enable alpha-to-one behavior.
-         *         <li>multiViewport specifies whether more than one viewport is supported. If this feature is not enabled:
-         *         </ul>
+         *     </ul>
+         * <li>fullDrawIndexUint32 specifies the full 32-bit range of indices is supported for indexed draw calls when using a VkIndexType of VK_INDEX_TYPE_UINT32. maxDrawIndexedIndexValue is the maximum index value that <b>may</b> be used (aside from the primitive restart index, which is always 2^32-1 when the VkIndexType is VK_INDEX_TYPE_UINT32). If this feature is supported, maxDrawIndexedIndexValue <b>must</b> be 2^32-1; otherwise it <b>must</b> be no smaller than 2^24-1. See maxDrawIndexedIndexValue.
+         * <li>imageCubeArray specifies whether image views with a VkImageViewType of VK_IMAGE_VIEW_TYPE_CUBE_ARRAY <b>can</b> be created, and that the corresponding SampledCubeArray and ImageCubeArray SPIR-V capabilities <b>can</b> be used in shader code.
+         * <li>independentBlend specifies whether the VkPipelineColorBlendAttachmentState settings are controlled independently per-attachment. If this feature is not enabled, the VkPipelineColorBlendAttachmentState settings for all color attachments must be identical. Otherwise, a different VkPipelineColorBlendAttachmentState <b>can</b> be provided for each bound color attachment.
+         * <li>geometryShader specifies whether geometry shaders are supported. If this feature is not enabled, the VK_SHADER_STAGE_GEOMETRY_BIT and VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT enum values <b>must</b> not be used. This also specifies whether shader modules <b>can</b> declare the Geometry capability.
+         * <li>tessellationShader specifies whether tessellation control and evaluation shaders are supported. If this feature is not enabled, the VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT, VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT, and VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO enum values <b>must</b> not be used. This also specifies whether shader modules <b>can</b> declare the Tessellation capability.
+         * <li>sampleRateShading specifies whether Sample Shading and multisample interpolation are supported. If this feature is not enabled, the sampleShadingEnable member of the VkPipelineMultisampleStateCreateInfo structure <b>must</b> be set to VK_FALSE and the minSampleShading member is ignored. This also specifies whether shader modules <b>can</b> declare the SampleRateShading capability.
+         * <li>dualSrcBlend specifies whether blend operations which take two sources are supported. If this feature is not enabled, the VK_BLEND_FACTOR_SRC1_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR, VK_BLEND_FACTOR_SRC1_ALPHA, and VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA enum values <b>must</b> not be used as source or destination blending factors. See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#framebuffer-dsb.
+         * <li>logicOp specifies whether logic operations are supported. If this feature is not enabled, the logicOpEnable member of the VkPipelineColorBlendStateCreateInfo structure <b>must</b> be set to VK_FALSE, and the logicOp member is ignored.
+         * <li>multiDrawIndirect specifies whether multiple draw indirect is supported. If this feature is not enabled, the drawCount parameter to the vkCmdDrawIndirect and vkCmdDrawIndexedIndirect commands <b>must</b> be 0 or 1. The maxDrawIndirectCount member of the VkPhysicalDeviceLimits structure <b>must</b> also be 1 if this feature is not supported. See maxDrawIndirectCount.
+         * <li>drawIndirectFirstInstance specifies whether indirect drawing calls support the firstInstance parameter. If this feature is not enabled, the firstInstance member of all VkDrawIndirectCommand and VkDrawIndexedIndirectCommand structures that are provided to the vkCmdDrawIndirect and vkCmdDrawIndexedIndirect commands <b>must</b> be 0.
+         * <li>depthClamp specifies whether depth clamping is supported. If this feature is not enabled, the depthClampEnable member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to VK_FALSE. Otherwise, setting depthClampEnable to VK_TRUE will enable depth clamping.
+         * <li>depthBiasClamp specifies whether depth bias clamping is supported. If this feature is not enabled, the depthBiasClamp member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to 0.0 unless the VK_DYNAMIC_STATE_DEPTH_BIAS dynamic state is enabled, and the depthBiasClamp parameter to vkCmdSetDepthBias <b>must</b> be set to 0.0.
+         * <li>fillModeNonSolid specifies whether point and wireframe fill modes are supported. If this feature is not enabled, the VK_POLYGON_MODE_POINT and VK_POLYGON_MODE_LINE enum values <b>must</b> not be used.
+         * <li>depthBounds specifies whether depth bounds tests are supported. If this feature is not enabled, the depthBoundsTestEnable member of the VkPipelineDepthStencilStateCreateInfo structure <b>must</b> be set to VK_FALSE. When depthBoundsTestEnable is set to VK_FALSE, the minDepthBounds and maxDepthBounds members of the VkPipelineDepthStencilStateCreateInfo structure are ignored.
+         * <li>wideLines specifies whether lines with width other than 1.0 are supported. If this feature is not enabled, the lineWidth member of the VkPipelineRasterizationStateCreateInfo structure <b>must</b> be set to 1.0 unless the VK_DYNAMIC_STATE_LINE_WIDTH dynamic state is enabled, and the lineWidth parameter to vkCmdSetLineWidth <b>must</b> be set to 1.0. When this feature is supported, the range and granularity of supported line widths are indicated by the lineWidthRange and lineWidthGranularity members of the VkPhysicalDeviceLimits structure, respectively.
+         * <li>largePoints specifies whether points with size greater than 1.0 are supported. If this feature is not enabled, only a point size of 1.0 written by a shader is supported. The range and granularity of supported point sizes are indicated by the pointSizeRange and pointSizeGranularity members of the VkPhysicalDeviceLimits structure, respectively.
+         * <li>alphaToOne specifies whether the implementation is able to replace the alpha value of the fragment shader color output in the Multisample Coverage fragment operation. If this feature is not enabled, then the alphaToOneEnable member of the VkPipelineMultisampleStateCreateInfo structure <b>must</b> be set to VK_FALSE. Otherwise setting alphaToOneEnable to VK_TRUE will enable alpha-to-one behavior.
+         * <li>multiViewport specifies whether more than one viewport is supported. If this feature is not enabled:
+         *     <ul>
          *     <li>The viewportCount and scissorCount members of the VkPipelineViewportStateCreateInfo structure <b>must</b> be set to 1.
          *     <li>The firstViewport and viewportCount parameters to the vkCmdSetViewport command <b>must</b> be set to 0 and 1, respectively.
          *     <li>The firstScissor and scissorCount parameters to the vkCmdSetScissor command <b>must</b> be set to 0 and 1, respectively.
          *     <li>The exclusiveScissorCount member of the VkPipelineViewportExclusiveScissorStateCreateInfoNV structure <b>must</b> be set to 0 or 1.
          *     <li>The firstExclusiveScissor and exclusiveScissorCount parameters to the vkCmdSetExclusiveScissorNV command <b>must</b> be set to 0 and 1, respectively.
-         *         <ul>
-         *         <li>samplerAnisotropy specifies whether anisotropic filtering is supported. If this feature is not enabled, the anisotropyEnable member of the VkSamplerCreateInfo structure <b>must</b> be VK_FALSE.
-         *         <li>textureCompressionETC2 specifies whether all of the ETC2 and EAC compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must</b> be supported in optimalTilingFeatures for the following formats:
-         *         </ul>
+         *     </ul>
+         * <li>samplerAnisotropy specifies whether anisotropic filtering is supported. If this feature is not enabled, the anisotropyEnable member of the VkSamplerCreateInfo structure <b>must</b> be VK_FALSE.
+         * <li>textureCompressionETC2 specifies whether all of the ETC2 and EAC compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must</b> be supported in optimalTilingFeatures for the following formats:
+         *     <ul>
          *     <li>VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK
          *     <li>VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK
          *     <li>VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK
@@ -4626,11 +5701,13 @@ namespace vk {
          *     <li>VK_FORMAT_EAC_R11_UNORM_BLOCK
          *     <li>VK_FORMAT_EAC_R11_SNORM_BLOCK
          *     <li>VK_FORMAT_EAC_R11G11_UNORM_BLOCK
-         *     <li>VK_FORMAT_EAC_R11G11_SNORM_BLOCK<br>
-         *     To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
-         *         <ul>
-         *         <li>textureCompressionASTC_LDR specifies whether all of the ASTC LDR compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must<li> be supported in optimalTilingFeatures for the following formats:
-         *         </ul>
+         *     <li>VK_FORMAT_EAC_R11G11_SNORM_BLOCK
+         *     </ul>
+         * </ul>
+         * To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
+         * <ul>
+         * <li>textureCompressionASTC_LDR specifies whether all of the ASTC LDR compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must<li> be supported in optimalTilingFeatures for the following formats:
+         *     <ul>
          *     <li>VK_FORMAT_ASTC_4x4_UNORM_BLOCK
          *     <li>VK_FORMAT_ASTC_4x4_SRGB_BLOCK
          *     <li>VK_FORMAT_ASTC_5x4_UNORM_BLOCK
@@ -4658,11 +5735,13 @@ namespace vk {
          *     <li>VK_FORMAT_ASTC_12x10_UNORM_BLOCK
          *     <li>VK_FORMAT_ASTC_12x10_SRGB_BLOCK
          *     <li>VK_FORMAT_ASTC_12x12_UNORM_BLOCK
-         *     <li>VK_FORMAT_ASTC_12x12_SRGB_BLOCK<br>
-         *     To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
-         *         <ul>
-         *         <li>textureCompressionBC specifies whether all of the BC compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must</b> be supported in optimalTilingFeatures for the following formats:
-         *         </ul>
+         *     <li>VK_FORMAT_ASTC_12x12_SRGB_BLOCK
+         *     </ul>
+         * </ul>
+         * To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
+         * <ul>
+         * <li>textureCompressionBC specifies whether all of the BC compressed texture formats are supported. If this feature is enabled, then the VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT and VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT features <b>must</b> be supported in optimalTilingFeatures for the following formats:
+         *     <ul>
          *     <li>VK_FORMAT_BC1_RGB_UNORM_BLOCK
          *     <li>VK_FORMAT_BC1_RGB_SRGB_BLOCK
          *     <li>VK_FORMAT_BC1_RGBA_UNORM_BLOCK
@@ -4678,17 +5757,19 @@ namespace vk {
          *     <li>VK_FORMAT_BC6H_UFLOAT_BLOCK
          *     <li>VK_FORMAT_BC6H_SFLOAT_BLOCK
          *     <li>VK_FORMAT_BC7_UNORM_BLOCK
-         *     <li>VK_FORMAT_BC7_SRGB_BLOCK<br>
-         *     To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
-         *         <ul>
-         *         <li>occlusionQueryPrecise specifies whether occlusion queries returning actual sample counts are supported. Occlusion queries are created in a VkQueryPool by specifying the queryType of VK_QUERY_TYPE_OCCLUSION in the VkQueryPoolCreateInfo structure which is passed to vkCreateQueryPool. If this feature is enabled, queries of this type <b>can</b> enable VK_QUERY_CONTROL_PRECISE_BIT in the flags parameter to vkCmdBeginQuery. If this feature is not supported, the implementation supports only boolean occlusion queries. When any samples are passed, boolean queries will return a non-zero result value, otherwise a result value of zero is returned. When this feature is enabled and VK_QUERY_CONTROL_PRECISE_BIT is set, occlusion queries will report the actual number of samples passed.
-         *         <li>pipelineStatisticsQuery specifies whether the pipeline statistics queries are supported. If this feature is not enabled, queries of type VK_QUERY_TYPE_PIPELINE_STATISTICS <b>cannot</b> be created, and none of the VkQueryPipelineStatisticFlagBits bits <b>can</b> be set in the pipelineStatistics member of the VkQueryPoolCreateInfo structure.
-         *         <li>vertexPipelineStoresAndAtomics specifies whether storage buffers and images support stores and atomic operations in the vertex, tessellation, and geometry shader stages. If this feature is not enabled, all storage image, storage texel buffer, and storage buffer variables used by these stages in shader modules <b>must</b> be decorated with the NonWritable decoration (or the readonly memory qualifier in GLSL).
-         *         <li>fragmentStoresAndAtomics specifies whether storage buffers and images support stores and atomic operations in the fragment shader stage. If this feature is not enabled, all storage image, storage texel buffer, and storage buffer variables used by the fragment stage in shader modules <b>must</b> be decorated with the NonWritable decoration (or the readonly memory qualifier in GLSL).
-         *         <li>shaderTessellationAndGeometryPointSize specifies whether the PointSize built-in decoration is available in the tessellation control, tessellation evaluation, and geometry shader stages. If this feature is not enabled, members decorated with the PointSize built-in decoration <b>must</b> not be read from or written to and all points written from a tessellation or geometry shader will have a size of 1.0. This also specifies whether shader modules <b>can</b> declare the TessellationPointSize capability for tessellation control and evaluation shaders, or if the shader modules <b>can</b> declare the GeometryPointSize capability for geometry shaders. An implementation supporting this feature <b>must</b> also support one or both of the tessellationShader or geometryShader features.
-         *         <li>shaderImageGatherExtended specifies whether the extended set of image gather instructions are available in shader code. If this feature is not enabled, the OpImage*Gather instructions do not support the Offset and ConstOffsets operands. This also specifies whether shader modules <b>can</b> declare the ImageGatherExtended capability.
-         *         <li>shaderStorageImageExtendedFormats specifies whether all the “storage image extended formats” below are supported; if this feature is supported, then the VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT <b>must</b> be supported in optimalTilingFeatures for the following formats:
-         *         </ul>
+         *     <li>VK_FORMAT_BC7_SRGB_BLOCK
+         *     </ul>
+         * </ul>
+         * To query for additional properties, or if the feature is not enabled, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats as normal.
+         * <ul>
+         * <li>occlusionQueryPrecise specifies whether occlusion queries returning actual sample counts are supported. Occlusion queries are created in a VkQueryPool by specifying the queryType of VK_QUERY_TYPE_OCCLUSION in the VkQueryPoolCreateInfo structure which is passed to vkCreateQueryPool. If this feature is enabled, queries of this type <b>can</b> enable VK_QUERY_CONTROL_PRECISE_BIT in the flags parameter to vkCmdBeginQuery. If this feature is not supported, the implementation supports only boolean occlusion queries. When any samples are passed, boolean queries will return a non-zero result value, otherwise a result value of zero is returned. When this feature is enabled and VK_QUERY_CONTROL_PRECISE_BIT is set, occlusion queries will report the actual number of samples passed.
+         * <li>pipelineStatisticsQuery specifies whether the pipeline statistics queries are supported. If this feature is not enabled, queries of type VK_QUERY_TYPE_PIPELINE_STATISTICS <b>cannot</b> be created, and none of the VkQueryPipelineStatisticFlagBits bits <b>can</b> be set in the pipelineStatistics member of the VkQueryPoolCreateInfo structure.
+         * <li>vertexPipelineStoresAndAtomics specifies whether storage buffers and images support stores and atomic operations in the vertex, tessellation, and geometry shader stages. If this feature is not enabled, all storage image, storage texel buffer, and storage buffer variables used by these stages in shader modules <b>must</b> be decorated with the NonWritable decoration (or the readonly memory qualifier in GLSL).
+         * <li>fragmentStoresAndAtomics specifies whether storage buffers and images support stores and atomic operations in the fragment shader stage. If this feature is not enabled, all storage image, storage texel buffer, and storage buffer variables used by the fragment stage in shader modules <b>must</b> be decorated with the NonWritable decoration (or the readonly memory qualifier in GLSL).
+         * <li>shaderTessellationAndGeometryPointSize specifies whether the PointSize built-in decoration is available in the tessellation control, tessellation evaluation, and geometry shader stages. If this feature is not enabled, members decorated with the PointSize built-in decoration <b>must</b> not be read from or written to and all points written from a tessellation or geometry shader will have a size of 1.0. This also specifies whether shader modules <b>can</b> declare the TessellationPointSize capability for tessellation control and evaluation shaders, or if the shader modules <b>can</b> declare the GeometryPointSize capability for geometry shaders. An implementation supporting this feature <b>must</b> also support one or both of the tessellationShader or geometryShader features.
+         * <li>shaderImageGatherExtended specifies whether the extended set of image gather instructions are available in shader code. If this feature is not enabled, the OpImage*Gather instructions do not support the Offset and ConstOffsets operands. This also specifies whether shader modules <b>can</b> declare the ImageGatherExtended capability.
+         * <li>shaderStorageImageExtendedFormats specifies whether all the “storage image extended formats” below are supported; if this feature is supported, then the VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT <b>must</b> be supported in optimalTilingFeatures for the following formats:
+         *     <ul>
          *     <li>VK_FORMAT_R16G16_SFLOAT
          *     <li>VK_FORMAT_B10G11R11_UFLOAT_PACK32
          *     <li>VK_FORMAT_R16_SFLOAT
@@ -4717,34 +5798,32 @@ namespace vk {
          *     To query for additional properties, or if the feature is not supported, vkGetPhysicalDeviceFormatProperties and vkGetPhysicalDeviceImageFormatProperties <b>can</b> be used to check for supported properties of individual formats, as usual rules allow.<br>
          *     VK_FORMAT_R32G32_UINT, VK_FORMAT_R32G32_SINT, and VK_FORMAT_R32G32_SFLOAT from StorageImageExtendedFormats SPIR-V capability, are already covered by core Vulkan mandatory format support.
          *
-         *         <ul>
-         *         <li>shaderStorageImageMultisample specifies whether multisampled storage images are supported. If this feature is not enabled, images that are created with a usage that includes VK_IMAGE_USAGE_STORAGE_BIT <b>must</b> be created with samples equal to VK_SAMPLE_COUNT_1_BIT. This also specifies whether shader modules <b>can</b> declare the StorageImageMultisample and ImageMSArray capabilities.
-         *         <li>shaderStorageImageReadWithoutFormat specifies whether storage images and storage texel buffers require a format qualifier to be specified when reading. shaderStorageImageReadWithoutFormat applies only to formats listed in the storage without format list.
-         *         <li>shaderStorageImageWriteWithoutFormat specifies whether storage images and storage texel buffers require a format qualifier to be specified when writing. shaderStorageImageWriteWithoutFormat applies only to formats listed in the storage without format list.
-         *         <li>shaderUniformBufferArrayDynamicIndexing specifies whether arrays of uniform buffers <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the UniformBufferArrayDynamicIndexing capability.
-         *         <li>shaderSampledImageArrayDynamicIndexing specifies whether arrays of samplers or sampled images <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, or VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the SampledImageArrayDynamicIndexing capability.
-         *         <li>shaderStorageBufferArrayDynamicIndexing specifies whether arrays of storage buffers <b>can</b< be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the StorageBufferArrayDynamicIndexing capability.
-         *         <li>shaderStorageImageArrayDynamicIndexing specifies whether arrays of storage images <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_STORAGE_IMAGE <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the StorageImageArrayDynamicIndexing capability.
-         *         <li>shaderClipDistance specifies whether clip distances are supported in shader code. If this feature is not enabled, any members decorated with the ClipDistance built-in decoration <b>must</b> not be read from or written to in shader modules. This also specifies whether shader modules <b>can</b> declare the ClipDistance capability.
-         *         <li>shaderCullDistance specifies whether cull distances are supported in shader code. If this feature is not enabled, any members decorated with the CullDistance built-in decoration <b>must</b> not be read from or written to in shader modules. This also specifies whether shader modules <b>can</b> declare the CullDistance capability.
-         *         <li>shaderFloat64 specifies whether 64-bit floats (doubles) are supported in shader code. If this feature is not enabled, 64-bit floating-point types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Float64 capability. Declaring and using 64-bit floats is enabled for all storage classes that SPIR-V allows with the Float64 capability.
-         *         <li>shaderInt64 specifies whether 64-bit integers (signed and unsigned) are supported in shader code. If this feature is not enabled, 64-bit integer types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Int64 capability. Declaring and using 64-bit integers is enabled for all storage classes that SPIR-V allows with the Int64 capability.
-         *         <li>shaderInt16 specifies whether 16-bit integers (signed and unsigned) are supported in shader code. If this feature is not enabled, 16-bit integer types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Int16 capability. However, this only enables a subset of the storage classes that SPIR-V allows for the Int16 SPIR-V capability: Declaring and using 16-bit integers in the Private, Workgroup (for non-Block variables), and Function storage classes is enabled, while declaring them in the interface storage classes (e.g., UniformConstant, Uniform, StorageBuffer, Input, Output, and PushConstant) is not enabled.
-         *         <li>shaderResourceResidency specifies whether image operations that return resource residency information are supported in shader code. If this feature is not enabled, the OpImageSparse* instructions <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the SparseResidency capability. The feature requires at least one of the sparseResidency* features to be supported.
-         *         <li>shaderResourceMinLod specifies whether image operations specifying the minimum resource LOD are supported in shader code. If this feature is not enabled, the MinLod image operand <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the MinLod capability.
-         *         <li>sparseBinding specifies whether resource memory <b>can</b> be managed at opaque sparse block level instead of at the object level. If this feature is not enabled, resource memory <b>must</b> be bound only on a per-object basis using the vkBindBufferMemory and vkBindImageMemory commands. In this case, buffers and images <b>must</b> not be created with VK_BUFFER_CREATE_SPARSE_BINDING_BIT and VK_IMAGE_CREATE_SPARSE_BINDING_BIT set in the flags member of the VkBufferCreateInfo and VkImageCreateInfo structures, respectively. Otherwise resource memory <b>can</b> be managed as described in Sparse Resource Features.
-         *         <li>sparseResidencyBuffer specifies whether the device <b>can</b> access partially resident buffers. If this feature is not enabled, buffers <b>must</b> not be created with VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkBufferCreateInfo structure.
-         *         <li>sparseResidencyImage2D specifies whether the device <b>can</b> access partially resident 2D images with 1 sample per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_1_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
-         *         <li>sparseResidencyImage3D specifies whether the device <b>can</b> access partially resident 3D images. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_3D <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
-         *         <li>sparseResidency2Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 2 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_2_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
-         *         <li>sparseResidency4Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 4 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_4_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
-         *         <li>sparseResidency8Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 8 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_8_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
-         *         <li>sparseResidency16Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 16 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_16_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
-         *         <li>sparseResidencyAliased specifies whether the physical device <b>can</b> correctly access data aliased into multiple locations. If this feature is not enabled, the VK_BUFFER_CREATE_SPARSE_ALIASED_BIT and VK_IMAGE_CREATE_SPARSE_ALIASED_BIT enum values <b>must</b> not be used in flags members of the VkBufferCreateInfo and VkImageCreateInfo structures, respectively.
-         *         <li>variableMultisampleRate specifies whether all pipelines that will be bound to a command buffer during a subpass which uses no attachments <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. If set to VK_TRUE, the implementation supports variable multisample rates in a subpass which uses no attachments. If set to VK_FALSE, then all pipelines bound in such a subpass <b>must</b> have the same multisample rate. This has no effect in situations where a subpass uses any attachments.
-         *         <li>inheritedQueries specifies whether a secondary command buffer <b>may</b> be executed while a query is active.
-         *         </ul>
          *     </ul>
+         * <li>shaderStorageImageMultisample specifies whether multisampled storage images are supported. If this feature is not enabled, images that are created with a usage that includes VK_IMAGE_USAGE_STORAGE_BIT <b>must</b> be created with samples equal to VK_SAMPLE_COUNT_1_BIT. This also specifies whether shader modules <b>can</b> declare the StorageImageMultisample and ImageMSArray capabilities.
+         * <li>shaderStorageImageReadWithoutFormat specifies whether storage images and storage texel buffers require a format qualifier to be specified when reading. shaderStorageImageReadWithoutFormat applies only to formats listed in the storage without format list.
+         * <li>shaderStorageImageWriteWithoutFormat specifies whether storage images and storage texel buffers require a format qualifier to be specified when writing. shaderStorageImageWriteWithoutFormat applies only to formats listed in the storage without format list.
+         * <li>shaderUniformBufferArrayDynamicIndexing specifies whether arrays of uniform buffers <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the UniformBufferArrayDynamicIndexing capability.
+         * <li>shaderSampledImageArrayDynamicIndexing specifies whether arrays of samplers or sampled images <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, or VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the SampledImageArrayDynamicIndexing capability.
+         * <li>shaderStorageBufferArrayDynamicIndexing specifies whether arrays of storage buffers <b>can</b< be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the StorageBufferArrayDynamicIndexing capability.
+         * <li>shaderStorageImageArrayDynamicIndexing specifies whether arrays of storage images <b>can</b> be indexed by dynamically uniform integer expressions in shader code. If this feature is not enabled, resources with a descriptor type of VK_DESCRIPTOR_TYPE_STORAGE_IMAGE <b>must</b> be indexed only by constant integral expressions when aggregated into arrays in shader code. This also specifies whether shader modules <b>can</b> declare the StorageImageArrayDynamicIndexing capability.
+         * <li>shaderClipDistance specifies whether clip distances are supported in shader code. If this feature is not enabled, any members decorated with the ClipDistance built-in decoration <b>must</b> not be read from or written to in shader modules. This also specifies whether shader modules <b>can</b> declare the ClipDistance capability.
+         * <li>shaderCullDistance specifies whether cull distances are supported in shader code. If this feature is not enabled, any members decorated with the CullDistance built-in decoration <b>must</b> not be read from or written to in shader modules. This also specifies whether shader modules <b>can</b> declare the CullDistance capability.
+         * <li>shaderFloat64 specifies whether 64-bit floats (doubles) are supported in shader code. If this feature is not enabled, 64-bit floating-point types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Float64 capability. Declaring and using 64-bit floats is enabled for all storage classes that SPIR-V allows with the Float64 capability.
+         * <li>shaderInt64 specifies whether 64-bit integers (signed and unsigned) are supported in shader code. If this feature is not enabled, 64-bit integer types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Int64 capability. Declaring and using 64-bit integers is enabled for all storage classes that SPIR-V allows with the Int64 capability.
+         * <li>shaderInt16 specifies whether 16-bit integers (signed and unsigned) are supported in shader code. If this feature is not enabled, 16-bit integer types <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the Int16 capability. However, this only enables a subset of the storage classes that SPIR-V allows for the Int16 SPIR-V capability: Declaring and using 16-bit integers in the Private, Workgroup (for non-Block variables), and Function storage classes is enabled, while declaring them in the interface storage classes (e.g., UniformConstant, Uniform, StorageBuffer, Input, Output, and PushConstant) is not enabled.
+         * <li>shaderResourceResidency specifies whether image operations that return resource residency information are supported in shader code. If this feature is not enabled, the OpImageSparse* instructions <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the SparseResidency capability. The feature requires at least one of the sparseResidency* features to be supported.
+         * <li>shaderResourceMinLod specifies whether image operations specifying the minimum resource LOD are supported in shader code. If this feature is not enabled, the MinLod image operand <b>must</b> not be used in shader code. This also specifies whether shader modules <b>can</b> declare the MinLod capability.
+         * <li>sparseBinding specifies whether resource memory <b>can</b> be managed at opaque sparse block level instead of at the object level. If this feature is not enabled, resource memory <b>must</b> be bound only on a per-object basis using the vkBindBufferMemory and vkBindImageMemory commands. In this case, buffers and images <b>must</b> not be created with VK_BUFFER_CREATE_SPARSE_BINDING_BIT and VK_IMAGE_CREATE_SPARSE_BINDING_BIT set in the flags member of the VkBufferCreateInfo and VkImageCreateInfo structures, respectively. Otherwise resource memory <b>can</b> be managed as described in Sparse Resource Features.
+         * <li>sparseResidencyBuffer specifies whether the device <b>can</b> access partially resident buffers. If this feature is not enabled, buffers <b>must</b> not be created with VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkBufferCreateInfo structure.
+         * <li>sparseResidencyImage2D specifies whether the device <b>can</b> access partially resident 2D images with 1 sample per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_1_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         * <li>sparseResidencyImage3D specifies whether the device <b>can</b> access partially resident 3D images. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_3D <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         * <li>sparseResidency2Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 2 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_2_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         * <li>sparseResidency4Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 4 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_4_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         * <li>sparseResidency8Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 8 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_8_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         * <li>sparseResidency16Samples specifies whether the physical device <b>can</b> access partially resident 2D images with 16 samples per pixel. If this feature is not enabled, images with an imageType of VK_IMAGE_TYPE_2D and samples set to VK_SAMPLE_COUNT_16_BIT <b>must</b> not be created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT set in the flags member of the VkImageCreateInfo structure.
+         * <li>sparseResidencyAliased specifies whether the physical device <b>can</b> correctly access data aliased into multiple locations. If this feature is not enabled, the VK_BUFFER_CREATE_SPARSE_ALIASED_BIT and VK_IMAGE_CREATE_SPARSE_ALIASED_BIT enum values <b>must</b> not be used in flags members of the VkBufferCreateInfo and VkImageCreateInfo structures, respectively.
+         * <li>variableMultisampleRate specifies whether all pipelines that will be bound to a command buffer during a subpass which uses no attachments <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. If set to VK_TRUE, the implementation supports variable multisample rates in a subpass which uses no attachments. If set to VK_FALSE, then all pipelines bound in such a subpass <b>must</b> have the same multisample rate. This has no effect in situations where a subpass uses any attachments.
+         * <li>inheritedQueries specifies whether a secondary command buffer <b>may</b> be executed while a query is active.
          * </ul>
          */
         using PhysicalDeviceFeatures = VkPhysicalDeviceFeatures;
@@ -4766,6 +5845,89 @@ namespace vk {
                 };
         }
 
+        /** <b>Name</b><hr><br>
+         *
+         * VkQueueFamilyProperties - Structure providing information about a queue family<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkQueueFamilyProperties structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkQueueFamilyProperties {
+         *     VkQueueFlags    queueFlags;
+         *     uint32_t        queueCount;
+         *     uint32_t        timestampValidBits;
+         *     VkExtent3D      minImageTransferGranularity;
+         * } VkQueueFamilyProperties;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>queueFlags is a bitmask of VkQueueFlagBits indicating capabilities of the queues in this queue family.
+         * <li>queueCount is the unsigned integer count of queues in this queue family. Each queue family must support at least one queue.
+         * <li>timestampValidBits is the unsigned integer count of meaningful bits in the timestamps written via vkCmdWriteTimestamp2 or vkCmdWriteTimestamp. The valid range for the count is 36 to 64 bits, or a value of 0, indicating no support for timestamps. Bits outside the valid range are guaranteed to be zeros.
+         * <li>minImageTransferGranularity is the minimum granularity supported for image transfer operations on the queues in this queue family.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * The value returned in minImageTransferGranularity has a unit of compressed texel blocks for images having a block-compressed format, and a unit of texels otherwise.<br><br>
+         *
+         * Possible values of minImageTransferGranularity are:
+         * <ul>
+         * <li>(0,0,0) specifies that only whole mip levels <b>must</b> be transferred using the image transfer operations on the corresponding queues. In this case, the following restrictions apply to all offset and extent parameters of image transfer operations:
+         *     <ul>
+         *     <li>The x, y, and z members of a VkOffset3D parameter <b>must</b> always be zero.
+         *     <li>The width, height, and depth members of a VkExtent3D parameter <b>must</b> always match the width, height, and depth of the image subresource corresponding to the parameter, respectively.
+         *     </ul>
+         * <li>(Ax, Ay, Az) where Ax, Ay, and Az are all integer powers of two. In this case the following restrictions apply to all image transfer operations:
+         *     <ul>
+         *     <li>x, y, and z of a VkOffset3D parameter <b>must</b> be integer multiples of Ax, Ay, and Az, respectively.
+         *     <li>width of a VkExtent3D parameter <b>must</b> be an integer multiple of Ax, or else x + width <b>must</b> equal the width of the image subresource corresponding to the parameter.
+         *     <li>height of a VkExtent3D parameter <b>must</b> be an integer multiple of Ay, or else y + height <b>must</b> equal the height of the image subresource corresponding to the parameter.
+         *     <li>depth of a VkExtent3D parameter <b>must</b> be an integer multiple of Az, or else z + depth <b>must</b> equal the depth of the image subresource corresponding to the parameter.
+         *     <li>If the format of the image corresponding to the parameters is one of the block-compressed formats then for the purposes of the above calculations the granularity <b>must</b> be scaled up by the compressed texel block dimensions.
+         *     </ul>
+         * </ul>
+         * Queues supporting graphics and/or compute operations <b>must</b> report (1,1,1) in minImageTransferGranularity, meaning that there are no additional restrictions on the granularity of image transfer operations for these queues. Other queues supporting image transfer operations are only <b>required</b> to support whole mip level transfers, thus minImageTransferGranularity for queues belonging to such queue families <b>may</b> be (0,0,0).<br><br>
+         *
+         * The Device Memory section describes memory properties queried from the physical device.<br><br>
+         *
+         * For physical device feature queries see the Features chapter.
+         */
+        using QueueFamilyProperties = VkQueueFamilyProperties;
+        std::vector<QueueFamilyProperties> getQueueFamilyProperties(
+                const PhysicalDevice &physicalDevice
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkExtensionProperties - Structure specifying an extension properties<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkExtensionProperties structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkExtensionProperties {
+         *     char        extensionName[VK_MAX_EXTENSION_NAME_SIZE];
+         *     uint32_t    specVersion;
+         * } VkExtensionProperties;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>extensionName is an array of VK_MAX_EXTENSION_NAME_SIZE char containing a null-terminated UTF-8 string which is the name of the extension.
+         * <li>specVersion is the version of this extension. It is an integer, incremented with backward compatible changes.
+         * </ul>
+         */
+        using ExtensionProperties = VkExtensionProperties;
+        std::vector<ExtensionProperties> getExtensionProperties(
+                const PhysicalDevice &physicalDevice
+        );
+
 }
 
-#endif // VULKANPP_HPP_HEADER
+#endif // VULKANPP_HPP
