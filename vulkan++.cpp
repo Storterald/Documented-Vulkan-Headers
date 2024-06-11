@@ -9,9 +9,12 @@ Buffer vk::createBuffer(
         const Device                       &device,
         const DeviceSize                   &size,
         const VkBufferUsageFlags           &usage,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
-        auto createInfo = vk::createBufferCreateInfo(size, usage);
+        auto createInfo = vk::createBufferCreateInfo(
+                size, usage, pCreateInfoNext
+        );
 
         Buffer buffer{};
         Result result = vkCreateBuffer(device, &createInfo, pAllocator, &buffer);
@@ -28,10 +31,11 @@ BufferView vk::createBufferView(
         const Format                       &format,
         const DeviceSize                   &offset,
         const DeviceSize                   &range,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
         auto createInfo = vk::createBufferViewCreateInfo(
-                buffer, format, offset, range
+                buffer, format, offset, range, pCreateInfoNext
         );
 
         BufferView bufferView{};
@@ -45,9 +49,12 @@ BufferView vk::createBufferView(
 
 CommandBuffer vk::createCommandBuffer(
         const CommandPool          &commandPool,
-        const Device               &device
+        const Device               &device,
+        const void                 *pAllocInfoNext
 ) {
-        auto allocateInfo = vk::createCommandBufferAllocateInfo(commandPool);
+        auto allocateInfo = vk::createCommandBufferAllocateInfo(
+                commandPool, pAllocInfoNext
+        );
 
         CommandBuffer commandBuffer{};
         Result result = vkAllocateCommandBuffers(
@@ -63,10 +70,11 @@ CommandBuffer vk::createCommandBuffer(
 CommandPool vk::createCommandPool(
         const uint32_t                     &queueFamilyIndex,
         const Device                       &device,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
         auto createInfo = vk::createCommandPoolCreateInfo(
-                queueFamilyIndex
+                queueFamilyIndex, pCreateInfoNext
         );
 
         CommandPool commandPool{};
@@ -82,10 +90,11 @@ DescriptorPool vk::createDescriptorPool(
         const Device                                   &device,
         const uint32_t                                 &descriptorCount,
         const std::vector<VkDescriptorPoolSize>        &poolSizes,
-        const VkAllocationCallbacks                    *pAllocator
+        const VkAllocationCallbacks                    *pAllocator,
+        const void                                     *pCreateInfoNext
 ) {
         auto createInfo = vk::createDescriptorPoolCreateInfo(
-                descriptorCount, poolSizes
+                descriptorCount, poolSizes, pCreateInfoNext
         );
 
         DescriptorPool descriptorPool;
@@ -103,10 +112,11 @@ DescriptorPool vk::createDescriptorPool(
 std::vector<DescriptorSet> vk::createDescriptorSets(
         const Device                                    &device,
         const VkDescriptorPool                          &pool,
-        const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts
+        const std::vector<VkDescriptorSetLayout>        &descriptorSetLayouts,
+        const void                                      *pAllocInfoNext
 ) {
         auto allocateInfo = vk::createDescriptorSetAllocateInfo(
-                pool, descriptorSetLayouts
+                pool, descriptorSetLayouts, pAllocInfoNext
         );
 
         std::vector<DescriptorSet> descriptorSets(descriptorSetLayouts.size());
@@ -123,10 +133,11 @@ std::vector<DescriptorSet> vk::createDescriptorSets(
 DescriptorSetLayout vk::createDescriptorSetLayout(
         const VkDevice                                         &device,
         const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
-        const VkAllocationCallbacks                            *pAllocator
+        const VkAllocationCallbacks                            *pAllocator,
+        const void                                             *pCreateInfoNext
 ) {
         auto createInfo = vk::createDescriptorSetLayoutCreateInfo(
-                bindings
+                bindings, pCreateInfoNext
         );
 
         DescriptorSetLayout descriptorSetLayout;
@@ -147,7 +158,8 @@ Device vk::createDevice(
         const std::vector<uint32_t>            &queueFamilyIndices,
         const std::vector<const char *>        &enabledExtensionNames,
         const VkPhysicalDeviceFeatures         *pEnabledFeatures,
-        const VkAllocationCallbacks            *pAllocator
+        const VkAllocationCallbacks            *pAllocator,
+        const void                             *pCreateInfoNext
 ) {
         float queuePriority = 1.0f;
 
@@ -161,7 +173,7 @@ Device vk::createDevice(
                 ));
 
         auto createInfo = vk::createDeviceCreateInfo(
-                queueCreateInfos, enabledExtensionNames, pEnabledFeatures
+                queueCreateInfos, enabledExtensionNames, pEnabledFeatures, pCreateInfoNext
         );
 
         Device device{};
@@ -179,9 +191,12 @@ Device vk::createDevice(
 Fence vk::createFence(
         const Device                       &device,
         const bool                         &signaled,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
-        auto createInfo = vk::createFenceCreateInfo(signaled);
+        auto createInfo = vk::createFenceCreateInfo(
+                signaled, pCreateInfoNext
+        );
 
         Fence fence{};
         Result result = vkCreateFence(
@@ -200,10 +215,11 @@ Framebuffer vk::createFramebuffer(
         const VkExtent2D                      &extent,
         const std::vector<VkImageView>        &imageViews,
         const Device                          &device,
-        const VkAllocationCallbacks           *pAllocator
+        const VkAllocationCallbacks           *pAllocator,
+        const void                            *pCreateInfoNext
 ) {
         auto createInfo = vk::createFramebufferCreateInfo(
-                renderPass, extent, imageViews
+                renderPass, extent, imageViews, pCreateInfoNext
         );
 
         Framebuffer framebuffer{};
@@ -225,10 +241,12 @@ Image vk::createImage(
         const Extent3D                     &extent,
         const VkImageUsageFlags            &usage,
         const std::vector<uint32_t>        &queueFamilyIndices,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
         auto createInfo = vk::createImageCreateInfo(
-                imageType, format, extent, usage, queueFamilyIndices
+                imageType, format, extent, usage,
+                queueFamilyIndices, pCreateInfoNext
         );
 
         Image image{};
@@ -242,12 +260,13 @@ Image vk::createImage(
 
 ImageView vk::createImageView(
         const Image                        &image,
-        const Format                     &format,
+        const Format                       &format,
         const Device                       &device,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
         auto createInfo = vk::createImageViewCreateInfo(
-                image, format
+                image, format, pCreateInfoNext
         );
 
         ImageView imageView{};
@@ -267,7 +286,8 @@ Instance vk::createInstance(
         const uint32_t                         &version,
         const std::vector<const char *>        &enabledLayerNames,
         const std::vector<const char *>        &enabledExtensionNames,
-        const VkAllocationCallbacks            *pAllocator
+        const VkAllocationCallbacks            *pAllocator,
+        const void                             *pCreateInfoNext
 ) {
         uint32_t apiVersion = 0;
         Result result = vkEnumerateInstanceVersion(&apiVersion);
@@ -275,12 +295,13 @@ Instance vk::createInstance(
         if (result != VK_SUCCESS)
                 throw std::runtime_error("Could not get api version!");
 
-        VkApplicationInfo appInfo = vk::createApplicationInfo(
+        auto applicationInfo = vk::createApplicationInfo(
                 name, version, apiVersion
         );
 
-        VkInstanceCreateInfo createInfo = vk::createInstanceCreateInfo(
-                appInfo, enabledLayerNames, enabledExtensionNames
+        auto createInfo = vk::createInstanceCreateInfo(
+                applicationInfo, enabledLayerNames,
+                enabledExtensionNames, pCreateInfoNext
         );
 
         Instance instance{};
@@ -319,7 +340,8 @@ Pipeline vk::createPipeline(
         const std::vector<PipelineShaderStageCreateInfo>          &shaderStages,
         const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
         const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
-        const VkAllocationCallbacks                               *pAllocator
+        const VkAllocationCallbacks                               *pAllocator,
+        const void                                                *pCreateInfoNext
 ) {
         auto vertexInputStateCreateInfo = vk::createPipelineVertexInputStateCreateInfo(
                 bindingDescriptions, attributeDescriptions
@@ -341,14 +363,10 @@ Pipeline vk::createPipeline(
                 colorBlendAttachmentState
         );
 
-        VkGraphicsPipelineCreateInfo createInfo = vk::createGraphicsPipelineCreateInfo(
-                vertexInputStateCreateInfo,
-                inputAssemblyStateCreateInfo,
-                viewportStateCreateInfo,
-                rasterizationStateCreateInfo,
-                multisampleStateCreateInfo,
-                colorBlendStateCreateInfo,
-                shaderStages, layout, renderPass
+        auto createInfo = vk::createGraphicsPipelineCreateInfo(
+                vertexInputStateCreateInfo, inputAssemblyStateCreateInfo, viewportStateCreateInfo,
+                rasterizationStateCreateInfo, multisampleStateCreateInfo, colorBlendStateCreateInfo,
+                shaderStages, layout, renderPass, pCreateInfoNext
         );
 
         Pipeline pipeline{};
@@ -368,10 +386,11 @@ PipelineLayout vk::createPipelineLayout(
         const Device                                  &device,
         const std::vector<DescriptorSetLayout>        &setLayouts,
         const std::vector<PushConstantRange>          &pushConstantRanges,
-        const VkAllocationCallbacks                   *pAllocator
+        const VkAllocationCallbacks                   *pAllocator,
+        const void                                    *pCreateInfoNext
 ) {
         auto createInfo = vk::createPipelineLayoutCreateInfo(
-                setLayouts, pushConstantRanges
+                setLayouts, pushConstantRanges, pCreateInfoNext
         );
 
         PipelineLayout layout{};
@@ -405,7 +424,8 @@ RenderPass vk::createRenderPass(
         const Device                       &device,
         const SurfaceKHR                   &surface,
         const SurfaceFormatKHR             &requiredFormat,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
         uint32_t formatsCount = 0;
         Result result = vkGetPhysicalDeviceSurfaceFormatsKHR(
@@ -443,8 +463,9 @@ RenderPass vk::createRenderPass(
                 {}, attachmentReferences,
                 {}, {}, {}
         );
+
         auto createInfo = vk::createRenderPassCreateInfo(
-                attachmentDescription, subpassDescription
+                attachmentDescription, subpassDescription, pCreateInfoNext
         );
 
         RenderPass renderPass{};
@@ -466,11 +487,13 @@ Sampler vk::createSampler(
         const Bool32                      &anisotropyEnable,
         const float                       &maxAnisotropy,
         const Bool32                      &compareEnable,
-        const VkCompareOp                 &compareOp
+        const VkCompareOp                 &compareOp,
+        const void                        *pCreateInfoNext
 ) {
         auto createInfo = vk::createSamplerCreateInfo(
                 filter, addressMode, anisotropyEnable,
-                maxAnisotropy, compareEnable, compareOp
+                maxAnisotropy, compareEnable, compareOp,
+                pCreateInfoNext
         );
 
         Sampler sampler{};
@@ -487,9 +510,12 @@ Sampler vk::createSampler(
 
 Semaphore vk::createSemaphore(
         const Device                       &device,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
-        auto createInfo = vk::createSemaphoreCreateInfo();
+        auto createInfo = vk::createSemaphoreCreateInfo(
+                pCreateInfoNext
+        );
 
         Semaphore semaphore{};
         Result result = vkCreateSemaphore(
@@ -506,10 +532,11 @@ Semaphore vk::createSemaphore(
 ShaderModule vk::createShaderModule(
         const std::vector<uint8_t>         &code,
         const Device                       &device,
-        const VkAllocationCallbacks        *pAllocator
+        const VkAllocationCallbacks        *pAllocator,
+        const void                         *pCreateInfoNext
 ) {
         auto createInfo = vk::createShaderModuleCreateInfo(
-                code
+                code, pCreateInfoNext
         );
 
         ShaderModule shaderModule{};
@@ -532,7 +559,8 @@ SwapchainKHR vk::createSwapchainKHR(
         const std::vector<uint32_t>              &queueFamilyIndices,
         const SurfaceFormatKHR                   &format,
         const Extent2D                           &extent,
-        const VkAllocationCallbacks              *pAllocator
+        const VkAllocationCallbacks              *pAllocator,
+        const void                               *pCreateInfoNext
 ) {
         uint32_t imageCount = std::min(capabilities.maxImageCount, capabilities.minImageCount + 1);
         PresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
@@ -550,9 +578,8 @@ SwapchainKHR vk::createSwapchainKHR(
                 VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT;
 
         auto createInfo = vk::createSwapchainCreateInfoKHR(
-                capabilities, imageCount,
-                format, extent, presentMode,
-                surface, sharingMode, fixedIndices
+                capabilities, imageCount, format, extent, presentMode,
+                surface, sharingMode, fixedIndices, pCreateInfoNext
         );
 
         SwapchainKHR swapchain{};
