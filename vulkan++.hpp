@@ -1050,7 +1050,7 @@ namespace vk {
          */
         using ClearValue = VkClearValue;
         constexpr ClearValue createClearValue(
-                const VkClearColorValue        &clearColorValue
+                const ClearColorValue        &clearColorValue
         ) {
                 return {
                         .color = clearColorValue
@@ -3470,10 +3470,10 @@ namespace vk {
          */
         using RenderPassBeginInfo = VkRenderPassBeginInfo;
         constexpr RenderPassBeginInfo createRenderPassBeginInfo(
-                const RenderPass                       &renderPass,
-                const Framebuffer                      &framebuffer,
-                const Extent2D                         &extent,
-                const std::vector<VkClearValue>        &clearValues
+                const RenderPass                     &renderPass,
+                const Framebuffer                    &framebuffer,
+                const Extent2D                       &extent,
+                const std::vector<ClearValue>        &clearValues
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
