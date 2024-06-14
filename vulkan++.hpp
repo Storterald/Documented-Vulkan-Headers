@@ -3,11 +3,20 @@
 #ifndef VULKANPP_HPP
 #define VULKANPP_HPP
 
+#ifdef VULKANPP_INCLUDE_VULKAN
 #include <vulkan/vulkan.h>
+#endif
+
 #include <vector>
 
 #ifdef VULKAN_HPP
-#error "Vulkan++ should not be used with the vulkan.hpp header."
+        #error "Vulkan++ should not be used with the vulkan.hpp header."
+#endif
+
+#ifdef VULKANPP_ENABLE_CONSTEXPR
+        #define VULKANPP_CONSTEXPR inline constexpr
+#else
+        #define VULKANPP_CONSTEXPR inline
 #endif
 
 namespace vk {
@@ -968,21 +977,21 @@ namespace vk {
          * @endcode
          */
         using ClearColorValue = VkClearColorValue;
-        constexpr ClearColorValue createClearColorValue(
+        VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const float        float32[4]
         ) {
                 return {
                         .float32 = { float32[0], float32[1], float32[2], float32[3] }
                 };
         }
-        constexpr ClearColorValue createClearColorValue(
+        VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const int32_t        int32[4]
         ) {
                 return {
                         .int32 = { int32[0], int32[1], int32[2], int32[3] }
                 };
         }
-        constexpr ClearColorValue createClearColorValue(
+        VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const uint32_t        uint32[4]
         ) {
                 return {
@@ -1013,7 +1022,7 @@ namespace vk {
          * </ul>
          */
         using ClearDepthStencilValue = VkClearDepthStencilValue;
-        constexpr ClearDepthStencilValue createClearDepthStencilValue(
+        VULKANPP_CONSTEXPR ClearDepthStencilValue createClearDepthStencilValue(
                 const float           &depth,
                 const uint32_t        &stencil
         ) {
@@ -1049,21 +1058,21 @@ namespace vk {
          * This union is used where part of the API requires either color or depth/stencil clear values, depending on the attachment, and defines the initial clear values in the VkRenderPassBeginInfo structure.
          */
         using ClearValue = VkClearValue;
-        constexpr ClearValue createClearValue(
+        VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const ClearColorValue        &clearColorValue
         ) {
                 return {
                         .color = clearColorValue
                 };
         }
-        constexpr ClearValue createClearValue(
+        VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const ClearDepthStencilValue        &depthStencil
         ) {
                 return {
                         .depthStencil = depthStencil
                 };
         }
-        constexpr ClearValue createClearValue(
+        VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const float        &r,
                 const float        &g,
                 const float        &b,
@@ -1074,7 +1083,7 @@ namespace vk {
                         .color = vk::createClearColorValue(float32)
                 };
         }
-        constexpr ClearValue createClearValue(
+        VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const int32_t        &r,
                 const int32_t        &g,
                 const int32_t        &b,
@@ -1085,7 +1094,7 @@ namespace vk {
                         .color = vk::createClearColorValue(int32)
                 };
         }
-        constexpr ClearValue createClearValue(
+        VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const uint32_t        &r,
                 const uint32_t        &g,
                 const uint32_t        &b,
@@ -1096,7 +1105,7 @@ namespace vk {
                         .color = vk::createClearColorValue(uint32)
                 };
         }
-        constexpr ClearValue createClearValue(
+        VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const float           &depth,
                 const uint32_t        &stencil
         ) {
@@ -1131,7 +1140,7 @@ namespace vk {
          * @note When creating a descriptor pool that will contain descriptors for combined image samplers of multi-planar formats, an application needs to account for non-trivial descriptor consumption when choosing the descriptorCount value, as indicated by VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount.
          */
         using DescriptorPoolSize = VkDescriptorPoolSize;
-        constexpr DescriptorPoolSize createDescriptorPoolSize(
+        VULKANPP_CONSTEXPR DescriptorPoolSize createDescriptorPoolSize(
                 const VkDescriptorType        &type,
                 const uint32_t                &descriptorCount
         ) {
@@ -1164,7 +1173,7 @@ namespace vk {
          * </ul>
          */
         using Extent2D = VkExtent2D;
-        constexpr Extent2D createExtent2D(
+        VULKANPP_CONSTEXPR Extent2D createExtent2D(
                 const uint32_t        &width,
                 const uint32_t        &height
         ) {
@@ -1229,7 +1238,7 @@ namespace vk {
          *
          */
         using Viewport = VkViewport;
-        constexpr Viewport createViewport(
+        VULKANPP_CONSTEXPR Viewport createViewport(
                 const Extent2D        &extent
         ) {
                 return {
@@ -1265,7 +1274,7 @@ namespace vk {
          * </ul>
          */
         using Offset2D = VkOffset2D;
-        constexpr Offset2D createOffset2D(
+        VULKANPP_CONSTEXPR Offset2D createOffset2D(
                 const int32_t        &x,
                 const int32_t        &y
         ) {
@@ -1297,7 +1306,7 @@ namespace vk {
          * </ul>
          */
         using Rect2D = VkRect2D;
-        constexpr Rect2D createRect2D(
+        VULKANPP_CONSTEXPR Rect2D createRect2D(
                 const Offset2D        &offset,
                 const Extent2D        &extent
         ) {
@@ -1332,7 +1341,7 @@ namespace vk {
          * </ul>
          */
         using Extent3D = VkExtent3D;
-        constexpr Extent3D createExtent3D(
+        VULKANPP_CONSTEXPR Extent3D createExtent3D(
                 const uint32_t        &width,
                 const uint32_t        &height,
                 const uint32_t        &depth
@@ -1340,6 +1349,16 @@ namespace vk {
                 return {
                         .width = width,
                         .height = height,
+                        .depth = depth
+                };
+        }
+        VULKANPP_CONSTEXPR Extent3D createExtent3D(
+                const Extent2D        &extent2D,
+                const uint32_t        &depth
+        )  {
+                return {
+                        .width = extent2D.width,
+                        .height = extent2D.height,
                         .depth = depth
                 };
         }
@@ -1757,7 +1776,7 @@ namespace vk {
          * </ul>
          */
         using PhysicalDeviceFeatures = VkPhysicalDeviceFeatures;
-        constexpr PhysicalDeviceFeatures createPhysicalDeviceFeatures(
+        VULKANPP_CONSTEXPR PhysicalDeviceFeatures createPhysicalDeviceFeatures(
                 const Bool32 values[55]
         ) {
                 return {
@@ -2076,6 +2095,7 @@ namespace vk {
                 const Format                       &format,
                 const Extent3D                     &extent,
                 const VkImageUsageFlags            &usage,
+                const VkImageTiling                &tiling,
                 const std::vector<uint32_t>        &queueFamilyIndices,
                 const VkAllocationCallbacks        *pAllocator,
                 const void                         *pCreateInfoNext = nullptr
@@ -2099,6 +2119,7 @@ namespace vk {
         using ImageView = VkImageView;
         ImageView createImageView(
                 const Image                        &image,
+                const VkImageAspectFlags           &aspectMask,
                 const Format                       &format,
                 const Device                       &device,
                 const VkAllocationCallbacks        *pAllocator,
@@ -2167,7 +2188,7 @@ namespace vk {
          * </ul>
          */
         using PushConstantRange = VkPushConstantRange;
-        constexpr PushConstantRange createPushConstantRange(
+        VULKANPP_CONSTEXPR PushConstantRange createPushConstantRange(
                 const VkShaderStageFlags        &stageFlags,
                 const uint32_t                  &offset,
                 const uint32_t                  &size
@@ -2253,6 +2274,216 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
+         * VkAttachmentReference - Structure specifying an attachment reference<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkAttachmentReference structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkAttachmentReference {
+         *     uint32_t         attachment;
+         *     VkImageLayout    layout;
+         * } VkAttachmentReference;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>attachment is either an integer value identifying an attachment at the corresponding index in VkRenderPassCreateInfo::pAttachments, or VK_ATTACHMENT_UNUSED to signify that this attachment is not used.
+         * <li>layout is a VkImageLayout value specifying the layout the attachment uses during the subpass.
+         * </ul>
+         */
+        using AttachmentReference = VkAttachmentReference;
+        VULKANPP_CONSTEXPR AttachmentReference createAttachmentReference(
+                const uint32_t             &attachment,
+                const VkImageLayout        &layout
+        ) {
+                return {
+                        .attachment = attachment,
+                        .layout = layout
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkAttachmentDescription - Structure specifying an attachment description<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkAttachmentDescription structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkAttachmentDescription {
+         *     VkAttachmentDescriptionFlags    flags;
+         *     VkFormat                        format;
+         *     VkSampleCountFlagBits           samples;
+         *     VkAttachmentLoadOp              loadOp;
+         *     VkAttachmentStoreOp             storeOp;
+         *     VkAttachmentLoadOp              stencilLoadOp;
+         *     VkAttachmentStoreOp             stencilStoreOp;
+         *     VkImageLayout                   initialLayout;
+         *     VkImageLayout                   finalLayout;
+         * } VkAttachmentDescription;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>flags is a bitmask of VkAttachmentDescriptionFlagBits specifying additional properties of the attachment.
+         * <li>format is a VkFormat value specifying the format of the image view that will be used for the attachment.
+         * <li>samples is a VkSampleCountFlagBits value specifying the number of samples of the image.
+         * <li>loadOp is a VkAttachmentLoadOp value specifying how the contents of color and depth components of the attachment are treated at the beginning of the subpass where it is first used.
+         * <li>storeOp is a VkAttachmentStoreOp value specifying how the contents of color and depth components of the attachment are treated at the end of the subpass where it is last used.
+         * <li>stencilLoadOp is a VkAttachmentLoadOp value specifying how the contents of stencil components of the attachment are treated at the beginning of the subpass where it is first used.
+         * <li>stencilStoreOp is a VkAttachmentStoreOp value specifying how the contents of stencil components of the attachment are treated at the end of the last subpass where it is used.
+         * <li>initialLayout is the layout the attachment image subresource will be in when a render pass instance begins.
+         * <li>finalLayout is the layout the attachment image subresource will be transitioned to when a render pass instance ends.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * If the attachment uses a color format, then loadOp and storeOp are used, and stencilLoadOp and stencilStoreOp are ignored. If the format has depth and/or stencil components, loadOp and storeOp apply only to the depth data, while stencilLoadOp and stencilStoreOp define how the stencil data is handled. loadOp and stencilLoadOp define the load operations for the attachment. storeOp and stencilStoreOp define the store operations for the attachment. If an attachment is not used by any subpass, loadOp, storeOp, stencilStoreOp, and stencilLoadOp will be ignored for that attachment, and no load or store ops will be performed. However, any transition specified by initialLayout and finalLayout will still be executed.<br><br>
+         *
+         * If flags includes VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT, then the attachment is treated as if it shares physical memory with another attachment in the same render pass. This information limits the ability of the implementation to reorder certain operations (like layout transitions and the loadOp) such that it is not improperly reordered against other uses of the same physical memory via a different attachment. This is described in more detail below.<br><br>
+         *
+         * If a render pass uses multiple attachments that alias the same device memory, those attachments must each include the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit in their attachment description flags. Attachments aliasing the same memory occurs in multiple ways:<br><br>
+         * <ul>
+         * <li>Multiple attachments being assigned the same image view as part of framebuffer creation.
+         * <li>Attachments using distinct image views that correspond to the same image subresource of an image.
+         * <li>Attachments using views of distinct image subresources which are bound to overlapping memory ranges.
+         * </ul>
+         * @note Render passes <b>must</b> include subpass dependencies (either directly or via a subpass dependency chain) between any two subpasses that operate on the same attachment or aliasing attachments and those subpass dependencies <b>must</b> include execution and memory dependencies separating uses of the aliases, if at least one of those subpasses writes to one of the aliases. These dependencies <b>must</b> not include the VK_DEPENDENCY_BY_REGION_BIT if the aliases are views of distinct image subresources which overlap in memory.
+         *
+         * Multiple attachments that alias the same memory <b>must</b> not be used in a single subpass. A given attachment index <b>must</b> not be used multiple times in a single subpass, with one exception: two subpass attachments <b>can</b> use the same attachment index if at least one use is as an input attachment and neither use is as a resolve or preserve attachment. In other words, the same view <b>can</b> be used simultaneously as an input and color or depth/stencil attachment, but <b>must</b> not be used as multiple color or depth/stencil attachments nor as resolve or preserve attachments.<br><br>
+         *
+         * If a set of attachments alias each other, then all except the first to be used in the render pass <b>must</b> use an initialLayout of VK_IMAGE_LAYOUT_UNDEFINED, since the earlier uses of the other aliases make their contents undefined. Once an alias has been used and a different alias has been used after it, the first alias <b>must</b> not be used in any later subpasses. However, an application <b>can</b> assign the same image view to multiple aliasing attachment indices, which allows that image view to be used multiple times even if other aliases are used in between.
+         *
+         * @note Once an attachment needs the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit, there <b>should</b> be no additional cost of introducing additional aliases, and using these additional aliases <b>may</b> allow more efficient clearing of the attachments on multiple uses via VK_ATTACHMENT_LOAD_OP_CLEAR.
+         */
+        using AttachmentDescription = VkAttachmentDescription;
+        VULKANPP_CONSTEXPR AttachmentDescription createAttachmentDescription(
+                const Format               &format,
+                const VkImageLayout        &finalLayout
+        ) {
+                return {
+                        .flags = VkAttachmentDescriptionFlags(),
+                        .format = format,
+                        .samples = VK_SAMPLE_COUNT_1_BIT,
+                        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+                        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+                        .finalLayout = finalLayout
+                };
+        }
+
+        // TODO doc
+        using SubpassDependency = VkSubpassDependency;
+        VULKANPP_CONSTEXPR SubpassDependency createSubpassDependency(
+                const VkPipelineStageFlags        &stageMask,
+                const VkAccessFlags               &dstAccessMask
+        ) {
+                return {
+                        .srcSubpass = VK_SUBPASS_EXTERNAL,
+                        .dstSubpass = 0,
+                        .srcStageMask = stageMask,
+                        .dstStageMask = stageMask,
+                        .srcAccessMask = VK_ACCESS_NONE,
+                        .dstAccessMask = dstAccessMask,
+                        .dependencyFlags = VkDependencyFlags()
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkSubpassDescription - Structure specifying a subpass description<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSubpassDescription structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkSubpassDescription {
+         *     VkSubpassDescriptionFlags       flags;
+         *     VkPipelineBindPoint             pipelineBindPoint;
+         *     uint32_t                        inputAttachmentCount;
+         *     const VkAttachmentReference*    pInputAttachments;
+         *     uint32_t                        colorAttachmentCount;
+         *     const VkAttachmentReference*    pColorAttachments;
+         *     const VkAttachmentReference*    pResolveAttachments;
+         *     const VkAttachmentReference*    pDepthStencilAttachment;
+         *     uint32_t                        preserveAttachmentCount;
+         *     const uint32_t*                 pPreserveAttachments;
+         * } VkSubpassDescription;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>flags is a bitmask of VkSubpassDescriptionFlagBits specifying usage of the subpass.
+         * <li>pipelineBindPoint is a VkPipelineBindPoint value specifying the pipeline type supported for this subpass.
+         * <li>inputAttachmentCount is the number of input attachments.
+         * <li>pInputAttachments is a pointer to an array of VkAttachmentReference structures defining the input attachments for this subpass and their layouts.
+         * <li>colorAttachmentCount is the number of color attachments.
+         * <li>pColorAttachments is a pointer to an array of colorAttachmentCount VkAttachmentReference structures defining the color attachments for this subpass and their layouts.
+         * <li>pResolveAttachments is NULL or a pointer to an array of colorAttachmentCount VkAttachmentReference structures defining the resolve attachments for this subpass and their layouts.
+         * <li>pDepthStencilAttachment is a pointer to a VkAttachmentReference structure specifying the depth/stencil attachment for this subpass and its layout.
+         * <li>preserveAttachmentCount is the number of preserved attachments.
+         * <li>pPreserveAttachments is a pointer to an array of preserveAttachmentCount render pass attachment indices identifying attachments that are not used by this subpass, but whose contents <b>must</b> be preserved throughout the subpass.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * Each element of the pInputAttachments array corresponds to an input attachment index in a fragment shader, i.e. if a shader declares an image variable decorated with a InputAttachmentIndex value of X, then it uses the attachment provided in pInputAttachments[X]. Input attachments <b>must</b> also be bound to the pipeline in a descriptor set. If the attachment member of any element of pInputAttachments is VK_ATTACHMENT_UNUSED, the application <b>must</b> not read from the corresponding input attachment index. Fragment shaders <b>can</b> use subpass input variables to access the contents of an input attachment at the fragment’s (x, y, layer) framebuffer coordinates. Input attachments <b>must</b> not be used by any subpasses within a render pass that enables render pass transform.<br><br>
+         *
+         * Each element of the pColorAttachments array corresponds to an output location in the shader, i.e. if the shader declares an output variable decorated with a Location value of X, then it uses the attachment provided in pColorAttachments[X]. If the attachment member of any element of pColorAttachments is VK_ATTACHMENT_UNUSED, or if Color Write Enable has been disabled for the corresponding attachment index, then writes to the corresponding location by a fragment shader are discarded.<br><br>
+         *
+         * If flags does not include VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM, and if pResolveAttachments is not NULL, each of its elements corresponds to a color attachment (the element in pColorAttachments at the same index), and a multisample resolve operation is defined for each attachment unless the resolve attachment index is VK_ATTACHMENT_UNUSED.<br><br>
+         *
+         * Similarly, if flags does not include VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM, and VkSubpassDescriptionDepthStencilResolve::pDepthStencilResolveAttachment is not NULL and does not have the value VK_ATTACHMENT_UNUSED, it corresponds to the depth/stencil attachment in pDepthStencilAttachment, and multisample resolve operation for depth and stencil are defined by VkSubpassDescriptionDepthStencilResolve::depthResolveMode and VkSubpassDescriptionDepthStencilResolve::stencilResolveMode, respectively. If VkSubpassDescriptionDepthStencilResolve::depthResolveMode is VK_RESOLVE_MODE_NONE or the pDepthStencilResolveAttachment does not have a depth aspect, no resolve operation is performed for the depth attachment. If VkSubpassDescriptionDepthStencilResolve::stencilResolveMode is VK_RESOLVE_MODE_NONE or the pDepthStencilResolveAttachment does not have a stencil aspect, no resolve operation is performed for the stencil attachment.<br><br>
+         *
+         * If the image subresource range referenced by the depth/stencil attachment is created with VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT, then the multisample resolve operation uses the sample locations state specified in the sampleLocationsInfo member of the element of the VkRenderPassSampleLocationsBeginInfoEXT::pPostSubpassSampleLocations for the subpass.<br><br>
+         *
+         * If pDepthStencilAttachment is NULL, or if its attachment index is VK_ATTACHMENT_UNUSED, it indicates that no depth/stencil attachment will be used in the subpass.<br><br>
+         *
+         * The contents of an attachment within the render area become undefined at the start of a subpass S if all of the following conditions are true:
+         * <ul>
+         * <li> The attachment is used as a color, depth/stencil, or resolve attachment in any subpass in the render pass.
+         * <li> There is a subpass S1 that uses or preserves the attachment, and a subpass dependency from S1 to S.
+         * <li> The attachment is not used or preserved in subpass S.
+         * </ul>
+         * In addition, the contents of an attachment within the render area become undefined at the start of a subpass S if all of the following conditions are true:
+         * <ul>
+         * <li> VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM is set.
+         * <li> The attachment is used as a color or depth/stencil in the subpass.
+         * </ul>
+         *
+         * Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.<br><br>
+         */
+        using SubpassDescription = VkSubpassDescription;
+        VULKANPP_CONSTEXPR SubpassDescription createSubpassDescription(
+                const std::vector<AttachmentReference>        &inputAttachments,
+                const std::vector<AttachmentReference>        &colorAttachments,
+                const std::vector<AttachmentReference>        &resolveAttachments,
+                const AttachmentReference                     *pDepthStencilAttachment,
+                const std::vector<uint32_t>                   &preserveAttachments
+        ) {
+                return {
+                        .flags = VkSubpassDescriptionFlags(),
+                        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        .inputAttachmentCount = static_cast<uint32_t>(inputAttachments.size()),
+                        .pInputAttachments = inputAttachments.data(),
+                        .colorAttachmentCount = static_cast<uint32_t>(colorAttachments.size()),
+                        .pColorAttachments = colorAttachments.data(),
+                        .pResolveAttachments = resolveAttachments.data(),
+                        .pDepthStencilAttachment = pDepthStencilAttachment,
+                        .preserveAttachmentCount = static_cast<uint32_t>(preserveAttachments.size()),
+                        .pPreserveAttachments = preserveAttachments.data()
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
          * VkRenderPass - Opaque handle to a render pass object<br><br><br>
          *
          * <b>C Specification</b><hr><br>
@@ -2268,12 +2499,12 @@ namespace vk {
          */
         using RenderPass = VkRenderPass;
         RenderPass createRenderPass(
-                const PhysicalDevice               &physicalDevice,
-                const Device                       &device,
-                const SurfaceKHR                   &surface,
-                const SurfaceFormatKHR             &requiredFormat,
-                const VkAllocationCallbacks        *pAllocator,
-                const void                         *pCreateInfoNext = nullptr
+                const Device                                    &device,
+                const std::vector<SubpassDescription>           &subpassDescriptions,
+                const std::vector<AttachmentDescription>        &attachmentDescriptions,
+                const std::vector<SubpassDependency>            &dependencies,
+                const VkAllocationCallbacks                     *pAllocator,
+                const void                                      *pCreateInfoNext = nullptr
         );
 
         /** <b>Name</b><hr><br>
@@ -2295,7 +2526,7 @@ namespace vk {
         Framebuffer createFramebuffer(
                 const RenderPass                    &renderPass,
                 const Extent2D                      &extent,
-                const std::vector<ImageView>        &imageViews,
+                const std::vector<ImageView>        &attachments,
                 const Device                        &device,
                 const VkAllocationCallbacks         *pAllocator,
                 const void                          *pCreateInfoNext = nullptr
@@ -2328,7 +2559,7 @@ namespace vk {
          * </ul>
          */
         using VertexInputAttributeDescription = VkVertexInputAttributeDescription;
-        constexpr VertexInputAttributeDescription createVertexInputAttributeDescription(
+        VULKANPP_CONSTEXPR VertexInputAttributeDescription createVertexInputAttributeDescription(
                 const uint32_t        &location,
                 const uint32_t        &binding,
                 const Format          &format,
@@ -2367,7 +2598,7 @@ namespace vk {
          * </ul>
          */
         using VertexInputBindingDescription = VkVertexInputBindingDescription;
-        constexpr VertexInputBindingDescription createVertexInputBindingDescription(
+        VULKANPP_CONSTEXPR VertexInputBindingDescription createVertexInputBindingDescription(
                 const uint32_t                 &binding,
                 const uint32_t                 &size,
                 const VkVertexInputRate        &inputRate
@@ -2445,7 +2676,7 @@ namespace vk {
          * Applications <b>must</b> allow pipeline compilation to fail during link steps with VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT as it <b>may</b> not be possible to determine if a pipeline <b>can</b> be created from identifiers until the link step.
          */
         using PipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo;
-        constexpr PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
+        VULKANPP_CONSTEXPR PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
                 const VkShaderStageFlagBits        &stage,
                 const ShaderModule                 &module,
                 const void                         *pNext = nullptr
@@ -2994,7 +3225,7 @@ namespace vk {
          * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
          */
         using AccelerationStructureInfoNV = VkAccelerationStructureInfoNV;
-        constexpr AccelerationStructureInfoNV createAccelerationStructureInfoNV(
+        VULKANPP_CONSTEXPR AccelerationStructureInfoNV createAccelerationStructureInfoNV(
                 const VkAccelerationStructureTypeNV              &type,
                 const uint32_t                                   &instanceCount,
                 const std::vector<VkGeometryNV>                  &geometries,
@@ -3038,7 +3269,7 @@ namespace vk {
          * </ul>
          */
         using AccelerationStructureCreateInfoNV = VkAccelerationStructureCreateInfoNV;
-        constexpr AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
+        VULKANPP_CONSTEXPR AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
                 const DeviceSize                           &compactedSize,
                 const AccelerationStructureInfoNV          &info,
                 const void                                 *pNext = nullptr
@@ -3101,7 +3332,7 @@ namespace vk {
          * @note Providing a NULL VkInstanceCreateInfo::pApplicationInfo or providing an apiVersion of 0 is equivalent to providing an apiVersion of VK_MAKE_API_VERSION(0,1,0,0).
          */
         using ApplicationInfo = VkApplicationInfo;
-        constexpr ApplicationInfo createApplicationInfo(
+        VULKANPP_CONSTEXPR ApplicationInfo createApplicationInfo(
                 const char            *pApplicationName,
                 const uint32_t        &applicationVersion,
                 const uint32_t        &apiVersion,
@@ -3154,7 +3385,7 @@ namespace vk {
          * The buffer view has a buffer view usage identifying which descriptor types <b>can</b> be created from it. This usage can be defined by including the VkBufferUsageFlags2CreateInfoKHR structure in the pNext chain, and specifying the usage value there. If this structure is not included, it is equal to the VkBufferCreateInfo::usage value used to create buffer.
          */
         using BufferViewCreateInfo = VkBufferViewCreateInfo;
-        constexpr BufferViewCreateInfo createBufferViewCreateInfo(
+        VULKANPP_CONSTEXPR BufferViewCreateInfo createBufferViewCreateInfo(
                 const Buffer            &buffer,
                 const Format            &format,
                 const DeviceSize        &offset,
@@ -3204,7 +3435,7 @@ namespace vk {
          * </ul>
          */
         using PipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo;
-        constexpr PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
+        VULKANPP_CONSTEXPR PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
                 const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
                 const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
                 const void                                                *pNext = nullptr
@@ -3257,7 +3488,7 @@ namespace vk {
          * Restarting the assembly of primitives discards the most recent index values if those elements formed an incomplete primitive, and restarts the primitive assembly using the subsequent indices, but only assembling the immediately following element through the end of the originally specified elements. The primitive restart index value comparison is performed before adding the vertexOffset value to the index value.
          */
         using PipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo;
-        constexpr PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo(
+        VULKANPP_CONSTEXPR PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3301,7 +3532,7 @@ namespace vk {
          * </ul>
          */
         using PipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo;
-        constexpr PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
+        VULKANPP_CONSTEXPR PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
                 const std::vector<Viewport>        &viewports,
                 const std::vector<Rect2D>          &scissors,
                 const void                         *pNext = nullptr
@@ -3364,7 +3595,7 @@ namespace vk {
          * The application <b>can</b> also add a VkPipelineRasterizationStateRasterizationOrderAMD structure to the pNext chain of a VkPipelineRasterizationStateCreateInfo structure. This structure enables selecting the rasterization order to use when rendering with the corresponding graphics pipeline as described in Rasterization Order.
          */
         using PipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo;
-        constexpr PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo(
+        VULKANPP_CONSTEXPR PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3374,7 +3605,7 @@ namespace vk {
                         .depthClampEnable = VK_FALSE,
                         .rasterizerDiscardEnable = VK_FALSE,
                         .polygonMode = VK_POLYGON_MODE_FILL,
-                        .cullMode = VK_CULL_MODE_NONE,
+                        .cullMode = VK_CULL_MODE_BACK_BIT,
                         .frontFace = VK_FRONT_FACE_CLOCKWISE,
                         .depthBiasEnable = VK_FALSE,
                         .depthBiasConstantFactor = 0.0f,
@@ -3425,7 +3656,7 @@ namespace vk {
          * If pSampleMask is NULL, it is treated as if the mask has all bits set to 1.
          */
         using PipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo;
-        constexpr PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo(
+        VULKANPP_CONSTEXPR PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3476,7 +3707,7 @@ namespace vk {
          * </ul>
          */
         using PipelineColorBlendAttachmentState = VkPipelineColorBlendAttachmentState;
-        constexpr PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
+        VULKANPP_CONSTEXPR PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
         {
                 return {
                         .blendEnable = VK_FALSE,
@@ -3523,9 +3754,9 @@ namespace vk {
          * </ul>
          */
         using PipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo;
-        constexpr PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
-                const PipelineColorBlendAttachmentState        &colorBlendAttachmentState,
-                const void                                     *pNext = nullptr
+        VULKANPP_CONSTEXPR PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
+                const std::vector<PipelineColorBlendAttachmentState>        &attachments,
+                const void                                                  *pNext = nullptr
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
@@ -3533,201 +3764,9 @@ namespace vk {
                         .flags = VkPipelineColorBlendStateCreateFlags(),
                         .logicOpEnable = VK_FALSE,
                         .logicOp = VK_LOGIC_OP_COPY,
-                        .attachmentCount = 1,
-                        .pAttachments = &colorBlendAttachmentState,
+                        .attachmentCount = static_cast<uint32_t>(attachments.size()),
+                        .pAttachments = attachments.data(),
                         .blendConstants = {0.0f, 0.0f, 0.0f, 0.0f}
-                };
-        }
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkAttachmentDescription - Structure specifying an attachment description<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkAttachmentDescription structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkAttachmentDescription {
-         *     VkAttachmentDescriptionFlags    flags;
-         *     VkFormat                        format;
-         *     VkSampleCountFlagBits           samples;
-         *     VkAttachmentLoadOp              loadOp;
-         *     VkAttachmentStoreOp             storeOp;
-         *     VkAttachmentLoadOp              stencilLoadOp;
-         *     VkAttachmentStoreOp             stencilStoreOp;
-         *     VkImageLayout                   initialLayout;
-         *     VkImageLayout                   finalLayout;
-         * } VkAttachmentDescription;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>flags is a bitmask of VkAttachmentDescriptionFlagBits specifying additional properties of the attachment.
-         * <li>format is a VkFormat value specifying the format of the image view that will be used for the attachment.
-         * <li>samples is a VkSampleCountFlagBits value specifying the number of samples of the image.
-         * <li>loadOp is a VkAttachmentLoadOp value specifying how the contents of color and depth components of the attachment are treated at the beginning of the subpass where it is first used.
-         * <li>storeOp is a VkAttachmentStoreOp value specifying how the contents of color and depth components of the attachment are treated at the end of the subpass where it is last used.
-         * <li>stencilLoadOp is a VkAttachmentLoadOp value specifying how the contents of stencil components of the attachment are treated at the beginning of the subpass where it is first used.
-         * <li>stencilStoreOp is a VkAttachmentStoreOp value specifying how the contents of stencil components of the attachment are treated at the end of the last subpass where it is used.
-         * <li>initialLayout is the layout the attachment image subresource will be in when a render pass instance begins.
-         * <li>finalLayout is the layout the attachment image subresource will be transitioned to when a render pass instance ends.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * If the attachment uses a color format, then loadOp and storeOp are used, and stencilLoadOp and stencilStoreOp are ignored. If the format has depth and/or stencil components, loadOp and storeOp apply only to the depth data, while stencilLoadOp and stencilStoreOp define how the stencil data is handled. loadOp and stencilLoadOp define the load operations for the attachment. storeOp and stencilStoreOp define the store operations for the attachment. If an attachment is not used by any subpass, loadOp, storeOp, stencilStoreOp, and stencilLoadOp will be ignored for that attachment, and no load or store ops will be performed. However, any transition specified by initialLayout and finalLayout will still be executed.<br><br>
-         *
-         * If flags includes VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT, then the attachment is treated as if it shares physical memory with another attachment in the same render pass. This information limits the ability of the implementation to reorder certain operations (like layout transitions and the loadOp) such that it is not improperly reordered against other uses of the same physical memory via a different attachment. This is described in more detail below.<br><br>
-         *
-         * If a render pass uses multiple attachments that alias the same device memory, those attachments must each include the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit in their attachment description flags. Attachments aliasing the same memory occurs in multiple ways:<br><br>
-         * <ul>
-         * <li>Multiple attachments being assigned the same image view as part of framebuffer creation.
-         * <li>Attachments using distinct image views that correspond to the same image subresource of an image.
-         * <li>Attachments using views of distinct image subresources which are bound to overlapping memory ranges.
-         * </ul>
-         * @note Render passes <b>must</b> include subpass dependencies (either directly or via a subpass dependency chain) between any two subpasses that operate on the same attachment or aliasing attachments and those subpass dependencies <b>must</b> include execution and memory dependencies separating uses of the aliases, if at least one of those subpasses writes to one of the aliases. These dependencies <b>must</b> not include the VK_DEPENDENCY_BY_REGION_BIT if the aliases are views of distinct image subresources which overlap in memory.
-         *
-         * Multiple attachments that alias the same memory <b>must</b> not be used in a single subpass. A given attachment index <b>must</b> not be used multiple times in a single subpass, with one exception: two subpass attachments <b>can</b> use the same attachment index if at least one use is as an input attachment and neither use is as a resolve or preserve attachment. In other words, the same view <b>can</b> be used simultaneously as an input and color or depth/stencil attachment, but <b>must</b> not be used as multiple color or depth/stencil attachments nor as resolve or preserve attachments.<br><br>
-         *
-         * If a set of attachments alias each other, then all except the first to be used in the render pass <b>must</b> use an initialLayout of VK_IMAGE_LAYOUT_UNDEFINED, since the earlier uses of the other aliases make their contents undefined. Once an alias has been used and a different alias has been used after it, the first alias <b>must</b> not be used in any later subpasses. However, an application <b>can</b> assign the same image view to multiple aliasing attachment indices, which allows that image view to be used multiple times even if other aliases are used in between.
-         *
-         * @note Once an attachment needs the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit, there <b>should</b> be no additional cost of introducing additional aliases, and using these additional aliases <b>may</b> allow more efficient clearing of the attachments on multiple uses via VK_ATTACHMENT_LOAD_OP_CLEAR.
-         */
-        using AttachmentDescription = VkAttachmentDescription;
-        constexpr AttachmentDescription createAttachmentDescription(
-                const Format        &format
-        ) {
-                return {
-                        .flags = VkAttachmentDescriptionFlags(),
-                        .format = format,
-                        .samples = VK_SAMPLE_COUNT_1_BIT,
-                        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-                        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-                        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-                        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-                };
-        }
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkAttachmentReference - Structure specifying an attachment reference<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkAttachmentReference structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkAttachmentReference {
-         *     uint32_t         attachment;
-         *     VkImageLayout    layout;
-         * } VkAttachmentReference;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>attachment is either an integer value identifying an attachment at the corresponding index in VkRenderPassCreateInfo::pAttachments, or VK_ATTACHMENT_UNUSED to signify that this attachment is not used.
-         * <li>layout is a VkImageLayout value specifying the layout the attachment uses during the subpass.
-         * </ul>
-         */
-        using AttachmentReference = VkAttachmentReference;
-        constexpr AttachmentReference createAttachmentReference(
-                const uint32_t             &attachment,
-                const VkImageLayout        &layout
-        ) {
-                return {
-                        .attachment = attachment,
-                        .layout = layout
-                };
-        }
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkSubpassDescription - Structure specifying a subpass description<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkSubpassDescription structure is defined as:
-         *
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkSubpassDescription {
-         *     VkSubpassDescriptionFlags       flags;
-         *     VkPipelineBindPoint             pipelineBindPoint;
-         *     uint32_t                        inputAttachmentCount;
-         *     const VkAttachmentReference*    pInputAttachments;
-         *     uint32_t                        colorAttachmentCount;
-         *     const VkAttachmentReference*    pColorAttachments;
-         *     const VkAttachmentReference*    pResolveAttachments;
-         *     const VkAttachmentReference*    pDepthStencilAttachment;
-         *     uint32_t                        preserveAttachmentCount;
-         *     const uint32_t*                 pPreserveAttachments;
-         * } VkSubpassDescription;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>flags is a bitmask of VkSubpassDescriptionFlagBits specifying usage of the subpass.
-         * <li>pipelineBindPoint is a VkPipelineBindPoint value specifying the pipeline type supported for this subpass.
-         * <li>inputAttachmentCount is the number of input attachments.
-         * <li>pInputAttachments is a pointer to an array of VkAttachmentReference structures defining the input attachments for this subpass and their layouts.
-         * <li>colorAttachmentCount is the number of color attachments.
-         * <li>pColorAttachments is a pointer to an array of colorAttachmentCount VkAttachmentReference structures defining the color attachments for this subpass and their layouts.
-         * <li>pResolveAttachments is NULL or a pointer to an array of colorAttachmentCount VkAttachmentReference structures defining the resolve attachments for this subpass and their layouts.
-         * <li>pDepthStencilAttachment is a pointer to a VkAttachmentReference structure specifying the depth/stencil attachment for this subpass and its layout.
-         * <li>preserveAttachmentCount is the number of preserved attachments.
-         * <li>pPreserveAttachments is a pointer to an array of preserveAttachmentCount render pass attachment indices identifying attachments that are not used by this subpass, but whose contents <b>must</b> be preserved throughout the subpass.
-         * </ul><br>
-         * <b>Description</b><hr><br>
-         *
-         * Each element of the pInputAttachments array corresponds to an input attachment index in a fragment shader, i.e. if a shader declares an image variable decorated with a InputAttachmentIndex value of X, then it uses the attachment provided in pInputAttachments[X]. Input attachments <b>must</b> also be bound to the pipeline in a descriptor set. If the attachment member of any element of pInputAttachments is VK_ATTACHMENT_UNUSED, the application <b>must</b> not read from the corresponding input attachment index. Fragment shaders <b>can</b> use subpass input variables to access the contents of an input attachment at the fragment’s (x, y, layer) framebuffer coordinates. Input attachments <b>must</b> not be used by any subpasses within a render pass that enables render pass transform.<br><br>
-         *
-         * Each element of the pColorAttachments array corresponds to an output location in the shader, i.e. if the shader declares an output variable decorated with a Location value of X, then it uses the attachment provided in pColorAttachments[X]. If the attachment member of any element of pColorAttachments is VK_ATTACHMENT_UNUSED, or if Color Write Enable has been disabled for the corresponding attachment index, then writes to the corresponding location by a fragment shader are discarded.<br><br>
-         *
-         * If flags does not include VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM, and if pResolveAttachments is not NULL, each of its elements corresponds to a color attachment (the element in pColorAttachments at the same index), and a multisample resolve operation is defined for each attachment unless the resolve attachment index is VK_ATTACHMENT_UNUSED.<br><br>
-         *
-         * Similarly, if flags does not include VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM, and VkSubpassDescriptionDepthStencilResolve::pDepthStencilResolveAttachment is not NULL and does not have the value VK_ATTACHMENT_UNUSED, it corresponds to the depth/stencil attachment in pDepthStencilAttachment, and multisample resolve operation for depth and stencil are defined by VkSubpassDescriptionDepthStencilResolve::depthResolveMode and VkSubpassDescriptionDepthStencilResolve::stencilResolveMode, respectively. If VkSubpassDescriptionDepthStencilResolve::depthResolveMode is VK_RESOLVE_MODE_NONE or the pDepthStencilResolveAttachment does not have a depth aspect, no resolve operation is performed for the depth attachment. If VkSubpassDescriptionDepthStencilResolve::stencilResolveMode is VK_RESOLVE_MODE_NONE or the pDepthStencilResolveAttachment does not have a stencil aspect, no resolve operation is performed for the stencil attachment.<br><br>
-         *
-         * If the image subresource range referenced by the depth/stencil attachment is created with VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT, then the multisample resolve operation uses the sample locations state specified in the sampleLocationsInfo member of the element of the VkRenderPassSampleLocationsBeginInfoEXT::pPostSubpassSampleLocations for the subpass.<br><br>
-         *
-         * If pDepthStencilAttachment is NULL, or if its attachment index is VK_ATTACHMENT_UNUSED, it indicates that no depth/stencil attachment will be used in the subpass.<br><br>
-         *
-         * The contents of an attachment within the render area become undefined at the start of a subpass S if all of the following conditions are true:
-         * <ul>
-         * <li> The attachment is used as a color, depth/stencil, or resolve attachment in any subpass in the render pass.
-         * <li> There is a subpass S1 that uses or preserves the attachment, and a subpass dependency from S1 to S.
-         * <li> The attachment is not used or preserved in subpass S.
-         * </ul>
-         * In addition, the contents of an attachment within the render area become undefined at the start of a subpass S if all of the following conditions are true:
-         * <ul>
-         * <li> VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM is set.
-         * <li> The attachment is used as a color or depth/stencil in the subpass.
-         * </ul>
-         *
-         * Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.<br><br>
-         */
-        using SubpassDescription = VkSubpassDescription;
-        constexpr SubpassDescription createSubpassDescription(
-                const std::vector<AttachmentReference>        &inputAttachments,
-                const std::vector<AttachmentReference>        &colorAttachments,
-                const std::vector<AttachmentReference>        &resolveAttachments,
-                const std::vector<AttachmentReference>        &depthStencilAttachment,
-                const std::vector<uint32_t>                   &preserveAttachments
-        ) {
-                return {
-                        .flags = VkSubpassDescriptionFlags(),
-                        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-                        .inputAttachmentCount = static_cast<uint32_t>(inputAttachments.size()),
-                        .pInputAttachments = inputAttachments.data(),
-                        .colorAttachmentCount = static_cast<uint32_t>(colorAttachments.size()),
-                        .pColorAttachments = colorAttachments.data(),
-                        .pResolveAttachments = resolveAttachments.data(),
-                        .pDepthStencilAttachment = depthStencilAttachment.data(),
-                        .preserveAttachmentCount = static_cast<uint32_t>(preserveAttachments.size()),
-                        .pPreserveAttachments = preserveAttachments.data()
                 };
         }
 
@@ -3758,7 +3797,7 @@ namespace vk {
          * </ul>
          */
         using CommandBufferBeginInfo = VkCommandBufferBeginInfo;
-        constexpr CommandBufferBeginInfo createCommandBufferBeginInfo(
+        VULKANPP_CONSTEXPR CommandBufferBeginInfo createCommandBufferBeginInfo(
                 const VkCommandBufferUsageFlags        &flags,
                 const void                             *pNext = nullptr
         ) {
@@ -3814,7 +3853,7 @@ namespace vk {
          * @note There <b>may</b> be a performance cost for using a render area smaller than the framebuffer, unless it matches the render area granularity for the render pass.
          */
         using RenderPassBeginInfo = VkRenderPassBeginInfo;
-        constexpr RenderPassBeginInfo createRenderPassBeginInfo(
+        VULKANPP_CONSTEXPR RenderPassBeginInfo createRenderPassBeginInfo(
                 const RenderPass                     &renderPass,
                 const Framebuffer                    &framebuffer,
                 const Extent2D                       &extent,
@@ -3874,7 +3913,7 @@ namespace vk {
          * The order that command buffers appear in pCommandBuffers is used to determine submission order, and thus all the implicit ordering guarantees that respect it. Other than these implicit ordering guarantees and any explicit synchronization primitives, these command buffers <b>may</b> overlap or otherwise execute out of order.
          */
         using SubmitInfo = VkSubmitInfo;
-        constexpr SubmitInfo createSubmitInfo(
+        VULKANPP_CONSTEXPR SubmitInfo createSubmitInfo(
                 const std::vector<Semaphore>            &waitSemaphores,
                 const VkPipelineStageFlags              *pWaitDstStageMask,
                 const std::vector<CommandBuffer>        &commandBuffers,
@@ -3934,7 +3973,7 @@ namespace vk {
          * @note When transitioning the image to VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR or VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, there is no need to delay subsequent processing, or perform any visibility operations (as vkQueuePresentKHR performs automatic visibility operations). To achieve this, the dstAccessMask member of the VkImageMemoryBarrier <b>should</b> be set to 0, and the dstStageMask parameter <b>should</b> be set to VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT.
          */
         using PresentInfoKHR = VkPresentInfoKHR;
-        constexpr PresentInfoKHR createPresentInfoKHR(
+        VULKANPP_CONSTEXPR PresentInfoKHR createPresentInfoKHR(
                 const std::vector<Semaphore>          &waitSemaphores,
                 const std::vector<SwapchainKHR>       &swapchains,
                 const std::vector<uint32_t>           &imageIndices,
@@ -4003,7 +4042,7 @@ namespace vk {
          * When performing a memory import operation, it is the responsibility of the application to ensure the external handles and their associated payloads meet all valid usage requirements. However, implementations <b>must</b> perform sufficient validation of external handles and payloads to ensure that the operation results in a valid memory object which will not cause program termination, device loss, queue stalls, or corruption of other resources when used as allowed according to its allocation parameters. If the external handle provided does not meet these requirements, the implementation <b>must</b> fail the memory import operation with the error code VK_ERROR_INVALID_EXTERNAL_HANDLE. If the parameters define an export operation and the external handle type is VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID, implementations <b>should</b> not strictly follow memoryTypeIndex. Instead, they <b>should</b> modify the allocation internally to use the required memory type for the application’s given usage. This is because for an export operation, there is currently no way for the client to know the memory type index before allocating.
          */
         using MemoryAllocateInfo = VkMemoryAllocateInfo;
-        constexpr MemoryAllocateInfo createMemoryAllocateInfo(
+        VULKANPP_CONSTEXPR MemoryAllocateInfo createMemoryAllocateInfo(
                 const DeviceSize        &allocationSize,
                 const uint32_t          &memoryTypeIndex,
                 const void              *pNext = nullptr
@@ -4041,7 +4080,7 @@ namespace vk {
          * </ul>
          */
         using BufferCopy = VkBufferCopy;
-        constexpr BufferCopy createBufferCopy(
+        VULKANPP_CONSTEXPR BufferCopy createBufferCopy(
                 const DeviceSize        &size
         ) {
                 return {
@@ -4089,7 +4128,7 @@ namespace vk {
          * If a VkBufferUsageFlags2CreateInfoKHR structure is present in the pNext chain, VkBufferUsageFlags2CreateInfoKHR::usage from that structure is used instead of usage from this structure.
          */
         using BufferCreateInfo = VkBufferCreateInfo;
-        constexpr BufferCreateInfo createBufferCreateInfo(
+        VULKANPP_CONSTEXPR BufferCreateInfo createBufferCreateInfo(
                 const DeviceSize                &size,
                 const VkBufferUsageFlags        &usage,
                 const void                      *pNext = nullptr
@@ -4135,7 +4174,7 @@ namespace vk {
          * </ul>
          */
         using CommandBufferAllocateInfo = VkCommandBufferAllocateInfo;
-        constexpr CommandBufferAllocateInfo createCommandBufferAllocateInfo(
+        VULKANPP_CONSTEXPR CommandBufferAllocateInfo createCommandBufferAllocateInfo(
                 const CommandPool        &commandPool,
                 const void               *pNext = nullptr
         ) {
@@ -4175,7 +4214,7 @@ namespace vk {
          * </ul>
          */
         using CommandPoolCreateInfo = VkCommandPoolCreateInfo;
-        constexpr CommandPoolCreateInfo createCommandPoolCreateInfo(
+        VULKANPP_CONSTEXPR CommandPoolCreateInfo createCommandPoolCreateInfo(
                 const uint32_t        &queueFamilyIndex,
                 const void            *pNext = nullptr
         ) {
@@ -4218,7 +4257,7 @@ namespace vk {
          * </ul>
          */
         using DeviceQueueCreateInfo = VkDeviceQueueCreateInfo;
-        constexpr DeviceQueueCreateInfo createDeviceQueueCreateInfo(
+        VULKANPP_CONSTEXPR DeviceQueueCreateInfo createDeviceQueueCreateInfo(
                 const uint32_t        &queueFamilyIndex,
                 const float           *queuePriority,
                 const void            *pNext = nullptr
@@ -4272,7 +4311,7 @@ namespace vk {
          * </ul>
          */
         using DeviceCreateInfo = VkDeviceCreateInfo;
-        constexpr DeviceCreateInfo createDeviceCreateInfo(
+        VULKANPP_CONSTEXPR DeviceCreateInfo createDeviceCreateInfo(
                 const std::vector<DeviceQueueCreateInfo>        &queueCreateInfos,
                 const std::vector<const char *>                 &enabledExtensionNames,
                 const PhysicalDeviceFeatures                    *pEnabledFeatures,
@@ -4317,7 +4356,7 @@ namespace vk {
          * </ul>
          */
         using FenceCreateInfo = VkFenceCreateInfo;
-        constexpr FenceCreateInfo createFenceCreateInfo(
+        VULKANPP_CONSTEXPR FenceCreateInfo createFenceCreateInfo(
                 const VkFenceCreateFlags        &flags,
                 const void                      *pNext = nullptr
         ) {
@@ -4366,10 +4405,10 @@ namespace vk {
          * It is legal for a subpass to use no color or depth/stencil attachments, either because it has no attachment references or because all of them are VK_ATTACHMENT_UNUSED. This kind of subpass <b>can</b> use shader side effects such as image stores and atomics to produce an output. In this case, the subpass continues to use the width, height, and layers of the framebuffer to define the dimensions of the rendering area, and the rasterizationSamples from each pipeline’s VkPipelineMultisampleStateCreateInfo to define the number of samples used in rasterization; however, if VkPhysicalDeviceFeatures::variableMultisampleRate is VK_FALSE, then all pipelines to be bound with the subpass <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. In all such cases, rasterizationSamples <b>must</b> be a valid VkSampleCountFlagBits value that is set in VkPhysicalDeviceLimits::framebufferNoAttachmentsSampleCounts.
          */
         using FramebufferCreateInfo = VkFramebufferCreateInfo;
-        constexpr FramebufferCreateInfo createFramebufferCreateInfo(
+        VULKANPP_CONSTEXPR FramebufferCreateInfo createFramebufferCreateInfo(
                 const RenderPass                     &renderPass,
                 const Extent2D                       &extent,
-                const std::vector<ImageView>         &imageViews,
+                const std::vector<ImageView>         &attachments,
                 const void                           *pNext = nullptr
         ) {
                 return {
@@ -4377,8 +4416,8 @@ namespace vk {
                         .pNext = pNext,
                         .flags = VkFramebufferCreateFlags(),
                         .renderPass = renderPass,
-                        .attachmentCount = static_cast<uint32_t>(imageViews.size()),
-                        .pAttachments = imageViews.data(),
+                        .attachmentCount = static_cast<uint32_t>(attachments.size()),
+                        .pAttachments = attachments.data(),
                         .width = extent.width,
                         .height = extent.height,
                         .layers = 1
@@ -4412,7 +4451,7 @@ namespace vk {
          * </ul>
          */
         using ComponentMapping = VkComponentMapping;
-        constexpr ComponentMapping createComponentMapping(
+        VULKANPP_CONSTEXPR ComponentMapping createComponentMapping(
                 const VkComponentSwizzle        &r,
                 const VkComponentSwizzle        &g,
                 const VkComponentSwizzle        &b,
@@ -4470,7 +4509,7 @@ namespace vk {
          * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
         using ImageSubresourceRange = VkImageSubresourceRange;
-        constexpr ImageSubresourceRange createImageSubresourceRange(
+        VULKANPP_CONSTEXPR ImageSubresourceRange createImageSubresourceRange(
                 const VkImageAspectFlags        &aspectMask,
                 const uint32_t                  &baseMipLevel,
                 const uint32_t                  &levelCount,
@@ -4563,10 +4602,11 @@ namespace vk {
          *
          */
         using ImageViewCreateInfo = VkImageViewCreateInfo;
-        constexpr ImageViewCreateInfo createImageViewCreateInfo(
-                const Image           &image,
-                const Format          &format,
-                const void            *pNext = nullptr
+        VULKANPP_CONSTEXPR ImageViewCreateInfo createImageViewCreateInfo(
+                const Image                     &image,
+                const Format                    &format,
+                const VkImageAspectFlags        &aspectMask,
+                const void                      *pNext = nullptr
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -4580,7 +4620,7 @@ namespace vk {
                                 VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY
                         ),
                         .subresourceRange = vk::createImageSubresourceRange(
-                                VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+                                aspectMask, 0, 1, 0, 1
                         ),
                 };
         }
@@ -4627,7 +4667,7 @@ namespace vk {
          * @note VkDirectDriverLoadingListLUNARG allows applications to ship drivers with themselves. Only drivers that are designed to work with it should be used, such as drivers that implement Vulkan in software or that implement Vulkan by translating it to a different API. Any driver that requires installation should not be used, such as hardware drivers.
          */
         using InstanceCreateInfo = VkInstanceCreateInfo;
-        constexpr InstanceCreateInfo createInstanceCreateInfo(
+        VULKANPP_CONSTEXPR InstanceCreateInfo createInstanceCreateInfo(
                 const ApplicationInfo                  &applicationInfo,
                 const std::vector<const char *>        &enabledLayerNames,
                 const std::vector<const char *>        &enabledExtensionNames,
@@ -4642,6 +4682,33 @@ namespace vk {
                         .ppEnabledLayerNames = enabledLayerNames.data(),
                         .enabledExtensionCount = static_cast<uint32_t>(enabledExtensionNames.size()),
                         .ppEnabledExtensionNames = enabledExtensionNames.data()
+                };
+        }
+
+        //TODO doc
+        using PipelineDepthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo;
+        VULKANPP_CONSTEXPR PipelineDepthStencilStateCreateInfo createPipelineDepthStencilStateCreateInfo(
+                const Bool32                  &depthTestEnable,
+                const Bool32                  &depthWriteEnable,
+                const Bool32                  &depthBoundsTestEnable,
+                const Bool32                  &stencilTestEnable,
+                const VkStencilOpState        &front,
+                const VkStencilOpState        &back,
+                const void                    *pNext = nullptr
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+                        .pNext = pNext,
+                        .flags = VkPipelineDepthStencilStateCreateFlags(),
+                        .depthTestEnable = depthTestEnable,
+                        .depthWriteEnable = depthWriteEnable,
+                        .depthCompareOp = VK_COMPARE_OP_LESS,
+                        .depthBoundsTestEnable = depthBoundsTestEnable,
+                        .stencilTestEnable = stencilTestEnable,
+                        .front = front,
+                        .back = back,
+                        .minDepthBounds = 0.0f,
+                        .maxDepthBounds = 1.0f
                 };
         }
 
@@ -4809,12 +4876,13 @@ namespace vk {
          * If a VkPipelineCreateFlags2CreateInfoKHR structure is present in the pNext chain, VkPipelineCreateFlags2CreateInfoKHR::flags from that structure is used instead of flags from this structure.
          */
         using GraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo;
-        constexpr GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
+        VULKANPP_CONSTEXPR GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
                 const PipelineVertexInputStateCreateInfo                &vertexInputStateCreateInfo,
                 const PipelineInputAssemblyStateCreateInfo              &inputAssemblyStateCreateInfo,
                 const PipelineViewportStateCreateInfo                   &viewportStateCreateInfo,
                 const PipelineRasterizationStateCreateInfo              &rasterizationStateCreateInfo,
                 const PipelineMultisampleStateCreateInfo                &multisampleStateCreateInfo,
+                const PipelineDepthStencilStateCreateInfo               *pDepthStencilState,
                 const PipelineColorBlendStateCreateInfo                 &colorBlendStateCreateInfo,
                 const std::vector<PipelineShaderStageCreateInfo>        &shaderStages,
                 const PipelineLayout                                    &layout,
@@ -4833,7 +4901,7 @@ namespace vk {
                         .pViewportState = &viewportStateCreateInfo,
                         .pRasterizationState = &rasterizationStateCreateInfo,
                         .pMultisampleState = &multisampleStateCreateInfo,
-                        .pDepthStencilState = nullptr,
+                        .pDepthStencilState = pDepthStencilState,
                         .pColorBlendState = &colorBlendStateCreateInfo,
                         .pDynamicState = nullptr,
                         .layout = layout,
@@ -4877,7 +4945,7 @@ namespace vk {
          * </ul>
          */
         using PipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo;
-        constexpr PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
+        VULKANPP_CONSTEXPR PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const std::vector<PushConstantRange>          &pushConstantRanges,
                 const void                                    *pNext = nullptr
@@ -4933,21 +5001,22 @@ namespace vk {
          * @note Care should be taken to avoid a data race here; if any subpasses access attachments with overlapping memory locations, and one of those accesses is a write, a subpass dependency needs to be included between them.
          */
         using RenderPassCreateInfo = VkRenderPassCreateInfo;
-        constexpr RenderPassCreateInfo createRenderPassCreateInfo(
-                const AttachmentDescription        &attachmentDescription,
-                const SubpassDescription           &subpassDescription,
-                const void                         *pNext = nullptr
+        VULKANPP_CONSTEXPR RenderPassCreateInfo createRenderPassCreateInfo(
+                const std::vector<AttachmentDescription>        &attachmentDescriptions,
+                const std::vector<SubpassDescription>           &subpassDescriptions,
+                const std::vector<VkSubpassDependency>          &dependencies,
+                const void                                      *pNext = nullptr
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
                         .pNext = pNext,
                         .flags = VkRenderPassCreateFlags(),
-                        .attachmentCount = 1,
-                        .pAttachments = &attachmentDescription,
-                        .subpassCount = 1,
-                        .pSubpasses = &subpassDescription,
-                        .dependencyCount = 0,
-                        .pDependencies = nullptr
+                        .attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size()),
+                        .pAttachments = attachmentDescriptions.data(),
+                        .subpassCount = static_cast<uint32_t>(subpassDescriptions.size()),
+                        .pSubpasses = subpassDescriptions.data(),
+                        .dependencyCount = static_cast<uint32_t>(dependencies.size()),
+                        .pDependencies = dependencies.data()
                 };
         }
 
@@ -4976,7 +5045,7 @@ namespace vk {
          * </ul>
          */
         using SemaphoreCreateInfo = VkSemaphoreCreateInfo;
-        constexpr SemaphoreCreateInfo createSemaphoreCreateInfo(
+        VULKANPP_CONSTEXPR SemaphoreCreateInfo createSemaphoreCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -5015,7 +5084,7 @@ namespace vk {
          * </ul>
          */
         using ShaderModuleCreateInfo = VkShaderModuleCreateInfo;
-        constexpr ShaderModuleCreateInfo createShaderModuleCreateInfo(
+        VULKANPP_CONSTEXPR ShaderModuleCreateInfo createShaderModuleCreateInfo(
                 const std::vector<uint8_t>        &code,
                 const void                        *pNext = nullptr
         ) {
@@ -5105,14 +5174,13 @@ namespace vk {
          * The application <b>can</b> continue to use a shared presentable image obtained from oldSwapchain until a presentable image is acquired from the new swapchain, as long as it has not entered a state that causes it to return VK_ERROR_OUT_OF_DATE_KHR.
          */
         using SwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR;
-        constexpr SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
+        VULKANPP_CONSTEXPR SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
                 const SurfaceCapabilitiesKHR        &capabilities,
                 const uint32_t                      &minImageCount,
                 const SurfaceFormatKHR              &format,
                 const Extent2D                      &extent,
                 const PresentModeKHR                &presentMode,
                 const SurfaceKHR                    &surface,
-                const VkSharingMode                 &sharingMode,
                 const std::vector<uint32_t>         &queueFamilyIndices,
                 const void                          *pNext = nullptr
         ) {
@@ -5128,7 +5196,7 @@ namespace vk {
                         .imageExtent = extent,
                         .imageArrayLayers = 1,
                         .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-                        .imageSharingMode = sharingMode,
+                        .imageSharingMode = queueFamilyIndices.size() == 1 ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT,
                         .queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size()),
                         .pQueueFamilyIndices = queueFamilyIndices.data(),
                         .preTransform = capabilities.currentTransform,
@@ -5173,7 +5241,7 @@ namespace vk {
          * The above layout definition allows the descriptor bindings to be specified sparsely such that not all binding numbers between 0 and the maximum binding number need to be specified in the pBindings array. Bindings that are not specified have a descriptorCount and stageFlags of zero, and the value of descriptorType is undefined. However, all binding numbers between 0 and the maximum binding number in the VkDescriptorSetLayoutCreateInfo::pBindings array <b>may</b> consume memory in the descriptor set layout even if not all descriptor bindings are used, though it <b>should</b> not consume additional memory from the descriptor pool.
          */
         using DescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding;
-        constexpr DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
+        VULKANPP_CONSTEXPR DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
                 const uint32_t                  &binding,
                 const VkDescriptorType          &descriptorType,
                 const uint32_t                  &descriptorCount,
@@ -5218,7 +5286,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo;
-        constexpr DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
+        VULKANPP_CONSTEXPR DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
                 const std::vector<DescriptorSetLayoutBinding>        &bindings,
                 const void                                           *pNext = nullptr
         ) {
@@ -5273,7 +5341,7 @@ namespace vk {
          * If flags has the VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT bit set, descriptor pool creation <b>may</b> fail with the error VK_ERROR_FRAGMENTATION if the total number of descriptors across all pools (including this one) created with this bit set exceeds maxUpdateAfterBindDescriptorsInAllPools, or if fragmentation of the underlying hardware resources occurs.
          */
         using DescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo;
-        constexpr DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
+        VULKANPP_CONSTEXPR DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
                 const uint32_t                               &maxSets,
                 const std::vector<DescriptorPoolSize>        &poolSizes,
                 const void                                   *pNext = nullptr
@@ -5316,7 +5384,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorSetAllocateInfo = VkDescriptorSetAllocateInfo;
-        constexpr DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
+        VULKANPP_CONSTEXPR DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
                 const DescriptorPool                          &descriptorPool,
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const void                                    *pNext = nullptr
@@ -5360,7 +5428,7 @@ namespace vk {
          * For VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC and VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC descriptor types, offset is the base offset from which the dynamic offset is applied and range is the static size used for all dynamic offsets.
          */
         using DescriptorBufferInfo = VkDescriptorBufferInfo;
-        constexpr DescriptorBufferInfo createDescriptorBufferInfo(
+        VULKANPP_CONSTEXPR DescriptorBufferInfo createDescriptorBufferInfo(
                 const Buffer            &buffer,
                 const DeviceSize        &offset,
                 const DeviceSize        &range
@@ -5418,7 +5486,7 @@ namespace vk {
          * @note The same behavior applies to bindings with a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT where descriptorCount specifies the number of bytes to update while dstArrayElement specifies the starting byte offset, thus in this case if the dstBinding has a smaller byte size than the sum of dstArrayElement and descriptorCount, then the remainder will be used to update the subsequent binding - dstBinding+1 starting at offset zero. This falls out as a special case of the above rule.
          */
         using WriteDescriptorSet = VkWriteDescriptorSet;
-        constexpr WriteDescriptorSet createWriteDescriptorSet(
+        VULKANPP_CONSTEXPR WriteDescriptorSet createWriteDescriptorSet(
                 const DescriptorSet                 &dstSet,
                 const uint32_t                      &dstBinding,
                 const uint32_t                      &dstArrayElement,
@@ -5520,11 +5588,12 @@ namespace vk {
          * For images created with VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for at least one of the formats a VkImageView created from the image <b>can</b> have (see Image Views for more detail).
          */
         using ImageCreateInfo = VkImageCreateInfo;
-        constexpr ImageCreateInfo createImageCreateInfo(
+        VULKANPP_CONSTEXPR ImageCreateInfo createImageCreateInfo(
                 const VkImageType                  &imageType,
                 const Format                       &format,
                 const Extent3D                     &extent,
                 const VkImageUsageFlags            &usage,
+                const VkImageTiling                &tiling,
                 const std::vector<uint32_t>        &queueFamilyIndices,
                 const void                         *pNext = nullptr
         ) {
@@ -5538,9 +5607,9 @@ namespace vk {
                         .mipLevels = 1,
                         .arrayLayers = 1,
                         .samples = VK_SAMPLE_COUNT_1_BIT,
-                        .tiling = VK_IMAGE_TILING_OPTIMAL,
+                        .tiling = tiling,
                         .usage = usage,
-                        .sharingMode = queueFamilyIndices.size() == 1 ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT,
+                        .sharingMode = queueFamilyIndices.size() > 1 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE,
                         .queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size()),
                         .pQueueFamilyIndices = queueFamilyIndices.data(),
                         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
@@ -5601,15 +5670,16 @@ namespace vk {
          * If image has a multi-planar format and the image is disjoint, then including VK_IMAGE_ASPECT_COLOR_BIT in the aspectMask member of subresourceRange is equivalent to including VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, and (for three-plane formats only) VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
         using ImageMemoryBarrier = VkImageMemoryBarrier;
-        constexpr ImageMemoryBarrier createImageMemoryBarrier(
-                const VkAccessFlags              &srcAccessMask,
-                const VkAccessFlags              &dstAccessMask,
-                const VkImageLayout              &oldLayout,
-                const VkImageLayout              &newLayout,
-                const uint32_t                   &srcQueueFamilyIndex,
-                const uint32_t                   &dstQueueFamilyIndex,
-                const Image                      &image,
-                const void                       *pNext = nullptr
+        VULKANPP_CONSTEXPR ImageMemoryBarrier createImageMemoryBarrier(
+                const VkAccessFlags             &srcAccessMask,
+                const VkAccessFlags             &dstAccessMask,
+                const VkImageLayout             &oldLayout,
+                const VkImageLayout             &newLayout,
+                const uint32_t                  &srcQueueFamilyIndex,
+                const uint32_t                  &dstQueueFamilyIndex,
+                const Image                     &image,
+                const VkImageAspectFlags        &aspectMask,
+                const void                      *pNext = nullptr
         ) {
                 return {
                         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -5622,7 +5692,7 @@ namespace vk {
                         .dstQueueFamilyIndex = dstQueueFamilyIndex,
                         .image = image,
                         .subresourceRange = vk::createImageSubresourceRange(
-                                VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1
+                                aspectMask, 0, 1, 0, 1
                         )
                 };
         }
@@ -5653,7 +5723,7 @@ namespace vk {
          * </ul>
          */
         using ImageSubresourceLayers = VkImageSubresourceLayers;
-        constexpr ImageSubresourceLayers createImageSubresourceLayers(
+        VULKANPP_CONSTEXPR ImageSubresourceLayers createImageSubresourceLayers(
                 const VkImageAspectFlags        &aspectMask,
                 const uint32_t                  &mipLevel,
                 const uint32_t                  &baseArrayLayer,
@@ -5692,7 +5762,7 @@ namespace vk {
          * </ul>
          */
         using Offset3D = VkOffset3D;
-        constexpr Offset3D createOffset3D(
+        VULKANPP_CONSTEXPR Offset3D createOffset3D(
                 const int32_t        &x,
                 const int32_t        &y,
                 const int32_t        &z
@@ -5700,6 +5770,16 @@ namespace vk {
                 return {
                         .x = x,
                         .y = y,
+                        .z = z
+                };
+        }
+        VULKANPP_CONSTEXPR Offset3D createOffset3D(
+                const Offset2D        &offset2D,
+                const int32_t         &z
+        ) {
+                return {
+                        .x = offset2D.x,
+                        .y = offset2D.y,
                         .z = z
                 };
         }
@@ -5734,7 +5814,7 @@ namespace vk {
          * </ul>
          */
         using BufferImageCopy = VkBufferImageCopy;
-        constexpr BufferImageCopy createBufferImageCopy(
+        VULKANPP_CONSTEXPR BufferImageCopy createBufferImageCopy(
                 const DeviceSize                    &bufferOffset,
                 const uint32_t                      &bufferRowLength,
                 const uint32_t                      &bufferImageHeight,
@@ -5832,7 +5912,7 @@ namespace vk {
          * Since VkSampler is a non-dispatchable handle type, implementations <b>may</b> return the same handle for sampler state vectors that are identical. In such cases, all such objects would only count once against the maxSamplerAllocationCount limit.
          */
         using SamplerCreateInfo = VkSamplerCreateInfo;
-        constexpr SamplerCreateInfo createSamplerCreateInfo(
+        VULKANPP_CONSTEXPR SamplerCreateInfo createSamplerCreateInfo(
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
                 const Bool32                      &anisotropyEnable,
@@ -5891,7 +5971,7 @@ namespace vk {
          * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
          */
         using DescriptorImageInfo = VkDescriptorImageInfo;
-        constexpr DescriptorImageInfo createDescriptorImageInfo(
+        VULKANPP_CONSTEXPR DescriptorImageInfo createDescriptorImageInfo(
                 const Sampler              &sampler,
                 const ImageView            &imageView,
                 const VkImageLayout        &imageLayout
@@ -6021,7 +6101,7 @@ namespace vk {
          * The pNext chain of this structure is used to extend the structure with features defined by extensions. This structure <b>can</b> be used in vkGetPhysicalDeviceFeatures2 or <b>can</b> be included in the pNext chain of a VkDeviceCreateInfo structure, in which case it controls which features are enabled on the device in lieu of pEnabledFeatures.
          */
         using PhysicalDeviceFeatures2 = VkPhysicalDeviceFeatures2;
-        constexpr PhysicalDeviceFeatures2 createPhysicalDeviceFeatures2(
+        VULKANPP_CONSTEXPR PhysicalDeviceFeatures2 createPhysicalDeviceFeatures2(
                 const PhysicalDeviceFeatures        &physicalDeviceFeatures,
                 void                                *pNext = nullptr
         ) {
@@ -6085,7 +6165,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan11Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan11Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan11Features = VkPhysicalDeviceVulkan11Features;
-        constexpr PhysicalDeviceVulkan11Features createPhysicalDeviceVulkan11Features(
+        VULKANPP_CONSTEXPR PhysicalDeviceVulkan11Features createPhysicalDeviceVulkan11Features(
                 const Bool32        values[12],
                 void                *pNext = nullptr
         ) {
@@ -6229,7 +6309,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan12Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan12Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan12Features = VkPhysicalDeviceVulkan12Features;
-        constexpr PhysicalDeviceVulkan12Features createPhysicalDeviceVulkan12Features(
+        VULKANPP_CONSTEXPR PhysicalDeviceVulkan12Features createPhysicalDeviceVulkan12Features(
                 const Bool32        values[47],
                 void                *pNext = nullptr
         ) {
@@ -6383,7 +6463,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan13Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan13Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan13Features = VkPhysicalDeviceVulkan13Features;
-        constexpr PhysicalDeviceVulkan13Features createPhysicalDeviceVulkan13Features(
+        VULKANPP_CONSTEXPR PhysicalDeviceVulkan13Features createPhysicalDeviceVulkan13Features(
                 const Bool32        values[15],
                 void                *pNext = nullptr
         ) {
