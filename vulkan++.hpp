@@ -13,10 +13,16 @@
         #error "Vulkan++ should not be used with the vulkan.hpp header."
 #endif
 
-#ifdef VULKANPP_ENABLE_CONSTEXPR
-        #define VULKANPP_CONSTEXPR inline constexpr
+#ifdef VULKANPP_FORCE_INLINE
+        #define VULKANPP_INLINE __forceinline 
 #else
-        #define VULKANPP_CONSTEXPR inline
+        #define VULKANPP_INLINE inline 
+#endif
+
+#ifdef VULKANPP_ENABLE_CONSTEXPR
+        #define VULKANPP_CONSTEXPR constexpr
+#else
+        #define VULKANPP_CONSTEXPR
 #endif
 
 namespace vk {
@@ -977,21 +983,21 @@ namespace vk {
          * @endcode
          */
         using ClearColorValue = VkClearColorValue;
-        VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const float        float32[4]
         ) {
                 return {
                         .float32 = { float32[0], float32[1], float32[2], float32[3] }
                 };
         }
-        VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const int32_t        int32[4]
         ) {
                 return {
                         .int32 = { int32[0], int32[1], int32[2], int32[3] }
                 };
         }
-        VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const uint32_t        uint32[4]
         ) {
                 return {
@@ -1022,7 +1028,7 @@ namespace vk {
          * </ul>
          */
         using ClearDepthStencilValue = VkClearDepthStencilValue;
-        VULKANPP_CONSTEXPR ClearDepthStencilValue createClearDepthStencilValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearDepthStencilValue createClearDepthStencilValue(
                 const float           &depth,
                 const uint32_t        &stencil
         ) {
@@ -1058,21 +1064,21 @@ namespace vk {
          * This union is used where part of the API requires either color or depth/stencil clear values, depending on the attachment, and defines the initial clear values in the VkRenderPassBeginInfo structure.
          */
         using ClearValue = VkClearValue;
-        VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const ClearColorValue        &clearColorValue
         ) {
                 return {
                         .color = clearColorValue
                 };
         }
-        VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const ClearDepthStencilValue        &depthStencil
         ) {
                 return {
                         .depthStencil = depthStencil
                 };
         }
-        VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const float        &r,
                 const float        &g,
                 const float        &b,
@@ -1083,7 +1089,7 @@ namespace vk {
                         .color = vk::createClearColorValue(float32)
                 };
         }
-        VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const int32_t        &r,
                 const int32_t        &g,
                 const int32_t        &b,
@@ -1094,7 +1100,7 @@ namespace vk {
                         .color = vk::createClearColorValue(int32)
                 };
         }
-        VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const uint32_t        &r,
                 const uint32_t        &g,
                 const uint32_t        &b,
@@ -1105,7 +1111,7 @@ namespace vk {
                         .color = vk::createClearColorValue(uint32)
                 };
         }
-        VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const float           &depth,
                 const uint32_t        &stencil
         ) {
@@ -1140,7 +1146,7 @@ namespace vk {
          * @note When creating a descriptor pool that will contain descriptors for combined image samplers of multi-planar formats, an application needs to account for non-trivial descriptor consumption when choosing the descriptorCount value, as indicated by VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount.
          */
         using DescriptorPoolSize = VkDescriptorPoolSize;
-        VULKANPP_CONSTEXPR DescriptorPoolSize createDescriptorPoolSize(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorPoolSize createDescriptorPoolSize(
                 const VkDescriptorType        &type,
                 const uint32_t                &descriptorCount
         ) {
@@ -1173,7 +1179,7 @@ namespace vk {
          * </ul>
          */
         using Extent2D = VkExtent2D;
-        VULKANPP_CONSTEXPR Extent2D createExtent2D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Extent2D createExtent2D(
                 const uint32_t        &width,
                 const uint32_t        &height
         ) {
@@ -1238,14 +1244,17 @@ namespace vk {
          *
          */
         using Viewport = VkViewport;
-        VULKANPP_CONSTEXPR Viewport createViewport(
-                const Extent2D        &extent
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Viewport createViewport(
+                const float        &x,
+                const float        &y,
+                const float        &width,
+                const float        &height
         ) {
                 return {
-                        .x = 0.0f,
-                        .y = 0.0f,
-                        .width = static_cast<float>(extent.width),
-                        .height = static_cast<float>(extent.height),
+                        .x = x,
+                        .y = y,
+                        .width = width,
+                        .height = height,
                         .minDepth = 0.0f,
                         .maxDepth = 1.0f
                 };
@@ -1274,7 +1283,7 @@ namespace vk {
          * </ul>
          */
         using Offset2D = VkOffset2D;
-        VULKANPP_CONSTEXPR Offset2D createOffset2D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Offset2D createOffset2D(
                 const int32_t        &x,
                 const int32_t        &y
         ) {
@@ -1306,7 +1315,7 @@ namespace vk {
          * </ul>
          */
         using Rect2D = VkRect2D;
-        VULKANPP_CONSTEXPR Rect2D createRect2D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Rect2D createRect2D(
                 const Offset2D        &offset,
                 const Extent2D        &extent
         ) {
@@ -1341,7 +1350,7 @@ namespace vk {
          * </ul>
          */
         using Extent3D = VkExtent3D;
-        VULKANPP_CONSTEXPR Extent3D createExtent3D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Extent3D createExtent3D(
                 const uint32_t        &width,
                 const uint32_t        &height,
                 const uint32_t        &depth
@@ -1352,7 +1361,7 @@ namespace vk {
                         .depth = depth
                 };
         }
-        VULKANPP_CONSTEXPR Extent3D createExtent3D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Extent3D createExtent3D(
                 const Extent2D        &extent2D,
                 const uint32_t        &depth
         )  {
@@ -1413,28 +1422,136 @@ namespace vk {
 
         /** <b>Name</b><hr><br>
          *
-         * VkDescriptorUpdateTemplate - Opaque handle to a descriptor update template<br><br><br>
+         * VkDescriptorUpdateTemplateEntry - Describes a single descriptor update of the descriptor update template<br><br><br>
          *
          * <b>C Specification</b><hr><br>
          *
-         * A descriptor update template specifies a mapping from descriptor update information in host memory to descriptors in a descriptor set. It is designed to avoid passing redundant information to the driver when frequently updating the same set of descriptors in descriptor sets.<br><br>
-         *
-         * Descriptor update template objects are represented by VkDescriptorUpdateTemplate handles:
+         * The VkDescriptorUpdateTemplateEntry structure is defined as:
          *
          * @code
          * // Provided by VK_VERSION_1_1
-         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorUpdateTemplate)
+         * typedef struct VkDescriptorUpdateTemplateEntry {
+         *     uint32_t            dstBinding;
+         *     uint32_t            dstArrayElement;
+         *     uint32_t            descriptorCount;
+         *     VkDescriptorType    descriptorType;
+         *     size_t              offset;
+         *     size_t              stride;
+         * } VkDescriptorUpdateTemplateEntry;
          * @endcode
          *
          * or the equivalent
          *
          * @code
          * // Provided by VK_KHR_descriptor_update_template
-         * typedef VkDescriptorUpdateTemplate VkDescriptorUpdateTemplateKHR;
+         * typedef VkDescriptorUpdateTemplateEntry VkDescriptorUpdateTemplateEntryKHR;
          * @endcode
+         *
+         * <b>Members</b><hr><br>
+         *
+         * This structure describes the following features:
+         * <ul>
+         * <li>dstBinding is the descriptor binding to update when using this descriptor update template.
+         * <li>dstArrayElement is the starting element in the array belonging to dstBinding. If the descriptor binding identified by dstBinding has a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK then dstArrayElement specifies the starting byte offset to update.
+         * <li>descriptorCount is the number of descriptors to update. If descriptorCount is greater than the number of remaining array elements in the destination binding, those affect consecutive bindings in a manner similar to VkWriteDescriptorSet above. If the descriptor binding identified by dstBinding has a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK then descriptorCount specifies the number of bytes to update and the remaining array elements in the destination binding refer to the remaining number of bytes in it.
+         * <li>descriptorType is a VkDescriptorType specifying the type of the descriptor.
+         * <li>offset is the offset in bytes of the first binding in the raw data structure.
+         * <li>stride is the stride in bytes between two consecutive array elements of the descriptor update information in the raw data structure. The actual pointer ptr for each array element j of update entry i is computed using the following formula:
+         * @code
+         * const char *ptr = (const char *)pData + pDescriptorUpdateEntries[i].offset + j * pDescriptorUpdateEntries[i].stride
+         * @endcode
+         * The stride is useful in case the bindings are stored in structs along with other data. If descriptorType is VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK then the value of stride is ignored and the stride is assumed to be 1, i.e. the descriptor update information for them is always specified as a contiguous range.
+         * </ul>
          */
-        using DescriptorUpdateTemplate = VkDescriptorUpdateTemplate;
-        // TODO create
+        using DescriptorUpdateTemplateEntry = VkDescriptorUpdateTemplateEntry;
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorUpdateTemplateEntry createDescriptorUpdateTemplateEntry(
+                const uint32_t                &dstBinding,
+                const uint32_t                &dstArrayElement,
+                const uint32_t                &descriptorCount,
+                const VkDescriptorType        &descriptorType,
+                const size_t                  &offset,
+                const size_t                  &stride
+        ) {
+                return {
+                        .dstBinding = dstBinding,
+                        .dstArrayElement = dstArrayElement,
+                        .descriptorCount = descriptorCount,
+                        .descriptorType = descriptorType,
+                        .offset = offset,
+                        .stride = stride
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorUpdateTemplateCreateInfo - Structure specifying parameters of a newly created descriptor update template<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkDescriptorUpdateTemplateCreateInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_1
+         * typedef struct VkDescriptorUpdateTemplateCreateInfo {
+         *     VkStructureType                           sType;
+         *     const void*                               pNext;
+         *     VkDescriptorUpdateTemplateCreateFlags     flags;
+         *     uint32_t                                  descriptorUpdateEntryCount;
+         *     const VkDescriptorUpdateTemplateEntry*    pDescriptorUpdateEntries;
+         *     VkDescriptorUpdateTemplateType            templateType;
+         *     VkDescriptorSetLayout                     descriptorSetLayout;
+         *     VkPipelineBindPoint                       pipelineBindPoint;
+         *     VkPipelineLayout                          pipelineLayout;
+         *     uint32_t                                  set;
+         * } VkDescriptorUpdateTemplateCreateInfo;
+         * @endcode
+         *
+         * or the equivalent
+         *
+         * @code
+         * // Provided by VK_KHR_descriptor_update_template
+         * typedef VkDescriptorUpdateTemplateCreateInfo VkDescriptorUpdateTemplateCreateInfoKHR;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         *
+         * This structure describes the following features:
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is reserved for future use.
+         * <li>descriptorUpdateEntryCount is the number of elements in the pDescriptorUpdateEntries array.
+         * <li>pDescriptorUpdateEntries is a pointer to an array of VkDescriptorUpdateTemplateEntry structures describing the descriptors to be updated by the descriptor update template.
+         * <li>templateType Specifies the type of the descriptor update template. If set to VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET it <b>can</b> only be used to update descriptor sets with a fixed descriptorSetLayout. If set to VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR it <b>can</b> only be used to push descriptor sets using the provided pipelineBindPoint, pipelineLayout, and set number.
+         * <li>descriptorSetLayout is the descriptor set layout used to build the descriptor update template. All descriptor sets which are going to be updated through the newly created descriptor update template <b>must</b> be created with a layout that matches (is the same as, or defined identically to) this layout. This parameter is ignored if templateType is not VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET.
+         * <li>pipelineBindPoint is a VkPipelineBindPoint indicating the type of the pipeline that will use the descriptors. This parameter is ignored if templateType is not VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR
+         * <li>pipelineLayout is a VkPipelineLayout object used to program the bindings. This parameter is ignored if templateType is not VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR
+         * <li>set is the set number of the descriptor set in the pipeline layout that will be updated. This parameter is ignored if templateType is not VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR
+         * </ul>
+         */
+        using DescriptorUpdateTemplateCreateInfo =  VkDescriptorUpdateTemplateCreateInfo;
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorUpdateTemplateCreateInfo createDescriptorUpdateTemplateCreateInfo(
+                const std::vector<DescriptorUpdateTemplateEntry>         &descriptorUpdateEntries,
+                const VkDescriptorUpdateTemplateType                     &templateType,
+                const VkDescriptorSetLayout                              &descriptorSetLayout,
+                const VkPipelineBindPoint                                &pipelineBindPoint,
+                const VkPipelineLayout                                   &pipelineLayout,
+                const uint32_t                                           &set,
+                const void                                               *pNext = nullptr
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO,
+                        .pNext = pNext,
+                        .flags = VkDescriptorUpdateTemplateCreateFlags(),
+                        .descriptorUpdateEntryCount = static_cast<uint32_t>(descriptorUpdateEntries.size()),
+                        .pDescriptorUpdateEntries = descriptorUpdateEntries.data(),
+                        .templateType = templateType,
+                        .descriptorSetLayout = descriptorSetLayout,
+                        .pipelineBindPoint = pipelineBindPoint,
+                        .pipelineLayout = pipelineLayout,
+                        .set = set
+                };
+        }
 
         /** <b>Name</b><hr><br>
          *
@@ -1776,7 +1893,7 @@ namespace vk {
          * </ul>
          */
         using PhysicalDeviceFeatures = VkPhysicalDeviceFeatures;
-        VULKANPP_CONSTEXPR PhysicalDeviceFeatures createPhysicalDeviceFeatures(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceFeatures createPhysicalDeviceFeatures(
                 const Bool32 values[55]
         ) {
                 return {
@@ -2188,7 +2305,7 @@ namespace vk {
          * </ul>
          */
         using PushConstantRange = VkPushConstantRange;
-        VULKANPP_CONSTEXPR PushConstantRange createPushConstantRange(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PushConstantRange createPushConstantRange(
                 const VkShaderStageFlags        &stageFlags,
                 const uint32_t                  &offset,
                 const uint32_t                  &size
@@ -2222,6 +2339,40 @@ namespace vk {
                 const std::vector<PushConstantRange>          &pushConstantRanges,
                 const VkAllocationCallbacks                   *pAllocator,
                 const void                                    *pCreateInfoNext = nullptr
+        );
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkDescriptorUpdateTemplate - Opaque handle to a descriptor update template<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * A descriptor update template specifies a mapping from descriptor update information in host memory to descriptors in a descriptor set. It is designed to avoid passing redundant information to the driver when frequently updating the same set of descriptors in descriptor sets.<br><br>
+         *
+         * Descriptor update template objects are represented by VkDescriptorUpdateTemplate handles:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_1
+         * VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorUpdateTemplate)
+         * @endcode
+         *
+         * or the equivalent
+         *
+         * @code
+         * // Provided by VK_KHR_descriptor_update_template
+         * typedef VkDescriptorUpdateTemplate VkDescriptorUpdateTemplateKHR;
+         * @endcode
+         */
+        using DescriptorUpdateTemplate = VkDescriptorUpdateTemplate;
+        DescriptorUpdateTemplate createDescriptorUpdateTemplate(
+                const Device                                             &device,
+                const std::vector<DescriptorUpdateTemplateEntry>         &descriptorUpdateEntries,
+                const VkDescriptorUpdateTemplateType                     &templateType,
+                const DescriptorSetLayout                                &descriptorSetLayout,
+                const VkPipelineBindPoint                                &pipelineBindPoint,
+                const PipelineLayout                                     &pipelineLayout,
+                const uint32_t                                           &set,
+                const VkAllocationCallbacks                              *pAllocator
         );
 
         /** <b>Name</b><hr><br>
@@ -2295,7 +2446,7 @@ namespace vk {
          * </ul>
          */
         using AttachmentReference = VkAttachmentReference;
-        VULKANPP_CONSTEXPR AttachmentReference createAttachmentReference(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR AttachmentReference createAttachmentReference(
                 const uint32_t             &attachment,
                 const VkImageLayout        &layout
         ) {
@@ -2361,7 +2512,7 @@ namespace vk {
          * @note Once an attachment needs the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit, there <b>should</b> be no additional cost of introducing additional aliases, and using these additional aliases <b>may</b> allow more efficient clearing of the attachments on multiple uses via VK_ATTACHMENT_LOAD_OP_CLEAR.
          */
         using AttachmentDescription = VkAttachmentDescription;
-        VULKANPP_CONSTEXPR AttachmentDescription createAttachmentDescription(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR AttachmentDescription createAttachmentDescription(
                 const Format               &format,
                 const VkImageLayout        &finalLayout
         ) {
@@ -2378,9 +2529,62 @@ namespace vk {
                 };
         }
 
-        // TODO doc
+        /** <b>Name</b><hr><br>
+         *
+         * VkSubpassDependency - Structure specifying a subpass dependency<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkSubpassDependency structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkSubpassDependency {
+         *     uint32_t                srcSubpass;
+         *     uint32_t                dstSubpass;
+         *     VkPipelineStageFlags    srcStageMask;
+         *     VkPipelineStageFlags    dstStageMask;
+         *     VkAccessFlags           srcAccessMask;
+         *     VkAccessFlags           dstAccessMask;
+         *     VkDependencyFlags       dependencyFlags;
+         * } VkSubpassDependency;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>srcSubpass is the subpass index of the first subpass in the dependency, or VK_SUBPASS_EXTERNAL.
+         * <li>dstSubpass is the subpass index of the second subpass in the dependency, or VK_SUBPASS_EXTERNAL.
+         * <li>srcStageMask is a bitmask of VkPipelineStageFlagBits specifying the source stage mask.
+         * <li>dstStageMask is a bitmask of VkPipelineStageFlagBits specifying the destination stage mask
+         * <li>srcAccessMask is a bitmask of VkAccessFlagBits specifying a source access mask.
+         * <li>dstAccessMask is a bitmask of VkAccessFlagBits specifying a destination access mask.
+         * <li>dependencyFlags is a bitmask of VkDependencyFlagBits.
+         * </ul><br>
+         * <b>Description</b><hr><br>
+         *
+         * If srcSubpass is equal to dstSubpass then the VkSubpassDependency does not directly define a dependency. Instead, it enables pipeline barriers to be used in a render pass instance within the identified subpass, where the scopes of one pipeline barrier <b>must</b> be a subset of those described by one subpass dependency. Subpass dependencies specified in this way that include framebuffer-space stages in the srcStageMask <b>must</b> only include framebuffer-space stages in dstStageMask, and <b>must</b> include VK_DEPENDENCY_BY_REGION_BIT. When a subpass dependency is specified in this way for a subpass that has more than one view in its view mask, its dependencyFlags <b>must</b> include VK_DEPENDENCY_VIEW_LOCAL_BIT.<br><br>
+         *
+         * If srcSubpass and dstSubpass are not equal, when a render pass instance which includes a subpass dependency is submitted to a queue, it defines a dependency between the subpasses identified by srcSubpass and dstSubpass.<br><br>
+         *
+         * If srcSubpass is equal to VK_SUBPASS_EXTERNAL, the first synchronization scope includes commands that occur earlier in submission order than the vkCmdBeginRenderPass used to begin the render pass instance. Otherwise, the first set of commands includes all commands submitted as part of the subpass instance identified by srcSubpass and any load, store, or multisample resolve operations on attachments used in srcSubpass. In either case, the first synchronization scope is limited to operations on the pipeline stages determined by the source stage mask specified by srcStageMask.<br><br>
+         *
+         * If dstSubpass is equal to VK_SUBPASS_EXTERNAL, the second synchronization scope includes commands that occur later in submission order than the vkCmdEndRenderPass used to end the render pass instance. Otherwise, the second set of commands includes all commands submitted as part of the subpass instance identified by dstSubpass and any load, store, and multisample resolve operations on attachments used in dstSubpass. In either case, the second synchronization scope is limited to operations on the pipeline stages determined by the destination stage mask specified by dstStageMask.<br><br>
+         *
+         * The first access scope is limited to accesses in the pipeline stages determined by the source stage mask specified by srcStageMask. It is also limited to access types in the source access mask specified by srcAccessMask.<br><br>
+         *
+         * The second access scope is limited to accesses in the pipeline stages determined by the destination stage mask specified by dstStageMask. It is also limited to access types in the destination access mask specified by dstAccessMask.<br><br>
+         *
+         * The availability and visibility operations defined by a subpass dependency affect the execution of image layout transitions within the render pass.
+         *
+         * @note For non-attachment resources, the memory dependency expressed by subpass dependency is nearly identical to that of a VkMemoryBarrier (with matching srcAccessMask and dstAccessMask parameters) submitted as a part of a vkCmdPipelineBarrier (with matching srcStageMask and dstStageMask parameters). The only difference being that its scopes are limited to the identified subpasses rather than potentially affecting everything before and after.<br><br>
+         * For attachments however, subpass dependencies work more like a VkImageMemoryBarrier defined similarly to the VkMemoryBarrier above, the queue family indices set to VK_QUEUE_FAMILY_IGNORED, and layouts as follows:
+         * <ul>
+         * <li>The equivalent to oldLayout is the attachment’s layout according to the subpass description for srcSubpass.
+         * <li>The equivalent to newLayout is the attachment’s layout according to the subpass description for dstSubpass.
+         * </ul>
+         */
         using SubpassDependency = VkSubpassDependency;
-        VULKANPP_CONSTEXPR SubpassDependency createSubpassDependency(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR SubpassDependency createSubpassDependency(
                 const VkPipelineStageFlags        &stageMask,
                 const VkAccessFlags               &dstAccessMask
         ) {
@@ -2461,7 +2665,7 @@ namespace vk {
          * Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.<br><br>
          */
         using SubpassDescription = VkSubpassDescription;
-        VULKANPP_CONSTEXPR SubpassDescription createSubpassDescription(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR SubpassDescription createSubpassDescription(
                 const std::vector<AttachmentReference>        &inputAttachments,
                 const std::vector<AttachmentReference>        &colorAttachments,
                 const std::vector<AttachmentReference>        &resolveAttachments,
@@ -2559,7 +2763,7 @@ namespace vk {
          * </ul>
          */
         using VertexInputAttributeDescription = VkVertexInputAttributeDescription;
-        VULKANPP_CONSTEXPR VertexInputAttributeDescription createVertexInputAttributeDescription(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR VertexInputAttributeDescription createVertexInputAttributeDescription(
                 const uint32_t        &location,
                 const uint32_t        &binding,
                 const Format          &format,
@@ -2598,7 +2802,7 @@ namespace vk {
          * </ul>
          */
         using VertexInputBindingDescription = VkVertexInputBindingDescription;
-        VULKANPP_CONSTEXPR VertexInputBindingDescription createVertexInputBindingDescription(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR VertexInputBindingDescription createVertexInputBindingDescription(
                 const uint32_t                 &binding,
                 const uint32_t                 &size,
                 const VkVertexInputRate        &inputRate
@@ -2676,7 +2880,7 @@ namespace vk {
          * Applications <b>must</b> allow pipeline compilation to fail during link steps with VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT as it <b>may</b> not be possible to determine if a pipeline <b>can</b> be created from identifiers until the link step.
          */
         using PipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo;
-        VULKANPP_CONSTEXPR PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
                 const VkShaderStageFlagBits        &stage,
                 const ShaderModule                 &module,
                 const void                         *pNext = nullptr
@@ -2689,6 +2893,169 @@ namespace vk {
                         .module = module,
                         .pName = "main",
                         .pSpecializationInfo = nullptr
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipelineViewportStateCreateInfo - Structure specifying parameters of a newly created pipeline viewport state<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPipelineViewportStateCreateInfo structure is defined as:
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPipelineViewportStateCreateInfo {
+         *     VkStructureType                       sType;
+         *     const void*                           pNext;
+         *     VkPipelineViewportStateCreateFlags    flags;
+         *     uint32_t                              viewportCount;
+         *     const VkViewport*                     pViewports;
+         *     uint32_t                              scissorCount;
+         *     const VkRect2D*                       pScissors;
+         * } VkPipelineViewportStateCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is reserved for future use.
+         * <li>viewportCount is the number of viewports used by the pipeline.
+         * <li>pViewports is a pointer to an array of VkViewport structures, defining the viewport transforms. If the viewport state is dynamic, this member is ignored.
+         * <li>scissorCount is the number of scissors and must match the number of viewports.
+         * <li>pScissors is a pointer to an array of VkRect2D structures defining the rectangular bounds of the scissor for the corresponding viewport. If the scissor state is dynamic, this member is ignored.
+         * </ul>
+         */
+        using PipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo;
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
+                const std::vector<Viewport>        &viewports,
+                const std::vector<Rect2D>          &scissors,
+                const void                         *pNext = nullptr
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+                        .pNext = pNext,
+                        .flags = VkPipelineViewportStateCreateFlags(),
+                        .viewportCount = static_cast<uint32_t>(viewports.size()),
+                        .pViewports = viewports.data(),
+                        .scissorCount = static_cast<uint32_t>(scissors.size()),
+                        .pScissors = scissors.data()
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipelineVertexInputStateCreateInfo - Structure specifying parameters of a newly created pipeline vertex input state<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPipelineVertexInputStateCreateInfo structure is defined as:
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPipelineVertexInputStateCreateInfo {
+         *     VkStructureType                             sType;
+         *     const void*                                 pNext;
+         *     VkPipelineVertexInputStateCreateFlags       flags;
+         *     uint32_t                                    vertexBindingDescriptionCount;
+         *     const VkVertexInputBindingDescription*      pVertexBindingDescriptions;
+         *     uint32_t                                    vertexAttributeDescriptionCount;
+         *     const VkVertexInputAttributeDescription*    pVertexAttributeDescriptions;
+         * } VkPipelineVertexInputStateCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is reserved for future use.
+         * <li>vertexBindingDescriptionCount is the number of vertex binding descriptions provided in pVertexBindingDescriptions.
+         * <li>pVertexBindingDescriptions is a pointer to an array of VkVertexInputBindingDescription structures.
+         * <li>vertexAttributeDescriptionCount is the number of vertex attribute descriptions provided in pVertexAttributeDescriptions.
+         * <li>pVertexAttributeDescriptions is a pointer to an array of VkVertexInputAttributeDescription structures.
+         * </ul>
+         */
+        using PipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo;
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
+                const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
+                const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
+                const void                                                *pNext = nullptr
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+                        .pNext = pNext,
+                        .flags = VkPipelineVertexInputStateCreateFlags(),
+                        .vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size()),
+                        .pVertexBindingDescriptions = bindingDescriptions.data(),
+                        .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
+                        .pVertexAttributeDescriptions = attributeDescriptions.data()
+                };
+        }
+
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipelineDepthStencilStateCreateInfo - Structure specifying parameters of a newly created pipeline depth stencil state<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPipelineDepthStencilStateCreateInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPipelineDepthStencilStateCreateInfo {
+         *     VkStructureType                           sType;
+         *     const void*                               pNext;
+         *     VkPipelineDepthStencilStateCreateFlags    flags;
+         *     VkBool32                                  depthTestEnable;
+         *     VkBool32                                  depthWriteEnable;
+         *     VkCompareOp                               depthCompareOp;
+         *     VkBool32                                  depthBoundsTestEnable;
+         *     VkBool32                                  stencilTestEnable;
+         *     VkStencilOpState                          front;
+         *     VkStencilOpState                          back;
+         *     float                                     minDepthBounds;
+         *     float                                     maxDepthBounds;
+         * } VkPipelineDepthStencilStateCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is a bitmask of VkPipelineDepthStencilStateCreateFlagBits specifying additional depth/stencil state information.
+         * <li>depthTestEnable controls whether depth testing is enabled.
+         * <li>depthWriteEnable controls whether depth writes are enabled when depthTestEnable is VK_TRUE. Depth writes are always disabled when depthTestEnable is VK_FALSE.
+         * <li>depthCompareOp is a VkCompareOp value specifying the comparison operator to use in the Depth Comparison step of the depth test.
+         * <li>depthBoundsTestEnable controls whether depth bounds testing is enabled.
+         * <li>stencilTestEnable controls whether stencil testing is enabled.
+         * <li>front and back are VkStencilOpState values controlling the corresponding parameters of the stencil test.
+         * <li>minDepthBounds is the minimum depth bound used in the depth bounds test.
+         * <li>maxDepthBounds is the maximum depth bound used in the depth bounds test.
+         * </ul>
+         */
+        using PipelineDepthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo;
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineDepthStencilStateCreateInfo createPipelineDepthStencilStateCreateInfo(
+                const Bool32                  &depthTestEnable,
+                const Bool32                  &depthWriteEnable,
+                const Bool32                  &depthBoundsTestEnable,
+                const Bool32                  &stencilTestEnable,
+                const VkStencilOpState        &front,
+                const VkStencilOpState        &back,
+                const void                    *pNext = nullptr
+        ) {
+                return {
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+                        .pNext = pNext,
+                        .flags = VkPipelineDepthStencilStateCreateFlags(),
+                        .depthTestEnable = depthTestEnable,
+                        .depthWriteEnable = depthWriteEnable,
+                        .depthCompareOp = VK_COMPARE_OP_LESS,
+                        .depthBoundsTestEnable = depthBoundsTestEnable,
+                        .stencilTestEnable = stencilTestEnable,
+                        .front = front,
+                        .back = back,
+                        .minDepthBounds = 0.0f,
+                        .maxDepthBounds = 1.0f
                 };
         }
 
@@ -2707,16 +3074,14 @@ namespace vk {
          */
         using Pipeline = VkPipeline;
         Pipeline createPipeline(
-                const Device                                              &device,
-                const RenderPass                                          &renderPass,
-                const std::vector<Viewport>                               &viewports,
-                const std::vector<Rect2D>                                 &scissors,
-                const PipelineLayout                                      &layout,
-                const std::vector<PipelineShaderStageCreateInfo>          &shaderStages,
-                const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
-                const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
-                const VkAllocationCallbacks                               *pAllocator,
-                const void                                                *pCreateInfoNext = nullptr
+                const Device                                            &device,
+                const RenderPass                                        &renderPass,
+                const PipelineLayout                                    &layout,
+                const std::vector<PipelineShaderStageCreateInfo>        &shaderStages,
+                const PipelineVertexInputStateCreateInfo                *pVertexInputState,
+                const PipelineDepthStencilStateCreateInfo               *pDepthStencilState,
+                const VkAllocationCallbacks                             *pAllocator,
+                const void                                              *pCreateInfoNext = nullptr
         );
 
         /** <b>Name</b><hr><br>
@@ -3225,7 +3590,7 @@ namespace vk {
          * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
          */
         using AccelerationStructureInfoNV = VkAccelerationStructureInfoNV;
-        VULKANPP_CONSTEXPR AccelerationStructureInfoNV createAccelerationStructureInfoNV(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR AccelerationStructureInfoNV createAccelerationStructureInfoNV(
                 const VkAccelerationStructureTypeNV              &type,
                 const uint32_t                                   &instanceCount,
                 const std::vector<VkGeometryNV>                  &geometries,
@@ -3269,7 +3634,7 @@ namespace vk {
          * </ul>
          */
         using AccelerationStructureCreateInfoNV = VkAccelerationStructureCreateInfoNV;
-        VULKANPP_CONSTEXPR AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
                 const DeviceSize                           &compactedSize,
                 const AccelerationStructureInfoNV          &info,
                 const void                                 *pNext = nullptr
@@ -3332,7 +3697,7 @@ namespace vk {
          * @note Providing a NULL VkInstanceCreateInfo::pApplicationInfo or providing an apiVersion of 0 is equivalent to providing an apiVersion of VK_MAKE_API_VERSION(0,1,0,0).
          */
         using ApplicationInfo = VkApplicationInfo;
-        VULKANPP_CONSTEXPR ApplicationInfo createApplicationInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ApplicationInfo createApplicationInfo(
                 const char            *pApplicationName,
                 const uint32_t        &applicationVersion,
                 const uint32_t        &apiVersion,
@@ -3385,7 +3750,7 @@ namespace vk {
          * The buffer view has a buffer view usage identifying which descriptor types <b>can</b> be created from it. This usage can be defined by including the VkBufferUsageFlags2CreateInfoKHR structure in the pNext chain, and specifying the usage value there. If this structure is not included, it is equal to the VkBufferCreateInfo::usage value used to create buffer.
          */
         using BufferViewCreateInfo = VkBufferViewCreateInfo;
-        VULKANPP_CONSTEXPR BufferViewCreateInfo createBufferViewCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferViewCreateInfo createBufferViewCreateInfo(
                 const Buffer            &buffer,
                 const Format            &format,
                 const DeviceSize        &offset,
@@ -3400,54 +3765,6 @@ namespace vk {
                         .format = format,
                         .offset = offset,
                         .range = range
-                };
-        }
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPipelineVertexInputStateCreateInfo - Structure specifying parameters of a newly created pipeline vertex input state<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkPipelineVertexInputStateCreateInfo structure is defined as:
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkPipelineVertexInputStateCreateInfo {
-         *     VkStructureType                             sType;
-         *     const void*                                 pNext;
-         *     VkPipelineVertexInputStateCreateFlags       flags;
-         *     uint32_t                                    vertexBindingDescriptionCount;
-         *     const VkVertexInputBindingDescription*      pVertexBindingDescriptions;
-         *     uint32_t                                    vertexAttributeDescriptionCount;
-         *     const VkVertexInputAttributeDescription*    pVertexAttributeDescriptions;
-         * } VkPipelineVertexInputStateCreateInfo;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>sType is a VkStructureType value identifying this structure.
-         * <li>pNext is NULL or a pointer to a structure extending this structure.
-         * <li>flags is reserved for future use.
-         * <li>vertexBindingDescriptionCount is the number of vertex binding descriptions provided in pVertexBindingDescriptions.
-         * <li>pVertexBindingDescriptions is a pointer to an array of VkVertexInputBindingDescription structures.
-         * <li>vertexAttributeDescriptionCount is the number of vertex attribute descriptions provided in pVertexAttributeDescriptions.
-         * <li>pVertexAttributeDescriptions is a pointer to an array of VkVertexInputAttributeDescription structures.
-         * </ul>
-         */
-        using PipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
-                const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
-                const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
-                const void                                                *pNext = nullptr
-        ) {
-                return {
-                        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-                        .pNext = pNext,
-                        .flags = VkPipelineVertexInputStateCreateFlags(),
-                        .vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size()),
-                        .pVertexBindingDescriptions = bindingDescriptions.data(),
-                        .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
-                        .pVertexAttributeDescriptions = attributeDescriptions.data()
                 };
         }
 
@@ -3488,7 +3805,7 @@ namespace vk {
          * Restarting the assembly of primitives discards the most recent index values if those elements formed an incomplete primitive, and restarts the primitive assembly using the subsequent indices, but only assembling the immediately following element through the end of the originally specified elements. The primitive restart index value comparison is performed before adding the vertexOffset value to the index value.
          */
         using PipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3497,54 +3814,6 @@ namespace vk {
                         .flags = VkPipelineInputAssemblyStateCreateFlags(),
                         .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
                         .primitiveRestartEnable = VK_FALSE
-                };
-        }
-
-        /** <b>Name</b><hr><br>
-         *
-         * VkPipelineViewportStateCreateInfo - Structure specifying parameters of a newly created pipeline viewport state<br><br><br>
-         *
-         * <b>C Specification</b><hr><br>
-         *
-         * The VkPipelineViewportStateCreateInfo structure is defined as:
-         * @code
-         * // Provided by VK_VERSION_1_0
-         * typedef struct VkPipelineViewportStateCreateInfo {
-         *     VkStructureType                       sType;
-         *     const void*                           pNext;
-         *     VkPipelineViewportStateCreateFlags    flags;
-         *     uint32_t                              viewportCount;
-         *     const VkViewport*                     pViewports;
-         *     uint32_t                              scissorCount;
-         *     const VkRect2D*                       pScissors;
-         * } VkPipelineViewportStateCreateInfo;
-         * @endcode
-         *
-         * <b>Members</b><hr><br>
-         * <ul>
-         * <li>sType is a VkStructureType value identifying this structure.
-         * <li>pNext is NULL or a pointer to a structure extending this structure.
-         * <li>flags is reserved for future use.
-         * <li>viewportCount is the number of viewports used by the pipeline.
-         * <li>pViewports is a pointer to an array of VkViewport structures, defining the viewport transforms. If the viewport state is dynamic, this member is ignored.
-         * <li>scissorCount is the number of scissors and must match the number of viewports.
-         * <li>pScissors is a pointer to an array of VkRect2D structures defining the rectangular bounds of the scissor for the corresponding viewport. If the scissor state is dynamic, this member is ignored.
-         * </ul>
-         */
-        using PipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
-                const std::vector<Viewport>        &viewports,
-                const std::vector<Rect2D>          &scissors,
-                const void                         *pNext = nullptr
-        ) {
-                return {
-                        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-                        .pNext = pNext,
-                        .flags = VkPipelineViewportStateCreateFlags(),
-                        .viewportCount = static_cast<uint32_t>(viewports.size()),
-                        .pViewports = viewports.data(),
-                        .scissorCount = static_cast<uint32_t>(scissors.size()),
-                        .pScissors = scissors.data()
                 };
         }
 
@@ -3595,7 +3864,7 @@ namespace vk {
          * The application <b>can</b> also add a VkPipelineRasterizationStateRasterizationOrderAMD structure to the pNext chain of a VkPipelineRasterizationStateCreateInfo structure. This structure enables selecting the rasterization order to use when rendering with the corresponding graphics pipeline as described in Rasterization Order.
          */
         using PipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3656,7 +3925,7 @@ namespace vk {
          * If pSampleMask is NULL, it is treated as if the mask has all bits set to 1.
          */
         using PipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3707,7 +3976,7 @@ namespace vk {
          * </ul>
          */
         using PipelineColorBlendAttachmentState = VkPipelineColorBlendAttachmentState;
-        VULKANPP_CONSTEXPR PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
         {
                 return {
                         .blendEnable = VK_FALSE,
@@ -3754,7 +4023,7 @@ namespace vk {
          * </ul>
          */
         using PipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
                 const std::vector<PipelineColorBlendAttachmentState>        &attachments,
                 const void                                                  *pNext = nullptr
         ) {
@@ -3797,7 +4066,7 @@ namespace vk {
          * </ul>
          */
         using CommandBufferBeginInfo = VkCommandBufferBeginInfo;
-        VULKANPP_CONSTEXPR CommandBufferBeginInfo createCommandBufferBeginInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR CommandBufferBeginInfo createCommandBufferBeginInfo(
                 const VkCommandBufferUsageFlags        &flags,
                 const void                             *pNext = nullptr
         ) {
@@ -3853,7 +4122,7 @@ namespace vk {
          * @note There <b>may</b> be a performance cost for using a render area smaller than the framebuffer, unless it matches the render area granularity for the render pass.
          */
         using RenderPassBeginInfo = VkRenderPassBeginInfo;
-        VULKANPP_CONSTEXPR RenderPassBeginInfo createRenderPassBeginInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR RenderPassBeginInfo createRenderPassBeginInfo(
                 const RenderPass                     &renderPass,
                 const Framebuffer                    &framebuffer,
                 const Extent2D                       &extent,
@@ -3913,7 +4182,7 @@ namespace vk {
          * The order that command buffers appear in pCommandBuffers is used to determine submission order, and thus all the implicit ordering guarantees that respect it. Other than these implicit ordering guarantees and any explicit synchronization primitives, these command buffers <b>may</b> overlap or otherwise execute out of order.
          */
         using SubmitInfo = VkSubmitInfo;
-        VULKANPP_CONSTEXPR SubmitInfo createSubmitInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR SubmitInfo createSubmitInfo(
                 const std::vector<Semaphore>            &waitSemaphores,
                 const VkPipelineStageFlags              *pWaitDstStageMask,
                 const std::vector<CommandBuffer>        &commandBuffers,
@@ -3973,7 +4242,7 @@ namespace vk {
          * @note When transitioning the image to VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR or VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, there is no need to delay subsequent processing, or perform any visibility operations (as vkQueuePresentKHR performs automatic visibility operations). To achieve this, the dstAccessMask member of the VkImageMemoryBarrier <b>should</b> be set to 0, and the dstStageMask parameter <b>should</b> be set to VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT.
          */
         using PresentInfoKHR = VkPresentInfoKHR;
-        VULKANPP_CONSTEXPR PresentInfoKHR createPresentInfoKHR(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PresentInfoKHR createPresentInfoKHR(
                 const std::vector<Semaphore>          &waitSemaphores,
                 const std::vector<SwapchainKHR>       &swapchains,
                 const std::vector<uint32_t>           &imageIndices,
@@ -4042,7 +4311,7 @@ namespace vk {
          * When performing a memory import operation, it is the responsibility of the application to ensure the external handles and their associated payloads meet all valid usage requirements. However, implementations <b>must</b> perform sufficient validation of external handles and payloads to ensure that the operation results in a valid memory object which will not cause program termination, device loss, queue stalls, or corruption of other resources when used as allowed according to its allocation parameters. If the external handle provided does not meet these requirements, the implementation <b>must</b> fail the memory import operation with the error code VK_ERROR_INVALID_EXTERNAL_HANDLE. If the parameters define an export operation and the external handle type is VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID, implementations <b>should</b> not strictly follow memoryTypeIndex. Instead, they <b>should</b> modify the allocation internally to use the required memory type for the application’s given usage. This is because for an export operation, there is currently no way for the client to know the memory type index before allocating.
          */
         using MemoryAllocateInfo = VkMemoryAllocateInfo;
-        VULKANPP_CONSTEXPR MemoryAllocateInfo createMemoryAllocateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR MemoryAllocateInfo createMemoryAllocateInfo(
                 const DeviceSize        &allocationSize,
                 const uint32_t          &memoryTypeIndex,
                 const void              *pNext = nullptr
@@ -4080,7 +4349,7 @@ namespace vk {
          * </ul>
          */
         using BufferCopy = VkBufferCopy;
-        VULKANPP_CONSTEXPR BufferCopy createBufferCopy(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferCopy createBufferCopy(
                 const DeviceSize        &size
         ) {
                 return {
@@ -4128,7 +4397,7 @@ namespace vk {
          * If a VkBufferUsageFlags2CreateInfoKHR structure is present in the pNext chain, VkBufferUsageFlags2CreateInfoKHR::usage from that structure is used instead of usage from this structure.
          */
         using BufferCreateInfo = VkBufferCreateInfo;
-        VULKANPP_CONSTEXPR BufferCreateInfo createBufferCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferCreateInfo createBufferCreateInfo(
                 const DeviceSize                &size,
                 const VkBufferUsageFlags        &usage,
                 const void                      *pNext = nullptr
@@ -4174,7 +4443,7 @@ namespace vk {
          * </ul>
          */
         using CommandBufferAllocateInfo = VkCommandBufferAllocateInfo;
-        VULKANPP_CONSTEXPR CommandBufferAllocateInfo createCommandBufferAllocateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR CommandBufferAllocateInfo createCommandBufferAllocateInfo(
                 const CommandPool        &commandPool,
                 const void               *pNext = nullptr
         ) {
@@ -4214,7 +4483,7 @@ namespace vk {
          * </ul>
          */
         using CommandPoolCreateInfo = VkCommandPoolCreateInfo;
-        VULKANPP_CONSTEXPR CommandPoolCreateInfo createCommandPoolCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR CommandPoolCreateInfo createCommandPoolCreateInfo(
                 const uint32_t        &queueFamilyIndex,
                 const void            *pNext = nullptr
         ) {
@@ -4257,7 +4526,7 @@ namespace vk {
          * </ul>
          */
         using DeviceQueueCreateInfo = VkDeviceQueueCreateInfo;
-        VULKANPP_CONSTEXPR DeviceQueueCreateInfo createDeviceQueueCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DeviceQueueCreateInfo createDeviceQueueCreateInfo(
                 const uint32_t        &queueFamilyIndex,
                 const float           *queuePriority,
                 const void            *pNext = nullptr
@@ -4311,7 +4580,7 @@ namespace vk {
          * </ul>
          */
         using DeviceCreateInfo = VkDeviceCreateInfo;
-        VULKANPP_CONSTEXPR DeviceCreateInfo createDeviceCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DeviceCreateInfo createDeviceCreateInfo(
                 const std::vector<DeviceQueueCreateInfo>        &queueCreateInfos,
                 const std::vector<const char *>                 &enabledExtensionNames,
                 const PhysicalDeviceFeatures                    *pEnabledFeatures,
@@ -4356,7 +4625,7 @@ namespace vk {
          * </ul>
          */
         using FenceCreateInfo = VkFenceCreateInfo;
-        VULKANPP_CONSTEXPR FenceCreateInfo createFenceCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR FenceCreateInfo createFenceCreateInfo(
                 const VkFenceCreateFlags        &flags,
                 const void                      *pNext = nullptr
         ) {
@@ -4405,7 +4674,7 @@ namespace vk {
          * It is legal for a subpass to use no color or depth/stencil attachments, either because it has no attachment references or because all of them are VK_ATTACHMENT_UNUSED. This kind of subpass <b>can</b> use shader side effects such as image stores and atomics to produce an output. In this case, the subpass continues to use the width, height, and layers of the framebuffer to define the dimensions of the rendering area, and the rasterizationSamples from each pipeline’s VkPipelineMultisampleStateCreateInfo to define the number of samples used in rasterization; however, if VkPhysicalDeviceFeatures::variableMultisampleRate is VK_FALSE, then all pipelines to be bound with the subpass <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. In all such cases, rasterizationSamples <b>must</b> be a valid VkSampleCountFlagBits value that is set in VkPhysicalDeviceLimits::framebufferNoAttachmentsSampleCounts.
          */
         using FramebufferCreateInfo = VkFramebufferCreateInfo;
-        VULKANPP_CONSTEXPR FramebufferCreateInfo createFramebufferCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR FramebufferCreateInfo createFramebufferCreateInfo(
                 const RenderPass                     &renderPass,
                 const Extent2D                       &extent,
                 const std::vector<ImageView>         &attachments,
@@ -4451,7 +4720,7 @@ namespace vk {
          * </ul>
          */
         using ComponentMapping = VkComponentMapping;
-        VULKANPP_CONSTEXPR ComponentMapping createComponentMapping(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ComponentMapping createComponentMapping(
                 const VkComponentSwizzle        &r,
                 const VkComponentSwizzle        &g,
                 const VkComponentSwizzle        &b,
@@ -4509,7 +4778,7 @@ namespace vk {
          * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
         using ImageSubresourceRange = VkImageSubresourceRange;
-        VULKANPP_CONSTEXPR ImageSubresourceRange createImageSubresourceRange(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageSubresourceRange createImageSubresourceRange(
                 const VkImageAspectFlags        &aspectMask,
                 const uint32_t                  &baseMipLevel,
                 const uint32_t                  &levelCount,
@@ -4602,7 +4871,7 @@ namespace vk {
          *
          */
         using ImageViewCreateInfo = VkImageViewCreateInfo;
-        VULKANPP_CONSTEXPR ImageViewCreateInfo createImageViewCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageViewCreateInfo createImageViewCreateInfo(
                 const Image                     &image,
                 const Format                    &format,
                 const VkImageAspectFlags        &aspectMask,
@@ -4667,7 +4936,7 @@ namespace vk {
          * @note VkDirectDriverLoadingListLUNARG allows applications to ship drivers with themselves. Only drivers that are designed to work with it should be used, such as drivers that implement Vulkan in software or that implement Vulkan by translating it to a different API. Any driver that requires installation should not be used, such as hardware drivers.
          */
         using InstanceCreateInfo = VkInstanceCreateInfo;
-        VULKANPP_CONSTEXPR InstanceCreateInfo createInstanceCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR InstanceCreateInfo createInstanceCreateInfo(
                 const ApplicationInfo                  &applicationInfo,
                 const std::vector<const char *>        &enabledLayerNames,
                 const std::vector<const char *>        &enabledExtensionNames,
@@ -4685,30 +4954,45 @@ namespace vk {
                 };
         }
 
-        //TODO doc
-        using PipelineDepthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo;
-        VULKANPP_CONSTEXPR PipelineDepthStencilStateCreateInfo createPipelineDepthStencilStateCreateInfo(
-                const Bool32                  &depthTestEnable,
-                const Bool32                  &depthWriteEnable,
-                const Bool32                  &depthBoundsTestEnable,
-                const Bool32                  &stencilTestEnable,
-                const VkStencilOpState        &front,
-                const VkStencilOpState        &back,
-                const void                    *pNext = nullptr
+        /** <b>Name</b><hr><br>
+         *
+         * VkPipelineDynamicStateCreateInfo - Structure specifying parameters of a newly created pipeline dynamic state<br><br><br>
+         *
+         * <b>C Specification</b><hr><br>
+         *
+         * The VkPipelineDynamicStateCreateInfo structure is defined as:
+         *
+         * @code
+         * // Provided by VK_VERSION_1_0
+         * typedef struct VkPipelineDynamicStateCreateInfo {
+         *     VkStructureType                      sType;
+        *      const void*                          pNext;
+        *      VkPipelineDynamicStateCreateFlags    flags;
+        *      uint32_t                             dynamicStateCount;
+        *      const VkDynamicState*                pDynamicStates;
+         * } VkPipelineDynamicStateCreateInfo;
+         * @endcode
+         *
+         * <b>Members</b><hr><br>
+         * <ul>
+         * <li>sType is a VkStructureType value identifying this structure.
+         * <li>pNext is NULL or a pointer to a structure extending this structure.
+         * <li>flags is reserved for future use.
+         * <li>dynamicStateCount is the number of elements in the pDynamicStates array.
+         * <li>pDynamicStates is a pointer to an array of VkDynamicState values specifying which pieces of pipeline state will use the values from dynamic state commands rather than from pipeline state creation information.
+         * </ul>
+         */
+        using PipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo;
+        constexpr PipelineDynamicStateCreateInfo createPipelineDynamicStateCreateInfo(
+                const std::vector<VkDynamicState>        &dynamicStates,
+                const void                               *pNext = nullptr
         ) {
                 return {
-                        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+                        .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
                         .pNext = pNext,
-                        .flags = VkPipelineDepthStencilStateCreateFlags(),
-                        .depthTestEnable = depthTestEnable,
-                        .depthWriteEnable = depthWriteEnable,
-                        .depthCompareOp = VK_COMPARE_OP_LESS,
-                        .depthBoundsTestEnable = depthBoundsTestEnable,
-                        .stencilTestEnable = stencilTestEnable,
-                        .front = front,
-                        .back = back,
-                        .minDepthBounds = 0.0f,
-                        .maxDepthBounds = 1.0f
+                        .flags = VkPipelineDynamicStateCreateFlags(),
+                        .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()),
+                        .pDynamicStates = dynamicStates.data()
                 };
         }
 
@@ -4876,15 +5160,16 @@ namespace vk {
          * If a VkPipelineCreateFlags2CreateInfoKHR structure is present in the pNext chain, VkPipelineCreateFlags2CreateInfoKHR::flags from that structure is used instead of flags from this structure.
          */
         using GraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo;
-        VULKANPP_CONSTEXPR GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
-                const PipelineVertexInputStateCreateInfo                &vertexInputStateCreateInfo,
-                const PipelineInputAssemblyStateCreateInfo              &inputAssemblyStateCreateInfo,
-                const PipelineViewportStateCreateInfo                   &viewportStateCreateInfo,
-                const PipelineRasterizationStateCreateInfo              &rasterizationStateCreateInfo,
-                const PipelineMultisampleStateCreateInfo                &multisampleStateCreateInfo,
+        VULKANPP_INLINE VULKANPP_CONSTEXPR GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
+                const PipelineVertexInputStateCreateInfo                *pVertexInputState,
+                const PipelineInputAssemblyStateCreateInfo              *pInputAssemblyState,
+                const PipelineViewportStateCreateInfo                   *pViewportState,
+                const PipelineRasterizationStateCreateInfo              *pRasterizationState,
+                const PipelineMultisampleStateCreateInfo                *pMultisampleState,
                 const PipelineDepthStencilStateCreateInfo               *pDepthStencilState,
-                const PipelineColorBlendStateCreateInfo                 &colorBlendStateCreateInfo,
+                const PipelineColorBlendStateCreateInfo                 *pColorBlendState,
                 const std::vector<PipelineShaderStageCreateInfo>        &shaderStages,
+                const PipelineDynamicStateCreateInfo                    *pDynamicState,
                 const PipelineLayout                                    &layout,
                 const RenderPass                                        &renderPass,
                 const void                                              *pNext = nullptr
@@ -4895,15 +5180,15 @@ namespace vk {
                         .flags = VkPipelineCreateFlags(),
                         .stageCount = static_cast<uint32_t>(shaderStages.size()),
                         .pStages = shaderStages.data(),
-                        .pVertexInputState = &vertexInputStateCreateInfo,
-                        .pInputAssemblyState = &inputAssemblyStateCreateInfo,
+                        .pVertexInputState = pVertexInputState,
+                        .pInputAssemblyState = pInputAssemblyState,
                         .pTessellationState = nullptr,
-                        .pViewportState = &viewportStateCreateInfo,
-                        .pRasterizationState = &rasterizationStateCreateInfo,
-                        .pMultisampleState = &multisampleStateCreateInfo,
+                        .pViewportState = pViewportState,
+                        .pRasterizationState = pRasterizationState,
+                        .pMultisampleState = pMultisampleState,
                         .pDepthStencilState = pDepthStencilState,
-                        .pColorBlendState = &colorBlendStateCreateInfo,
-                        .pDynamicState = nullptr,
+                        .pColorBlendState = pColorBlendState,
+                        .pDynamicState = pDynamicState,
                         .layout = layout,
                         .renderPass = renderPass,
                         .subpass = 0,
@@ -4945,7 +5230,7 @@ namespace vk {
          * </ul>
          */
         using PipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo;
-        VULKANPP_CONSTEXPR PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const std::vector<PushConstantRange>          &pushConstantRanges,
                 const void                                    *pNext = nullptr
@@ -5001,7 +5286,7 @@ namespace vk {
          * @note Care should be taken to avoid a data race here; if any subpasses access attachments with overlapping memory locations, and one of those accesses is a write, a subpass dependency needs to be included between them.
          */
         using RenderPassCreateInfo = VkRenderPassCreateInfo;
-        VULKANPP_CONSTEXPR RenderPassCreateInfo createRenderPassCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR RenderPassCreateInfo createRenderPassCreateInfo(
                 const std::vector<AttachmentDescription>        &attachmentDescriptions,
                 const std::vector<SubpassDescription>           &subpassDescriptions,
                 const std::vector<VkSubpassDependency>          &dependencies,
@@ -5045,7 +5330,7 @@ namespace vk {
          * </ul>
          */
         using SemaphoreCreateInfo = VkSemaphoreCreateInfo;
-        VULKANPP_CONSTEXPR SemaphoreCreateInfo createSemaphoreCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR SemaphoreCreateInfo createSemaphoreCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -5084,7 +5369,7 @@ namespace vk {
          * </ul>
          */
         using ShaderModuleCreateInfo = VkShaderModuleCreateInfo;
-        VULKANPP_CONSTEXPR ShaderModuleCreateInfo createShaderModuleCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ShaderModuleCreateInfo createShaderModuleCreateInfo(
                 const std::vector<uint8_t>        &code,
                 const void                        *pNext = nullptr
         ) {
@@ -5174,7 +5459,7 @@ namespace vk {
          * The application <b>can</b> continue to use a shared presentable image obtained from oldSwapchain until a presentable image is acquired from the new swapchain, as long as it has not entered a state that causes it to return VK_ERROR_OUT_OF_DATE_KHR.
          */
         using SwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR;
-        VULKANPP_CONSTEXPR SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
                 const SurfaceCapabilitiesKHR        &capabilities,
                 const uint32_t                      &minImageCount,
                 const SurfaceFormatKHR              &format,
@@ -5241,7 +5526,7 @@ namespace vk {
          * The above layout definition allows the descriptor bindings to be specified sparsely such that not all binding numbers between 0 and the maximum binding number need to be specified in the pBindings array. Bindings that are not specified have a descriptorCount and stageFlags of zero, and the value of descriptorType is undefined. However, all binding numbers between 0 and the maximum binding number in the VkDescriptorSetLayoutCreateInfo::pBindings array <b>may</b> consume memory in the descriptor set layout even if not all descriptor bindings are used, though it <b>should</b> not consume additional memory from the descriptor pool.
          */
         using DescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding;
-        VULKANPP_CONSTEXPR DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
                 const uint32_t                  &binding,
                 const VkDescriptorType          &descriptorType,
                 const uint32_t                  &descriptorCount,
@@ -5286,7 +5571,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo;
-        VULKANPP_CONSTEXPR DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
                 const std::vector<DescriptorSetLayoutBinding>        &bindings,
                 const void                                           *pNext = nullptr
         ) {
@@ -5341,7 +5626,7 @@ namespace vk {
          * If flags has the VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT bit set, descriptor pool creation <b>may</b> fail with the error VK_ERROR_FRAGMENTATION if the total number of descriptors across all pools (including this one) created with this bit set exceeds maxUpdateAfterBindDescriptorsInAllPools, or if fragmentation of the underlying hardware resources occurs.
          */
         using DescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo;
-        VULKANPP_CONSTEXPR DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
                 const uint32_t                               &maxSets,
                 const std::vector<DescriptorPoolSize>        &poolSizes,
                 const void                                   *pNext = nullptr
@@ -5384,7 +5669,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorSetAllocateInfo = VkDescriptorSetAllocateInfo;
-        VULKANPP_CONSTEXPR DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
                 const DescriptorPool                          &descriptorPool,
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const void                                    *pNext = nullptr
@@ -5428,7 +5713,7 @@ namespace vk {
          * For VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC and VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC descriptor types, offset is the base offset from which the dynamic offset is applied and range is the static size used for all dynamic offsets.
          */
         using DescriptorBufferInfo = VkDescriptorBufferInfo;
-        VULKANPP_CONSTEXPR DescriptorBufferInfo createDescriptorBufferInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorBufferInfo createDescriptorBufferInfo(
                 const Buffer            &buffer,
                 const DeviceSize        &offset,
                 const DeviceSize        &range
@@ -5486,7 +5771,7 @@ namespace vk {
          * @note The same behavior applies to bindings with a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT where descriptorCount specifies the number of bytes to update while dstArrayElement specifies the starting byte offset, thus in this case if the dstBinding has a smaller byte size than the sum of dstArrayElement and descriptorCount, then the remainder will be used to update the subsequent binding - dstBinding+1 starting at offset zero. This falls out as a special case of the above rule.
          */
         using WriteDescriptorSet = VkWriteDescriptorSet;
-        VULKANPP_CONSTEXPR WriteDescriptorSet createWriteDescriptorSet(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR WriteDescriptorSet createWriteDescriptorSet(
                 const DescriptorSet                 &dstSet,
                 const uint32_t                      &dstBinding,
                 const uint32_t                      &dstArrayElement,
@@ -5588,7 +5873,7 @@ namespace vk {
          * For images created with VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for at least one of the formats a VkImageView created from the image <b>can</b> have (see Image Views for more detail).
          */
         using ImageCreateInfo = VkImageCreateInfo;
-        VULKANPP_CONSTEXPR ImageCreateInfo createImageCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageCreateInfo createImageCreateInfo(
                 const VkImageType                  &imageType,
                 const Format                       &format,
                 const Extent3D                     &extent,
@@ -5670,7 +5955,7 @@ namespace vk {
          * If image has a multi-planar format and the image is disjoint, then including VK_IMAGE_ASPECT_COLOR_BIT in the aspectMask member of subresourceRange is equivalent to including VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, and (for three-plane formats only) VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
         using ImageMemoryBarrier = VkImageMemoryBarrier;
-        VULKANPP_CONSTEXPR ImageMemoryBarrier createImageMemoryBarrier(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageMemoryBarrier createImageMemoryBarrier(
                 const VkAccessFlags             &srcAccessMask,
                 const VkAccessFlags             &dstAccessMask,
                 const VkImageLayout             &oldLayout,
@@ -5723,7 +6008,7 @@ namespace vk {
          * </ul>
          */
         using ImageSubresourceLayers = VkImageSubresourceLayers;
-        VULKANPP_CONSTEXPR ImageSubresourceLayers createImageSubresourceLayers(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageSubresourceLayers createImageSubresourceLayers(
                 const VkImageAspectFlags        &aspectMask,
                 const uint32_t                  &mipLevel,
                 const uint32_t                  &baseArrayLayer,
@@ -5762,7 +6047,7 @@ namespace vk {
          * </ul>
          */
         using Offset3D = VkOffset3D;
-        VULKANPP_CONSTEXPR Offset3D createOffset3D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Offset3D createOffset3D(
                 const int32_t        &x,
                 const int32_t        &y,
                 const int32_t        &z
@@ -5773,7 +6058,7 @@ namespace vk {
                         .z = z
                 };
         }
-        VULKANPP_CONSTEXPR Offset3D createOffset3D(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR Offset3D createOffset3D(
                 const Offset2D        &offset2D,
                 const int32_t         &z
         ) {
@@ -5814,7 +6099,7 @@ namespace vk {
          * </ul>
          */
         using BufferImageCopy = VkBufferImageCopy;
-        VULKANPP_CONSTEXPR BufferImageCopy createBufferImageCopy(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferImageCopy createBufferImageCopy(
                 const DeviceSize                    &bufferOffset,
                 const uint32_t                      &bufferRowLength,
                 const uint32_t                      &bufferImageHeight,
@@ -5912,7 +6197,7 @@ namespace vk {
          * Since VkSampler is a non-dispatchable handle type, implementations <b>may</b> return the same handle for sampler state vectors that are identical. In such cases, all such objects would only count once against the maxSamplerAllocationCount limit.
          */
         using SamplerCreateInfo = VkSamplerCreateInfo;
-        VULKANPP_CONSTEXPR SamplerCreateInfo createSamplerCreateInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR SamplerCreateInfo createSamplerCreateInfo(
                 const VkFilter                    &filter,
                 const VkSamplerAddressMode        &addressMode,
                 const Bool32                      &anisotropyEnable,
@@ -5971,7 +6256,7 @@ namespace vk {
          * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
          */
         using DescriptorImageInfo = VkDescriptorImageInfo;
-        VULKANPP_CONSTEXPR DescriptorImageInfo createDescriptorImageInfo(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorImageInfo createDescriptorImageInfo(
                 const Sampler              &sampler,
                 const ImageView            &imageView,
                 const VkImageLayout        &imageLayout
@@ -6101,7 +6386,7 @@ namespace vk {
          * The pNext chain of this structure is used to extend the structure with features defined by extensions. This structure <b>can</b> be used in vkGetPhysicalDeviceFeatures2 or <b>can</b> be included in the pNext chain of a VkDeviceCreateInfo structure, in which case it controls which features are enabled on the device in lieu of pEnabledFeatures.
          */
         using PhysicalDeviceFeatures2 = VkPhysicalDeviceFeatures2;
-        VULKANPP_CONSTEXPR PhysicalDeviceFeatures2 createPhysicalDeviceFeatures2(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceFeatures2 createPhysicalDeviceFeatures2(
                 const PhysicalDeviceFeatures        &physicalDeviceFeatures,
                 void                                *pNext = nullptr
         ) {
@@ -6165,7 +6450,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan11Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan11Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan11Features = VkPhysicalDeviceVulkan11Features;
-        VULKANPP_CONSTEXPR PhysicalDeviceVulkan11Features createPhysicalDeviceVulkan11Features(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan11Features createPhysicalDeviceVulkan11Features(
                 const Bool32        values[12],
                 void                *pNext = nullptr
         ) {
@@ -6309,7 +6594,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan12Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan12Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan12Features = VkPhysicalDeviceVulkan12Features;
-        VULKANPP_CONSTEXPR PhysicalDeviceVulkan12Features createPhysicalDeviceVulkan12Features(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan12Features createPhysicalDeviceVulkan12Features(
                 const Bool32        values[47],
                 void                *pNext = nullptr
         ) {
@@ -6463,7 +6748,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan13Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan13Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan13Features = VkPhysicalDeviceVulkan13Features;
-        VULKANPP_CONSTEXPR PhysicalDeviceVulkan13Features createPhysicalDeviceVulkan13Features(
+        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan13Features createPhysicalDeviceVulkan13Features(
                 const Bool32        values[15],
                 void                *pNext = nullptr
         ) {

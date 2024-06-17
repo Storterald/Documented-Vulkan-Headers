@@ -2,6 +2,12 @@
 
 #include <stdexcept>
 #include <set>
+#include <iostream>
+
+#define LOG_FATAL(__MSG__)      do {                                                                            \
+                                        std::cout << "\u001b[31m[FATAL ERROR]  " << __MSG__ << "\u001b[0m\n";   \
+                                        throw std::runtime_error(__MSG__);                                      \
+                                } while(0)
 
 using namespace vk;
 
@@ -20,7 +26,7 @@ Buffer vk::createBuffer(
         Result result = vkCreateBuffer(device, &createInfo, pAllocator, &buffer);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create buffer!");
+                LOG_FATAL("Could not create buffer!");
 
         return buffer;
 }
@@ -42,7 +48,7 @@ BufferView vk::createBufferView(
         Result result = vkCreateBufferView(device, &createInfo, pAllocator, &bufferView);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not allocate command buffer view!");
+                LOG_FATAL("Could not allocate command buffer view!");
 
         return bufferView;
 }
@@ -62,7 +68,7 @@ CommandBuffer vk::createCommandBuffer(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not allocate command buffer!");
+                LOG_FATAL("Could not allocate command buffer!");
 
         return commandBuffer;
 }
@@ -81,7 +87,7 @@ CommandPool vk::createCommandPool(
         Result result = vkCreateCommandPool(device, &createInfo, pAllocator, &commandPool);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create command pool!");
+                LOG_FATAL("Could not create command pool!");
 
         return commandPool;
 }
@@ -104,7 +110,7 @@ DescriptorPool vk::createDescriptorPool(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create descriptor pool!");
+                LOG_FATAL("Could not create descriptor pool!");
 
         return descriptorPool;
 }
@@ -125,7 +131,7 @@ std::vector<DescriptorSet> vk::createDescriptorSets(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not allocate descriptor sets!");
+                LOG_FATAL("Could not allocate descriptor sets!");
 
         return descriptorSets;
 }
@@ -147,7 +153,7 @@ DescriptorSetLayout vk::createDescriptorSetLayout(
         );
 
         if (result != VK_SUCCESS) {
-                throw std::runtime_error("Could not create descriptor set layout!");
+                LOG_FATAL("Could not create descriptor set layout!");
         }
 
         return descriptorSetLayout;
@@ -183,7 +189,7 @@ Device vk::createDevice(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create logical device!");
+                LOG_FATAL("Could not create logical device!");
 
         return device;
 }
@@ -205,7 +211,7 @@ Fence vk::createFence(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create fence!");
+                LOG_FATAL("Could not create fence!");
 
         return fence;
 }
@@ -229,7 +235,7 @@ Framebuffer vk::createFramebuffer(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create frame buffer!");
+                LOG_FATAL("Could not create frame buffer!");
 
         return framebuffer;
 }
@@ -254,7 +260,7 @@ Image vk::createImage(
         Result result = vkCreateImage(device, &createInfo, pAllocator, &image);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create image!");
+                LOG_FATAL("Could not create image!");
 
         return image;
 }
@@ -278,7 +284,7 @@ ImageView vk::createImageView(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create image view!");
+                LOG_FATAL("Could not create image view!");
 
         return imageView;
 }
@@ -295,7 +301,7 @@ Instance vk::createInstance(
         Result result = vkEnumerateInstanceVersion(&apiVersion);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get api version!");
+                LOG_FATAL("Could not get api version!");
 
         ApplicationInfo applicationInfo = vk::createApplicationInfo(
                 name, version, apiVersion
@@ -310,7 +316,7 @@ Instance vk::createInstance(
         result = vkCreateInstance(&createInfo, pAllocator, &instance);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create vulkan instance!");
+                LOG_FATAL("Could not create vulkan instance!");
 
         return instance;
 }
@@ -322,58 +328,51 @@ std::vector<PhysicalDevice> vk::getPhysicalDevices(
         Result result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr);
 
         if (result != VK_SUCCESS && result != VK_INCOMPLETE)
-                throw std::runtime_error("Could not get physical devices count!");
+                LOG_FATAL("Could not get physical devices count!");
 
         std::vector<PhysicalDevice> physicalDevices(physicalDevicesCount);
         result = vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, physicalDevices.data());
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get physical devices!");
+                LOG_FATAL("Could not get physical devices!");
 
         return physicalDevices;
 }
 
 Pipeline vk::createPipeline(
-        const Device                                              &device,
-        const RenderPass                                          &renderPass,
-        const std::vector<Viewport>                               &viewports,
-        const std::vector<Rect2D>                                 &scissors,
-        const PipelineLayout                                      &layout,
-        const std::vector<PipelineShaderStageCreateInfo>          &shaderStages,
-        const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
-        const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
-        const VkAllocationCallbacks                               *pAllocator,
-        const void                                                *pCreateInfoNext
+        const Device                                            &device,
+        const RenderPass                                        &renderPass,
+        const PipelineLayout                                    &layout,
+        const std::vector<PipelineShaderStageCreateInfo>        &shaderStages,
+        const PipelineVertexInputStateCreateInfo                *pVertexInputState,
+        const PipelineDepthStencilStateCreateInfo               *pDepthStencilState,
+        const VkAllocationCallbacks                             *pAllocator,
+        const void                                              *pCreateInfoNext
 ) {
-        PipelineVertexInputStateCreateInfo vertexInputStateCreateInfo = vk::createPipelineVertexInputStateCreateInfo(
-                bindingDescriptions, attributeDescriptions
-        );
-
-        PipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = vk::createPipelineInputAssemblyStateCreateInfo();
-
-        PipelineViewportStateCreateInfo viewportStateCreateInfo = vk::createPipelineViewportStateCreateInfo(
-                viewports, scissors
-        );
-
-        PipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = vk::createPipelineRasterizationStateCreateInfo();
-
-        PipelineMultisampleStateCreateInfo multisampleStateCreateInfo = vk::createPipelineMultisampleStateCreateInfo();
-
+        PipelineInputAssemblyStateCreateInfo inputAssemblyState = vk::createPipelineInputAssemblyStateCreateInfo();
+        PipelineRasterizationStateCreateInfo rasterizationState = vk::createPipelineRasterizationStateCreateInfo();
+        PipelineMultisampleStateCreateInfo multisampleState = vk::createPipelineMultisampleStateCreateInfo();
         PipelineColorBlendAttachmentState colorBlendAttachmentState = vk::createPipelineColorBlendAttachmentState();
-
-        PipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = vk::createPipelineColorBlendStateCreateInfo(
+        PipelineColorBlendStateCreateInfo colorBlendState = vk::createPipelineColorBlendStateCreateInfo(
                 { colorBlendAttachmentState }
         );
 
-        PipelineDepthStencilStateCreateInfo depthStencilState = vk::createPipelineDepthStencilStateCreateInfo(
-                VK_TRUE, VK_TRUE, VK_FALSE, VK_FALSE,
-                VkStencilOpState(), VkStencilOpState()
+        PipelineViewportStateCreateInfo viewportState = vk::createPipelineViewportStateCreateInfo(
+                {Viewport()}, {Rect2D()}
+        );
+
+        std::vector<VkDynamicState> dynamicStates {
+                VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
+        };
+        PipelineDynamicStateCreateInfo dynamicState = vk::createPipelineDynamicStateCreateInfo(
+                dynamicStates
         );
 
         GraphicsPipelineCreateInfo createInfo = vk::createGraphicsPipelineCreateInfo(
-                vertexInputStateCreateInfo, inputAssemblyStateCreateInfo, viewportStateCreateInfo,
-                rasterizationStateCreateInfo, multisampleStateCreateInfo, &depthStencilState,
-                colorBlendStateCreateInfo, shaderStages, layout, renderPass, pCreateInfoNext
+                pVertexInputState, &inputAssemblyState, &viewportState,
+                &rasterizationState, &multisampleState, pDepthStencilState,
+                &colorBlendState, shaderStages, &dynamicState,
+                layout, renderPass, pCreateInfoNext
         );
 
         Pipeline pipeline{};
@@ -384,7 +383,7 @@ Pipeline vk::createPipeline(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create graphic pipeline!");
+                LOG_FATAL("Could not create graphic pipeline!");
 
         return pipeline;
 }
@@ -407,7 +406,7 @@ PipelineLayout vk::createPipelineLayout(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create pipeline layout!");
+                LOG_FATAL("Could not create pipeline layout!");
 
         return layout;
 }
@@ -445,7 +444,7 @@ RenderPass vk::createRenderPass(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create pipeline render pass!");
+                LOG_FATAL("Could not create pipeline render pass!");
 
         return renderPass;
 }
@@ -473,7 +472,7 @@ Sampler vk::createSampler(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create sampler!");
+                LOG_FATAL("Could not create sampler!");
 
         return sampler;
 }
@@ -494,7 +493,7 @@ Semaphore vk::createSemaphore(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create semaphore!");
+                LOG_FATAL("Could not create semaphore!");
 
         return semaphore;
 }
@@ -516,7 +515,7 @@ ShaderModule vk::createShaderModule(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Failed to create shader module!");
+                LOG_FATAL("Failed to create shader module!");
 
         return shaderModule;
 }
@@ -556,7 +555,7 @@ SwapchainKHR vk::createSwapchainKHR(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not create swapchain.");
+                LOG_FATAL("Could not create swapchain!");
 
         return swapchain;
 }
@@ -587,7 +586,7 @@ SurfaceCapabilitiesKHR vk::getSurfaceCapabilitiesKHR(
         Result result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get physical device surface capabilities!");
+                LOG_FATAL("Could not get physical device surface capabilities!");
 
         return capabilities;
 }
@@ -603,7 +602,7 @@ std::vector<SurfaceFormatKHR> vk::getSurfaceFormatKHRs(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get surface formats count!");
+                LOG_FATAL("Could not get surface formats count!");
 
         std::vector<SurfaceFormatKHR> formats(formatsCount);
         result = vkGetPhysicalDeviceSurfaceFormatsKHR(
@@ -612,7 +611,7 @@ std::vector<SurfaceFormatKHR> vk::getSurfaceFormatKHRs(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get surface formats.");
+                LOG_FATAL("Could not get surface formats!");
 
         return formats;
 }
@@ -628,7 +627,7 @@ std::vector<PresentModeKHR> vk::getPresentModeKHR(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get present mode count.");
+                LOG_FATAL("Could not get present mode count!");
 
         std::vector<PresentModeKHR> presentModes(presentModesCount);
         result = vkGetPhysicalDeviceSurfacePresentModesKHR(
@@ -637,7 +636,7 @@ std::vector<PresentModeKHR> vk::getPresentModeKHR(
         );
 
         if (result != VK_SUCCESS)
-                throw std::runtime_error("Could not get present modes.");
+                LOG_FATAL("Could not get present modes!");
 
         return presentModes;
 }
@@ -649,13 +648,13 @@ std::vector<QueueFamilyProperties> vk::getQueueFamilyProperties(
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propertyCount, nullptr);
 
         if (propertyCount == 0)
-                throw std::runtime_error("Could not get family queue property count.");
+                LOG_FATAL("Could not get family queue property count!");
 
         std::vector<QueueFamilyProperties> queueFamilies(propertyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propertyCount, queueFamilies.data());
 
         if (queueFamilies.empty())
-                throw std::runtime_error("Could not get family queue properties.");
+                LOG_FATAL("Could not get family queue properties!");
 
         return queueFamilies;
 }
@@ -676,4 +675,31 @@ std::vector<ExtensionProperties> vk::getExtensionProperties(
         );
 
         return extensions;
+}
+
+DescriptorUpdateTemplate vk::createDescriptorUpdateTemplate(
+        const Device                                             &device,
+        const std::vector<DescriptorUpdateTemplateEntry>         &descriptorUpdateEntries,
+        const VkDescriptorUpdateTemplateType                     &templateType,
+        const DescriptorSetLayout                                &descriptorSetLayout,
+        const VkPipelineBindPoint                                &pipelineBindPoint,
+        const PipelineLayout                                     &pipelineLayout,
+        const uint32_t                                           &set,
+        const VkAllocationCallbacks                              *pAllocator
+) {
+        DescriptorUpdateTemplateCreateInfo createInfo = createDescriptorUpdateTemplateCreateInfo(
+                descriptorUpdateEntries, templateType, descriptorSetLayout,
+                pipelineBindPoint, pipelineLayout, set
+        );
+
+        DescriptorUpdateTemplate descriptorUpdateTemplate{};
+        Result result = vkCreateDescriptorUpdateTemplate(
+                device, &createInfo,
+                pAllocator, &descriptorUpdateTemplate
+        );
+
+        if (result != VK_SUCCESS)
+                LOG_FATAL("Could not create descriptor update template!");
+
+        return descriptorUpdateTemplate;
 }
