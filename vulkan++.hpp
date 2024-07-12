@@ -25,6 +25,12 @@
         #define VULKANPP_CONSTEXPR
 #endif
 
+#ifdef VULKANPP_DISABLE_NODISCARD
+        #define VULKANPP_NODISCARD
+#else
+        #define VULKANPP_NODISCARD [[nodiscard]]
+#endif
+
 namespace vk {
 
         /** <b>Name</b><hr><br>
@@ -983,21 +989,21 @@ namespace vk {
          * @endcode
          */
         using ClearColorValue = VkClearColorValue;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const float        float32[4]
         ) {
                 return {
                         .float32 = { float32[0], float32[1], float32[2], float32[3] }
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const int32_t        int32[4]
         ) {
                 return {
                         .int32 = { int32[0], int32[1], int32[2], int32[3] }
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearColorValue createClearColorValue(
                 const uint32_t        uint32[4]
         ) {
                 return {
@@ -1028,7 +1034,7 @@ namespace vk {
          * </ul>
          */
         using ClearDepthStencilValue = VkClearDepthStencilValue;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearDepthStencilValue createClearDepthStencilValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearDepthStencilValue createClearDepthStencilValue(
                 float           depth,
                 uint32_t        stencil
         ) {
@@ -1064,21 +1070,21 @@ namespace vk {
          * This union is used where part of the API requires either color or depth/stencil clear values, depending on the attachment, and defines the initial clear values in the VkRenderPassBeginInfo structure.
          */
         using ClearValue = VkClearValue;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 const ClearColorValue        &clearColorValue
         ) {
                 return {
                         .color = clearColorValue
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 ClearDepthStencilValue        depthStencil
         ) {
                 return {
                         .depthStencil = depthStencil
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 float        r,
                 float        g,
                 float        b,
@@ -1089,7 +1095,7 @@ namespace vk {
                         .color = vk::createClearColorValue(floats)
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 int32_t        r,
                 int32_t        g,
                 int32_t        b,
@@ -1100,7 +1106,7 @@ namespace vk {
                         .color = vk::createClearColorValue(ints)
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 uint32_t        r,
                 uint32_t        g,
                 uint32_t        b,
@@ -1111,7 +1117,7 @@ namespace vk {
                         .color = vk::createClearColorValue(uints)
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ClearValue createClearValue(
                 float           depth,
                 uint32_t        stencil
         ) {
@@ -1146,7 +1152,7 @@ namespace vk {
          * @note When creating a descriptor pool that will contain descriptors for combined image samplers of multi-planar formats, an application needs to account for non-trivial descriptor consumption when choosing the descriptorCount value, as indicated by VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount.
          */
         using DescriptorPoolSize = VkDescriptorPoolSize;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorPoolSize createDescriptorPoolSize(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorPoolSize createDescriptorPoolSize(
                 VkDescriptorType        type,
                 uint32_t                descriptorCount
         ) {
@@ -1179,7 +1185,7 @@ namespace vk {
          * </ul>
          */
         using Extent2D = VkExtent2D;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Extent2D createExtent2D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Extent2D createExtent2D(
                 uint32_t        width,
                 uint32_t        height
         ) {
@@ -1244,7 +1250,7 @@ namespace vk {
          *
          */
         using Viewport = VkViewport;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Viewport createViewport(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Viewport createViewport(
                 float        x,
                 float        y,
                 float        width,
@@ -1283,7 +1289,7 @@ namespace vk {
          * </ul>
          */
         using Offset2D = VkOffset2D;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Offset2D createOffset2D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Offset2D createOffset2D(
                 int32_t        x,
                 int32_t        y
         ) {
@@ -1315,7 +1321,7 @@ namespace vk {
          * </ul>
          */
         using Rect2D = VkRect2D;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Rect2D createRect2D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Rect2D createRect2D(
                 Offset2D        offset,
                 Extent2D        extent
         ) {
@@ -1350,7 +1356,7 @@ namespace vk {
          * </ul>
          */
         using Extent3D = VkExtent3D;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Extent3D createExtent3D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Extent3D createExtent3D(
                 uint32_t        width,
                 uint32_t        height,
                 uint32_t        depth
@@ -1361,7 +1367,7 @@ namespace vk {
                         .depth = depth
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Extent3D createExtent3D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Extent3D createExtent3D(
                 Extent2D        extent2D,
                 uint32_t        depth
         )  {
@@ -1464,7 +1470,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorUpdateTemplateEntry = VkDescriptorUpdateTemplateEntry;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorUpdateTemplateEntry createDescriptorUpdateTemplateEntry(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorUpdateTemplateEntry createDescriptorUpdateTemplateEntry(
                 uint32_t                dstBinding,
                 uint32_t                dstArrayElement,
                 uint32_t                descriptorCount,
@@ -1530,7 +1536,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorUpdateTemplateCreateInfo =  VkDescriptorUpdateTemplateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorUpdateTemplateCreateInfo createDescriptorUpdateTemplateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorUpdateTemplateCreateInfo createDescriptorUpdateTemplateCreateInfo(
                 const std::vector<DescriptorUpdateTemplateEntry>         &descriptorUpdateEntries,
                 VkDescriptorUpdateTemplateType                           templateType,
                 VkDescriptorSetLayout                                    descriptorSetLayout,
@@ -1569,7 +1575,7 @@ namespace vk {
          * @endcode
          */
         using Instance = VkInstance;
-        Instance createInstance(
+        VULKANPP_NODISCARD Instance createInstance(
                 const char                             *name,
                 uint32_t                               version,
                 const std::vector<const char *>        &enabledLayerNames,
@@ -1594,7 +1600,7 @@ namespace vk {
          * @endcode
          */
         using PhysicalDevice = VkPhysicalDevice;
-        std::vector<PhysicalDevice> getPhysicalDevices(
+        VULKANPP_NODISCARD std::vector<PhysicalDevice> getPhysicalDevices(
                 Instance        instance
         );
 
@@ -1893,7 +1899,7 @@ namespace vk {
          * </ul>
          */
         using PhysicalDeviceFeatures = VkPhysicalDeviceFeatures;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceFeatures createPhysicalDeviceFeatures(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceFeatures createPhysicalDeviceFeatures(
                 const Bool32        values[55]
         ) {
                 return {
@@ -1925,7 +1931,7 @@ namespace vk {
          * @endcode
          */
         using Device = VkDevice;
-        Device createDevice(
+        VULKANPP_NODISCARD Device createDevice(
                 PhysicalDevice                         physicalDevice,
                 const std::vector<uint32_t>            &queueFamilyIndices,
                 const std::vector<const char *>        &enabledExtensionNames,
@@ -1950,7 +1956,7 @@ namespace vk {
          * @endcode
          */
         using CommandPool = VkCommandPool;
-        CommandPool createCommandPool(
+        VULKANPP_NODISCARD CommandPool createCommandPool(
                 uint32_t                           queueFamilyIndex,
                 Device                             device,
                 const VkAllocationCallbacks        *pAllocator,
@@ -1973,7 +1979,7 @@ namespace vk {
          * @endcode
          */
         using CommandBuffer = VkCommandBuffer;
-        CommandBuffer createCommandBuffer(
+        VULKANPP_NODISCARD CommandBuffer createCommandBuffer(
                 CommandPool        commandPool,
                 Device             device,
                 const void         *pAllocInfoNext = nullptr
@@ -1995,7 +2001,7 @@ namespace vk {
          * @endcode
          */
         using Buffer = VkBuffer;
-        Buffer createBuffer(
+        VULKANPP_NODISCARD Buffer createBuffer(
                 Device                             device,
                 DeviceSize                         size,
                 VkBufferUsageFlags                 usage,
@@ -2022,7 +2028,7 @@ namespace vk {
          * @endcode
          */
         using BufferView = VkBufferView;
-        BufferView createBufferView(
+        VULKANPP_NODISCARD BufferView createBufferView(
                 Device                             device,
                 Buffer                             buffer,
                 Format                             format,
@@ -2048,7 +2054,7 @@ namespace vk {
  * @endcode
  */
         using DescriptorPool = VkDescriptorPool;
-        DescriptorPool createDescriptorPool(
+        VULKANPP_NODISCARD DescriptorPool createDescriptorPool(
                 Device                                       device,
                 uint32_t                                     descriptorCount,
                 const std::vector<DescriptorPoolSize>        &poolSizes,
@@ -2072,7 +2078,7 @@ namespace vk {
          * @endcode
          */
         using DescriptorSetLayout = VkDescriptorSetLayout;
-        DescriptorSetLayout createDescriptorSetLayout(
+        VULKANPP_NODISCARD DescriptorSetLayout createDescriptorSetLayout(
                 Device                                                 device,
                 const std::vector<VkDescriptorSetLayoutBinding>        &bindings,
                 const VkAllocationCallbacks                            *pAllocator,
@@ -2093,7 +2099,7 @@ namespace vk {
          * @endcode
          */
         using DescriptorSet = VkDescriptorSet;
-        std::vector<DescriptorSet> createDescriptorSets(
+        VULKANPP_NODISCARD std::vector<DescriptorSet> createDescriptorSets(
                 Device                                        device,
                 DescriptorPool                                pool,
                 const std::vector<DescriptorSetLayout>        &descriptorSetLayouts,
@@ -2183,7 +2189,7 @@ namespace vk {
          * @endcode
          */
         using Fence = VkFence;
-        Fence createFence(
+        VULKANPP_NODISCARD Fence createFence(
                 Device                             device,
                 bool                               signaled,
                 const VkAllocationCallbacks        *pAllocator,
@@ -2206,7 +2212,7 @@ namespace vk {
          * @endcode
          */
         using Image = VkImage;
-        Image createImage(
+        VULKANPP_NODISCARD Image createImage(
                 Device                             device,
                 VkImageType                        imageType,
                 Format                             format,
@@ -2234,7 +2240,7 @@ namespace vk {
          * @endcode
          */
         using ImageView = VkImageView;
-        ImageView createImageView(
+        VULKANPP_NODISCARD ImageView createImageView(
                 Image                              image,
                 VkImageAspectFlags                 aspectMask,
                 Format                             format,
@@ -2305,7 +2311,7 @@ namespace vk {
          * </ul>
          */
         using PushConstantRange = VkPushConstantRange;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PushConstantRange createPushConstantRange(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PushConstantRange createPushConstantRange(
                 VkShaderStageFlags        stageFlags,
                 uint32_t                  offset,
                 uint32_t                  size
@@ -2333,7 +2339,7 @@ namespace vk {
          * @endcode
          */
         using PipelineLayout = VkPipelineLayout;
-        PipelineLayout createPipelineLayout(
+        VULKANPP_NODISCARD PipelineLayout createPipelineLayout(
                 Device                                        device,
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const std::vector<PushConstantRange>          &pushConstantRanges,
@@ -2364,7 +2370,7 @@ namespace vk {
          * @endcode
          */
         using DescriptorUpdateTemplate = VkDescriptorUpdateTemplate;
-        DescriptorUpdateTemplate createDescriptorUpdateTemplate(
+        VULKANPP_NODISCARD DescriptorUpdateTemplate createDescriptorUpdateTemplate(
                 Device                                                   device,
                 const std::vector<DescriptorUpdateTemplateEntry>         &descriptorUpdateEntries,
                 VkDescriptorUpdateTemplateType                           templateType,
@@ -2419,7 +2425,7 @@ namespace vk {
          * </ul><br>
          */
         using SurfaceFormatKHR = VkSurfaceFormatKHR;
-        std::vector<SurfaceFormatKHR> getSurfaceFormatKHRs(
+        VULKANPP_NODISCARD std::vector<SurfaceFormatKHR> getSurfaceFormatKHRs(
                 PhysicalDevice        physicalDevice,
                 SurfaceKHR            surface
         );
@@ -2447,7 +2453,7 @@ namespace vk {
          * </ul>
          */
         using AttachmentReference = VkAttachmentReference;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR AttachmentReference createAttachmentReference(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR AttachmentReference createAttachmentReference(
                 uint32_t             attachment,
                 VkImageLayout        layout
         ) {
@@ -2513,7 +2519,7 @@ namespace vk {
          * @note Once an attachment needs the VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT bit, there <b>should</b> be no additional cost of introducing additional aliases, and using these additional aliases <b>may</b> allow more efficient clearing of the attachments on multiple uses via VK_ATTACHMENT_LOAD_OP_CLEAR.
          */
         using AttachmentDescription = VkAttachmentDescription;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR AttachmentDescription createAttachmentDescription(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR AttachmentDescription createAttachmentDescription(
                 Format               format,
                 VkImageLayout        finalLayout
         ) {
@@ -2585,7 +2591,7 @@ namespace vk {
          * </ul>
          */
         using SubpassDependency = VkSubpassDependency;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR SubpassDependency createSubpassDependency(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR SubpassDependency createSubpassDependency(
                 VkPipelineStageFlags        stageMask,
                 VkAccessFlags               dstAccessMask
         ) {
@@ -2666,7 +2672,7 @@ namespace vk {
          * Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.<br><br>
          */
         using SubpassDescription = VkSubpassDescription;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR SubpassDescription createSubpassDescription(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR SubpassDescription createSubpassDescription(
                 const std::vector<AttachmentReference>        &inputAttachments,
                 const std::vector<AttachmentReference>        &colorAttachments,
                 const std::vector<AttachmentReference>        &resolveAttachments,
@@ -2703,7 +2709,7 @@ namespace vk {
          * @endcode
          */
         using RenderPass = VkRenderPass;
-        RenderPass createRenderPass(
+        VULKANPP_NODISCARD RenderPass createRenderPass(
                 Device                                          device,
                 const std::vector<SubpassDescription>           &subpassDescriptions,
                 const std::vector<AttachmentDescription>        &attachmentDescriptions,
@@ -2728,7 +2734,7 @@ namespace vk {
          * @endcode
          */
         using Framebuffer = VkFramebuffer;
-        Framebuffer createFramebuffer(
+        VULKANPP_NODISCARD Framebuffer createFramebuffer(
                 RenderPass                          renderPass,
                 Extent2D                            extent,
                 const std::vector<ImageView>        &attachments,
@@ -2764,7 +2770,7 @@ namespace vk {
          * </ul>
          */
         using VertexInputAttributeDescription = VkVertexInputAttributeDescription;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR VertexInputAttributeDescription createVertexInputAttributeDescription(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR VertexInputAttributeDescription createVertexInputAttributeDescription(
                 uint32_t        location,
                 uint32_t        binding,
                 Format          format,
@@ -2831,7 +2837,7 @@ namespace vk {
          * @endcode
          */
         using ShaderModule = VkShaderModule;
-        ShaderModule createShaderModule(
+        VULKANPP_NODISCARD ShaderModule createShaderModule(
                 const std::vector<uint8_t>         &code,
                 Device                             device,
                 const VkAllocationCallbacks        *pAllocator,
@@ -2881,7 +2887,7 @@ namespace vk {
          * Applications <b>must</b> allow pipeline compilation to fail during link steps with VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT as it <b>may</b> not be possible to determine if a pipeline <b>can</b> be created from identifiers until the link step.
          */
         using PipelineShaderStageCreateInfo = VkPipelineShaderStageCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineShaderStageCreateInfo createPipelineShaderStageCreateInfo(
                 VkShaderStageFlagBits        stage,
                 ShaderModule                 module,
                 const void                   *pNext = nullptr
@@ -2929,7 +2935,7 @@ namespace vk {
          * </ul>
          */
         using PipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineViewportStateCreateInfo createPipelineViewportStateCreateInfo(
                 const std::vector<Viewport>        &viewports,
                 const std::vector<Rect2D>          &scissors,
                 const void                         *pNext = nullptr
@@ -2977,7 +2983,7 @@ namespace vk {
          * </ul>
          */
         using PipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineVertexInputStateCreateInfo createPipelineVertexInputStateCreateInfo(
                 const std::vector<VertexInputBindingDescription>          &bindingDescriptions,
                 const std::vector<VertexInputAttributeDescription>        &attributeDescriptions,
                 const void                                                *pNext = nullptr
@@ -3035,7 +3041,7 @@ namespace vk {
          * </ul>
          */
         using PipelineDepthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineDepthStencilStateCreateInfo createPipelineDepthStencilStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineDepthStencilStateCreateInfo createPipelineDepthStencilStateCreateInfo(
                 Bool32                        depthTestEnable,
                 Bool32                        depthWriteEnable,
                 Bool32                        depthBoundsTestEnable,
@@ -3092,7 +3098,7 @@ namespace vk {
          * @endcode
          */
         using Pipeline = VkPipeline;
-        Pipeline createGraphicPipeline(
+        VULKANPP_NODISCARD Pipeline createGraphicPipeline(
                 Device                                                  device,
                 RenderPass                                              renderPass,
                 PipelineLayout                                          layout,
@@ -3104,7 +3110,7 @@ namespace vk {
                 const VkAllocationCallbacks                             *pAllocator,
                 const void                                              *pCreateInfoNext = nullptr
         );
-        Pipeline createComputePipeline(
+        VULKANPP_NODISCARD Pipeline createComputePipeline(
                 Device                                     device,
                 PipelineCache                              pipelineCache,
                 const PipelineShaderStageCreateInfo        &stage,
@@ -3153,7 +3159,7 @@ namespace vk {
          * If a VkPipelineCreateFlags2CreateInfoKHR structure is present in the pNext chain, VkPipelineCreateFlags2CreateInfoKHR::flags from that structure is used instead of flags from this structure.
          */
         using ComputePipelineCreateInfo = VkComputePipelineCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ComputePipelineCreateInfo createComputePipelineCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ComputePipelineCreateInfo createComputePipelineCreateInfo(
                 const PipelineShaderStageCreateInfo        &stage,
                 PipelineLayout                             layout,
                 Pipeline                                   basePipelineHandle,
@@ -3205,7 +3211,7 @@ namespace vk {
          * @endcode
          */
         using Queue = VkQueue;
-        Queue getQueue(
+        VULKANPP_NODISCARD Queue getQueue(
                 Device          device,
                 uint32_t        queueFamilyIndex,
                 uint32_t        queueIndex
@@ -3227,7 +3233,7 @@ namespace vk {
          * @endcode
          */
         using Sampler = VkSampler;
-        Sampler createSampler(
+        VULKANPP_NODISCARD Sampler createSampler(
                 Device                      device,
                 VkFilter                    filter,
                 VkSamplerAddressMode        addressMode,
@@ -3279,7 +3285,7 @@ namespace vk {
          * @endcode
          */
         using Semaphore = VkSemaphore;
-        Semaphore createSemaphore(
+        VULKANPP_NODISCARD Semaphore createSemaphore(
                 Device                             device,
                 const VkAllocationCallbacks        *pAllocator,
                 const void                         *pCreateInfoNext = nullptr
@@ -3331,7 +3337,7 @@ namespace vk {
          * @note For reference, the mode indicated by VK_PRESENT_MODE_FIFO_KHR is equivalent to the behavior of {wgl|glX|egl}SwapBuffers with a swap interval of 1, while the mode indicated by VK_PRESENT_MODE_FIFO_RELAXED_KHR is equivalent to the behavior of {wgl|glX}SwapBuffers with a swap interval of -1 (from the {WGL|GLX}_EXT_swap_control_tear extensions).
          */
         using PresentModeKHR = VkPresentModeKHR;
-        std::vector<PresentModeKHR> getPresentModeKHR(
+        VULKANPP_NODISCARD std::vector<PresentModeKHR> getPresentModeKHR(
                 PhysicalDevice        physicalDevice,
                 SurfaceKHR            surface
         );
@@ -3380,7 +3386,7 @@ namespace vk {
          * @note Formulas such as min(N, maxImageCount) are not correct, since maxImageCount <b>may</b> be zero.
          */
         using SurfaceCapabilitiesKHR = VkSurfaceCapabilitiesKHR;
-        SurfaceCapabilitiesKHR getSurfaceCapabilitiesKHR(
+        VULKANPP_NODISCARD SurfaceCapabilitiesKHR getSurfaceCapabilitiesKHR(
                 PhysicalDevice        physicalDevice,
                 SurfaceKHR            surface
         );
@@ -3416,7 +3422,7 @@ namespace vk {
          * @note This allows the platform to handle situations which require out-of-order return of images after presentation. At the same time, it allows the application to generate command buffers referencing all of the images in the swapchain at initialization time, rather than in its main loop.
          */
         using SwapchainKHR = VkSwapchainKHR;
-        SwapchainKHR createSwapchainKHR(
+        VULKANPP_NODISCARD SwapchainKHR createSwapchainKHR(
                 Device                                   device,
                 SurfaceKHR                               surface,
                 const std::vector<PresentModeKHR>        &presentModes,
@@ -3506,7 +3512,7 @@ namespace vk {
          * @note The same device ID <b>should</b> be used for all physical implementations of that device version and configuration. For example, all uses of a specific silicon IP GPU version and configuration <b>should</b> use the same device ID, even if those uses occur in different SoCs.
          */
         using PhysicalDeviceProperties = VkPhysicalDeviceProperties;
-        PhysicalDeviceProperties getPhysicalDeviceProperties(
+        VULKANPP_NODISCARD PhysicalDeviceProperties getPhysicalDeviceProperties(
                 PhysicalDevice        physicalDevice
         );
 
@@ -3620,7 +3626,7 @@ namespace vk {
          * @endcode
          */
         using PhysicalDeviceMemoryProperties = VkPhysicalDeviceMemoryProperties;
-        PhysicalDeviceMemoryProperties getPhysicalDeviceMemoryProperties(
+        VULKANPP_NODISCARD PhysicalDeviceMemoryProperties getPhysicalDeviceMemoryProperties(
                 PhysicalDevice        physicalDevice
         );
 
@@ -3660,7 +3666,7 @@ namespace vk {
          * VkAccelerationStructureInfoNV contains information that is used both for acceleration structure creation with vkCreateAccelerationStructureNV and in combination with the actual geometric data to build the acceleration structure with vkCmdBuildAccelerationStructureNV.
          */
         using AccelerationStructureInfoNV = VkAccelerationStructureInfoNV;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR AccelerationStructureInfoNV createAccelerationStructureInfoNV(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR AccelerationStructureInfoNV createAccelerationStructureInfoNV(
                 VkAccelerationStructureTypeNV         type,
                 uint32_t                              instanceCount,
                 const std::vector<VkGeometryNV>       &geometries,
@@ -3704,7 +3710,7 @@ namespace vk {
          * </ul>
          */
         using AccelerationStructureCreateInfoNV = VkAccelerationStructureCreateInfoNV;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR AccelerationStructureCreateInfoNV createAccelerationStructureCreateInfoNV(
                 DeviceSize                                 compactedSize,
                 const AccelerationStructureInfoNV          &info,
                 const void                                 *pNext = nullptr
@@ -3767,7 +3773,7 @@ namespace vk {
          * @note Providing a NULL VkInstanceCreateInfo::pApplicationInfo or providing an apiVersion of 0 is equivalent to providing an apiVersion of VK_MAKE_API_VERSION(0,1,0,0).
          */
         using ApplicationInfo = VkApplicationInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ApplicationInfo createApplicationInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ApplicationInfo createApplicationInfo(
                 const char        *pApplicationName,
                 uint32_t          applicationVersion,
                 uint32_t          apiVersion,
@@ -3820,7 +3826,7 @@ namespace vk {
          * The buffer view has a buffer view usage identifying which descriptor types <b>can</b> be created from it. This usage can be defined by including the VkBufferUsageFlags2CreateInfoKHR structure in the pNext chain, and specifying the usage value there. If this structure is not included, it is equal to the VkBufferCreateInfo::usage value used to create buffer.
          */
         using BufferViewCreateInfo = VkBufferViewCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferViewCreateInfo createBufferViewCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR BufferViewCreateInfo createBufferViewCreateInfo(
                 Buffer            buffer,
                 Format            format,
                 DeviceSize        offset,
@@ -3875,7 +3881,7 @@ namespace vk {
          * Restarting the assembly of primitives discards the most recent index values if those elements formed an incomplete primitive, and restarts the primitive assembly using the subsequent indices, but only assembling the immediately following element through the end of the originally specified elements. The primitive restart index value comparison is performed before adding the vertexOffset value to the index value.
          */
         using PipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineInputAssemblyStateCreateInfo createPipelineInputAssemblyStateCreateInfo(
                 VkPrimitiveTopology        primitiveTopology,
                 const void                 *pNext = nullptr
         ) {
@@ -3935,7 +3941,7 @@ namespace vk {
          * The application <b>can</b> also add a VkPipelineRasterizationStateRasterizationOrderAMD structure to the pNext chain of a VkPipelineRasterizationStateCreateInfo structure. This structure enables selecting the rasterization order to use when rendering with the corresponding graphics pipeline as described in Rasterization Order.
          */
         using PipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineRasterizationStateCreateInfo createPipelineRasterizationStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -3996,7 +4002,7 @@ namespace vk {
          * If pSampleMask is NULL, it is treated as if the mask has all bits set to 1.
          */
         using PipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineMultisampleStateCreateInfo createPipelineMultisampleStateCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -4047,7 +4053,7 @@ namespace vk {
          * </ul>
          */
         using PipelineColorBlendAttachmentState = VkPipelineColorBlendAttachmentState;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineColorBlendAttachmentState createPipelineColorBlendAttachmentState()
         {
                 return {
                         .blendEnable = VK_FALSE,
@@ -4094,7 +4100,7 @@ namespace vk {
          * </ul>
          */
         using PipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineColorBlendStateCreateInfo createPipelineColorBlendStateCreateInfo(
                 const std::vector<PipelineColorBlendAttachmentState>        &attachments,
                 const void                                                  *pNext = nullptr
         ) {
@@ -4137,7 +4143,7 @@ namespace vk {
          * </ul>
          */
         using CommandBufferBeginInfo = VkCommandBufferBeginInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR CommandBufferBeginInfo createCommandBufferBeginInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR CommandBufferBeginInfo createCommandBufferBeginInfo(
                 VkCommandBufferUsageFlags        flags,
                 const void                       *pNext = nullptr
         ) {
@@ -4193,7 +4199,7 @@ namespace vk {
          * @note There <b>may</b> be a performance cost for using a render area smaller than the framebuffer, unless it matches the render area granularity for the render pass.
          */
         using RenderPassBeginInfo = VkRenderPassBeginInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR RenderPassBeginInfo createRenderPassBeginInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR RenderPassBeginInfo createRenderPassBeginInfo(
                 RenderPass                           renderPass,
                 Framebuffer                          framebuffer,
                 Extent2D                             extent,
@@ -4253,7 +4259,7 @@ namespace vk {
          * The order that command buffers appear in pCommandBuffers is used to determine submission order, and thus all the implicit ordering guarantees that respect it. Other than these implicit ordering guarantees and any explicit synchronization primitives, these command buffers <b>may</b> overlap or otherwise execute out of order.
          */
         using SubmitInfo = VkSubmitInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR SubmitInfo createSubmitInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR SubmitInfo createSubmitInfo(
                 const std::vector<Semaphore>            &waitSemaphores,
                 const VkPipelineStageFlags              *pWaitDstStageMask,
                 const std::vector<CommandBuffer>        &commandBuffers,
@@ -4313,7 +4319,7 @@ namespace vk {
          * @note When transitioning the image to VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR or VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, there is no need to delay subsequent processing, or perform any visibility operations (as vkQueuePresentKHR performs automatic visibility operations). To achieve this, the dstAccessMask member of the VkImageMemoryBarrier <b>should</b> be set to 0, and the dstStageMask parameter <b>should</b> be set to VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT.
          */
         using PresentInfoKHR = VkPresentInfoKHR;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PresentInfoKHR createPresentInfoKHR(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PresentInfoKHR createPresentInfoKHR(
                 const std::vector<Semaphore>          &waitSemaphores,
                 const std::vector<SwapchainKHR>       &swapchains,
                 const std::vector<uint32_t>           &imageIndices,
@@ -4382,7 +4388,7 @@ namespace vk {
          * When performing a memory import operation, it is the responsibility of the application to ensure the external handles and their associated payloads meet all valid usage requirements. However, implementations <b>must</b> perform sufficient validation of external handles and payloads to ensure that the operation results in a valid memory object which will not cause program termination, device loss, queue stalls, or corruption of other resources when used as allowed according to its allocation parameters. If the external handle provided does not meet these requirements, the implementation <b>must</b> fail the memory import operation with the error code VK_ERROR_INVALID_EXTERNAL_HANDLE. If the parameters define an export operation and the external handle type is VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID, implementations <b>should</b> not strictly follow memoryTypeIndex. Instead, they <b>should</b> modify the allocation internally to use the required memory type for the application’s given usage. This is because for an export operation, there is currently no way for the client to know the memory type index before allocating.
          */
         using MemoryAllocateInfo = VkMemoryAllocateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR MemoryAllocateInfo createMemoryAllocateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR MemoryAllocateInfo createMemoryAllocateInfo(
                 DeviceSize        allocationSize,
                 uint32_t          memoryTypeIndex,
                 const void        *pNext = nullptr
@@ -4420,7 +4426,7 @@ namespace vk {
          * </ul>
          */
         using BufferCopy = VkBufferCopy;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferCopy createBufferCopy(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR BufferCopy createBufferCopy(
                 DeviceSize        size
         ) {
                 return {
@@ -4468,7 +4474,7 @@ namespace vk {
          * If a VkBufferUsageFlags2CreateInfoKHR structure is present in the pNext chain, VkBufferUsageFlags2CreateInfoKHR::usage from that structure is used instead of usage from this structure.
          */
         using BufferCreateInfo = VkBufferCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferCreateInfo createBufferCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR BufferCreateInfo createBufferCreateInfo(
                 DeviceSize                size,
                 VkBufferUsageFlags        usage,
                 const void                *pNext = nullptr
@@ -4514,7 +4520,7 @@ namespace vk {
          * </ul>
          */
         using CommandBufferAllocateInfo = VkCommandBufferAllocateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR CommandBufferAllocateInfo createCommandBufferAllocateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR CommandBufferAllocateInfo createCommandBufferAllocateInfo(
                 CommandPool        commandPool,
                 const void         *pNext = nullptr
         ) {
@@ -4554,7 +4560,7 @@ namespace vk {
          * </ul>
          */
         using CommandPoolCreateInfo = VkCommandPoolCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR CommandPoolCreateInfo createCommandPoolCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR CommandPoolCreateInfo createCommandPoolCreateInfo(
                 uint32_t          queueFamilyIndex,
                 const void        *pNext = nullptr
         ) {
@@ -4597,7 +4603,7 @@ namespace vk {
          * </ul>
          */
         using DeviceQueueCreateInfo = VkDeviceQueueCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DeviceQueueCreateInfo createDeviceQueueCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DeviceQueueCreateInfo createDeviceQueueCreateInfo(
                 uint32_t           queueFamilyIndex,
                 const float        *queuePriority,
                 const void         *pNext = nullptr
@@ -4651,7 +4657,7 @@ namespace vk {
          * </ul>
          */
         using DeviceCreateInfo = VkDeviceCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DeviceCreateInfo createDeviceCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DeviceCreateInfo createDeviceCreateInfo(
                 const std::vector<DeviceQueueCreateInfo>        &queueCreateInfos,
                 const std::vector<const char *>                 &enabledExtensionNames,
                 const PhysicalDeviceFeatures                    *pEnabledFeatures,
@@ -4696,7 +4702,7 @@ namespace vk {
          * </ul>
          */
         using FenceCreateInfo = VkFenceCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR FenceCreateInfo createFenceCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR FenceCreateInfo createFenceCreateInfo(
                 VkFenceCreateFlags        flags,
                 const void                *pNext = nullptr
         ) {
@@ -4745,7 +4751,7 @@ namespace vk {
          * It is legal for a subpass to use no color or depth/stencil attachments, either because it has no attachment references or because all of them are VK_ATTACHMENT_UNUSED. This kind of subpass <b>can</b> use shader side effects such as image stores and atomics to produce an output. In this case, the subpass continues to use the width, height, and layers of the framebuffer to define the dimensions of the rendering area, and the rasterizationSamples from each pipeline’s VkPipelineMultisampleStateCreateInfo to define the number of samples used in rasterization; however, if VkPhysicalDeviceFeatures::variableMultisampleRate is VK_FALSE, then all pipelines to be bound with the subpass <b>must</b> have the same value for VkPipelineMultisampleStateCreateInfo::rasterizationSamples. In all such cases, rasterizationSamples <b>must</b> be a valid VkSampleCountFlagBits value that is set in VkPhysicalDeviceLimits::framebufferNoAttachmentsSampleCounts.
          */
         using FramebufferCreateInfo = VkFramebufferCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR FramebufferCreateInfo createFramebufferCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR FramebufferCreateInfo createFramebufferCreateInfo(
                 RenderPass                           renderPass,
                 Extent2D                             extent,
                 const std::vector<ImageView>         &attachments,
@@ -4791,7 +4797,7 @@ namespace vk {
          * </ul>
          */
         using ComponentMapping = VkComponentMapping;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ComponentMapping createComponentMapping(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ComponentMapping createComponentMapping(
                 VkComponentSwizzle        r,
                 VkComponentSwizzle        g,
                 VkComponentSwizzle        b,
@@ -4849,7 +4855,7 @@ namespace vk {
          * When creating a VkImageView, if sampler Y′CBCR conversion is not enabled in the sampler and the image format is multi-planar, the image <b>must</b> have been created with VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT, and the aspectMask of the VkImageView’s subresourceRange <b>must</b> be VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT or VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
         using ImageSubresourceRange = VkImageSubresourceRange;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageSubresourceRange createImageSubresourceRange(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ImageSubresourceRange createImageSubresourceRange(
                 VkImageAspectFlags        aspectMask,
                 uint32_t                  baseMipLevel,
                 uint32_t                  levelCount,
@@ -4942,7 +4948,7 @@ namespace vk {
          *
          */
         using ImageViewCreateInfo = VkImageViewCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageViewCreateInfo createImageViewCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ImageViewCreateInfo createImageViewCreateInfo(
                 Image                     image,
                 Format                    format,
                 VkImageAspectFlags        aspectMask,
@@ -5007,7 +5013,7 @@ namespace vk {
          * @note VkDirectDriverLoadingListLUNARG allows applications to ship drivers with themselves. Only drivers that are designed to work with it should be used, such as drivers that implement Vulkan in software or that implement Vulkan by translating it to a different API. Any driver that requires installation should not be used, such as hardware drivers.
          */
         using InstanceCreateInfo = VkInstanceCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR InstanceCreateInfo createInstanceCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR InstanceCreateInfo createInstanceCreateInfo(
                 const ApplicationInfo                  &applicationInfo,
                 const std::vector<const char *>        &enabledLayerNames,
                 const std::vector<const char *>        &enabledExtensionNames,
@@ -5054,7 +5060,7 @@ namespace vk {
          * </ul>
          */
         using PipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo;
-        constexpr PipelineDynamicStateCreateInfo createPipelineDynamicStateCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineDynamicStateCreateInfo createPipelineDynamicStateCreateInfo(
                 const std::vector<VkDynamicState>        &dynamicStates,
                 const void                               *pNext = nullptr
         ) {
@@ -5231,7 +5237,7 @@ namespace vk {
          * If a VkPipelineCreateFlags2CreateInfoKHR structure is present in the pNext chain, VkPipelineCreateFlags2CreateInfoKHR::flags from that structure is used instead of flags from this structure.
          */
         using GraphicsPipelineCreateInfo = VkGraphicsPipelineCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR GraphicsPipelineCreateInfo createGraphicsPipelineCreateInfo(
                 const PipelineVertexInputStateCreateInfo                *pVertexInputState,
                 const PipelineInputAssemblyStateCreateInfo              *pInputAssemblyState,
                 const PipelineViewportStateCreateInfo                   *pViewportState,
@@ -5301,7 +5307,7 @@ namespace vk {
          * </ul>
          */
         using PipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PipelineLayoutCreateInfo createPipelineLayoutCreateInfo(
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const std::vector<PushConstantRange>          &pushConstantRanges,
                 const void                                    *pNext = nullptr
@@ -5357,7 +5363,7 @@ namespace vk {
          * @note Care should be taken to avoid a data race here; if any subpasses access attachments with overlapping memory locations, and one of those accesses is a write, a subpass dependency needs to be included between them.
          */
         using RenderPassCreateInfo = VkRenderPassCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR RenderPassCreateInfo createRenderPassCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR RenderPassCreateInfo createRenderPassCreateInfo(
                 const std::vector<AttachmentDescription>        &attachmentDescriptions,
                 const std::vector<SubpassDescription>           &subpassDescriptions,
                 const std::vector<VkSubpassDependency>          &dependencies,
@@ -5401,7 +5407,7 @@ namespace vk {
          * </ul>
          */
         using SemaphoreCreateInfo = VkSemaphoreCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR SemaphoreCreateInfo createSemaphoreCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR SemaphoreCreateInfo createSemaphoreCreateInfo(
                 const void        *pNext = nullptr
         ) {
                 return {
@@ -5440,7 +5446,7 @@ namespace vk {
          * </ul>
          */
         using ShaderModuleCreateInfo = VkShaderModuleCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ShaderModuleCreateInfo createShaderModuleCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ShaderModuleCreateInfo createShaderModuleCreateInfo(
                 const std::vector<uint8_t>        &code,
                 const void                        *pNext = nullptr
         ) {
@@ -5530,7 +5536,7 @@ namespace vk {
          * The application <b>can</b> continue to use a shared presentable image obtained from oldSwapchain until a presentable image is acquired from the new swapchain, as long as it has not entered a state that causes it to return VK_ERROR_OUT_OF_DATE_KHR.
          */
         using SwapchainCreateInfoKHR = VkSwapchainCreateInfoKHR;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR SwapchainCreateInfoKHR createSwapchainCreateInfoKHR(
                 const SurfaceCapabilitiesKHR        &capabilities,
                 uint32_t                            minImageCount,
                 SurfaceFormatKHR                    format,
@@ -5598,7 +5604,7 @@ namespace vk {
          * The above layout definition allows the descriptor bindings to be specified sparsely such that not all binding numbers between 0 and the maximum binding number need to be specified in the pBindings array. Bindings that are not specified have a descriptorCount and stageFlags of zero, and the value of descriptorType is undefined. However, all binding numbers between 0 and the maximum binding number in the VkDescriptorSetLayoutCreateInfo::pBindings array <b>may</b> consume memory in the descriptor set layout even if not all descriptor bindings are used, though it <b>should</b> not consume additional memory from the descriptor pool.
          */
         using DescriptorSetLayoutBinding = VkDescriptorSetLayoutBinding;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetLayoutBinding createDescriptorSetLayoutBinding(
                 uint32_t                  binding,
                 VkDescriptorType          descriptorType,
                 uint32_t                  descriptorCount,
@@ -5643,7 +5649,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetLayoutCreateInfo createDescriptorSetLayoutCreateInfo(
                 const std::vector<DescriptorSetLayoutBinding>        &bindings,
                 const void                                           *pNext = nullptr
         ) {
@@ -5698,7 +5704,7 @@ namespace vk {
          * If flags has the VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT bit set, descriptor pool creation <b>may</b> fail with the error VK_ERROR_FRAGMENTATION if the total number of descriptors across all pools (including this one) created with this bit set exceeds maxUpdateAfterBindDescriptorsInAllPools, or if fragmentation of the underlying hardware resources occurs.
          */
         using DescriptorPoolCreateInfo = VkDescriptorPoolCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorPoolCreateInfo createDescriptorPoolCreateInfo(
                 uint32_t                                     maxSets,
                 const std::vector<DescriptorPoolSize>        &poolSizes,
                 const void                                   *pNext = nullptr
@@ -5741,7 +5747,7 @@ namespace vk {
          * </ul>
          */
         using DescriptorSetAllocateInfo = VkDescriptorSetAllocateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorSetAllocateInfo createDescriptorSetAllocateInfo(
                 DescriptorPool                                descriptorPool,
                 const std::vector<DescriptorSetLayout>        &setLayouts,
                 const void                                    *pNext = nullptr
@@ -5785,7 +5791,7 @@ namespace vk {
          * For VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC and VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC descriptor types, offset is the base offset from which the dynamic offset is applied and range is the static size used for all dynamic offsets.
          */
         using DescriptorBufferInfo = VkDescriptorBufferInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorBufferInfo createDescriptorBufferInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorBufferInfo createDescriptorBufferInfo(
                 Buffer            buffer,
                 DeviceSize        offset,
                 DeviceSize        range
@@ -5843,7 +5849,7 @@ namespace vk {
          * @note The same behavior applies to bindings with a descriptor type of VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT where descriptorCount specifies the number of bytes to update while dstArrayElement specifies the starting byte offset, thus in this case if the dstBinding has a smaller byte size than the sum of dstArrayElement and descriptorCount, then the remainder will be used to update the subsequent binding - dstBinding+1 starting at offset zero. This falls out as a special case of the above rule.
          */
         using WriteDescriptorSet = VkWriteDescriptorSet;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR WriteDescriptorSet createWriteDescriptorSet(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR WriteDescriptorSet createWriteDescriptorSet(
                 DescriptorSet                       dstSet,
                 uint32_t                            dstBinding,
                 uint32_t                            dstArrayElement,
@@ -5945,7 +5951,7 @@ namespace vk {
          * For images created with VK_IMAGE_CREATE_EXTENDED_USAGE_BIT a usage bit is valid if it is supported for at least one of the formats a VkImageView created from the image <b>can</b> have (see Image Views for more detail).
          */
         using ImageCreateInfo = VkImageCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageCreateInfo createImageCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ImageCreateInfo createImageCreateInfo(
                 VkImageType                        imageType,
                 Format                             format,
                 const Extent3D                     &extent,
@@ -6027,7 +6033,7 @@ namespace vk {
          * If image has a multi-planar format and the image is disjoint, then including VK_IMAGE_ASPECT_COLOR_BIT in the aspectMask member of subresourceRange is equivalent to including VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, and (for three-plane formats only) VK_IMAGE_ASPECT_PLANE_2_BIT.
          */
         using ImageMemoryBarrier = VkImageMemoryBarrier;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageMemoryBarrier createImageMemoryBarrier(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ImageMemoryBarrier createImageMemoryBarrier(
                 VkAccessFlags             srcAccessMask,
                 VkAccessFlags             dstAccessMask,
                 VkImageLayout             oldLayout,
@@ -6080,7 +6086,7 @@ namespace vk {
          * </ul>
          */
         using ImageSubresourceLayers = VkImageSubresourceLayers;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR ImageSubresourceLayers createImageSubresourceLayers(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR ImageSubresourceLayers createImageSubresourceLayers(
                 VkImageAspectFlags        aspectMask,
                 uint32_t                  mipLevel,
                 uint32_t                  baseArrayLayer,
@@ -6119,7 +6125,7 @@ namespace vk {
          * </ul>
          */
         using Offset3D = VkOffset3D;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Offset3D createOffset3D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Offset3D createOffset3D(
                 int32_t        x,
                 int32_t        y,
                 int32_t        z
@@ -6130,7 +6136,7 @@ namespace vk {
                         .z = z
                 };
         }
-        VULKANPP_INLINE VULKANPP_CONSTEXPR Offset3D createOffset3D(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR Offset3D createOffset3D(
                 Offset2D        offset2D,
                 int32_t         z
         ) {
@@ -6171,7 +6177,7 @@ namespace vk {
          * </ul>
          */
         using BufferImageCopy = VkBufferImageCopy;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR BufferImageCopy createBufferImageCopy(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR BufferImageCopy createBufferImageCopy(
                 DeviceSize            bufferOffset,
                 uint32_t              bufferRowLength,
                 uint32_t              bufferImageHeight,
@@ -6269,7 +6275,7 @@ namespace vk {
          * Since VkSampler is a non-dispatchable handle type, implementations <b>may</b> return the same handle for sampler state vectors that are identical. In such cases, all such objects would only count once against the maxSamplerAllocationCount limit.
          */
         using SamplerCreateInfo = VkSamplerCreateInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR SamplerCreateInfo createSamplerCreateInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR SamplerCreateInfo createSamplerCreateInfo(
                 VkFilter                    filter,
                 VkSamplerAddressMode        addressMode,
                 Bool32                      anisotropyEnable,
@@ -6328,7 +6334,7 @@ namespace vk {
          * Members of VkDescriptorImageInfo that are not used in an update (as described above) are ignored.
          */
         using DescriptorImageInfo = VkDescriptorImageInfo;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorImageInfo createDescriptorImageInfo(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR DescriptorImageInfo createDescriptorImageInfo(
                 Sampler              sampler,
                 ImageView            imageView,
                 VkImageLayout        imageLayout
@@ -6392,7 +6398,7 @@ namespace vk {
          * For physical device feature queries see the Features chapter.
          */
         using QueueFamilyProperties = VkQueueFamilyProperties;
-        std::vector<QueueFamilyProperties> getQueueFamilyProperties(
+        VULKANPP_NODISCARD std::vector<QueueFamilyProperties> getQueueFamilyProperties(
                 PhysicalDevice        physicalDevice
         );
 
@@ -6419,7 +6425,7 @@ namespace vk {
          * </ul>
          */
         using ExtensionProperties = VkExtensionProperties;
-        std::vector<ExtensionProperties> getExtensionProperties(
+        VULKANPP_NODISCARD std::vector<ExtensionProperties> getExtensionProperties(
                 PhysicalDevice        physicalDevice
         );
 
@@ -6458,7 +6464,7 @@ namespace vk {
          * The pNext chain of this structure is used to extend the structure with features defined by extensions. This structure <b>can</b> be used in vkGetPhysicalDeviceFeatures2 or <b>can</b> be included in the pNext chain of a VkDeviceCreateInfo structure, in which case it controls which features are enabled on the device in lieu of pEnabledFeatures.
          */
         using PhysicalDeviceFeatures2 = VkPhysicalDeviceFeatures2;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceFeatures2 createPhysicalDeviceFeatures2(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceFeatures2 createPhysicalDeviceFeatures2(
                 const PhysicalDeviceFeatures        &physicalDeviceFeatures,
                 void                                *pNext = nullptr
         ) {
@@ -6522,7 +6528,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan11Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan11Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan11Features = VkPhysicalDeviceVulkan11Features;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan11Features createPhysicalDeviceVulkan11Features(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan11Features createPhysicalDeviceVulkan11Features(
                 const Bool32        values[12],
                 void                *pNext = nullptr
         ) {
@@ -6666,7 +6672,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan12Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan12Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan12Features = VkPhysicalDeviceVulkan12Features;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan12Features createPhysicalDeviceVulkan12Features(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan12Features createPhysicalDeviceVulkan12Features(
                 const Bool32        values[47],
                 void                *pNext = nullptr
         ) {
@@ -6820,7 +6826,7 @@ namespace vk {
          * If the VkPhysicalDeviceVulkan13Features structure is included in the pNext chain of the VkPhysicalDeviceFeatures2 structure passed to vkGetPhysicalDeviceFeatures2, it is filled in to indicate whether each corresponding feature is supported. VkPhysicalDeviceVulkan13Features <b>can</b> also be used in the pNext chain of VkDeviceCreateInfo to selectively enable these features.
          */
         using PhysicalDeviceVulkan13Features = VkPhysicalDeviceVulkan13Features;
-        VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan13Features createPhysicalDeviceVulkan13Features(
+        VULKANPP_NODISCARD VULKANPP_INLINE VULKANPP_CONSTEXPR PhysicalDeviceVulkan13Features createPhysicalDeviceVulkan13Features(
                 const Bool32        values[15],
                 void                *pNext = nullptr
         ) {
