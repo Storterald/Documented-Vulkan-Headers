@@ -1,0 +1,15 @@
+#pragma once
+
+#ifndef VULKANPP_HPP
+#define VULKANPP_HPP
+
+#ifdef VULKANPP_INCLUDE_VULKAN
+        #include <vulkan/vulkan.h>
+#endif
+
+#ifdef VULKAN_HPP
+        #error "Vulkan++ should not be used with the vulkan.hpp header."
+#endif
+
+namespace vk {
+
