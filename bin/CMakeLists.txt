@@ -16,10 +16,10 @@ endif()
 # Embed shaders
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp
-        COMMAND ${CMAKE_COMMAND} -E env python ${CMAKE_HOME_DIRECTORY}/generate.py
+        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+        COMMAND ${CMAKE_COMMAND} -E env python generate.py
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Generating header"
+        DEPENDS generate.py
 )
 add_custom_target(pre-build DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp)
 

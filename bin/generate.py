@@ -59,6 +59,7 @@ PROVIDER_DEFINES: dict[str, str] = {
         "VkSurfaceFullScreenExclusiveWin32InfoEXT": "VK_USE_PLATFORM_WIN32_KHR",
         "VkImportFenceWin32HandleInfoKHR": "VK_USE_PLATFORM_WIN32_KHR",
         "VkFullScreenExclusiveEXT": "VK_USE_PLATFORM_WIN32_KHR",
+        "VkWin32SurfaceCreateFlagsKHR": "VK_USE_PLATFORM_WIN32_KHR",
 
         # "vulkan_xlib_xrandr.h" VK_USE_PLATFORM_XLIB_XRANDR_EXT
         "vkAcquireXlibDisplayEXT": "VK_USE_PLATFORM_XLIB_XRANDR_EXT",
@@ -737,6 +738,18 @@ def parseHtml(content: str, platform: str):
         if enumsSect:
                 print("Found 'Enumerations' section")
                 processSection(enumsSect, False, platform)
+
+        # Extract and write scalar types
+        scalarTypesSect = soup.find('h2', id='basetypes')
+        if scalarTypesSect:
+                print("Found 'Scalar Types' section")
+                processSection(scalarTypesSect, False, platform)
+
+        # Extract and write flags
+        flagsSect = soup.find('h2', id='flags')
+        if flagsSect:
+                print("Found 'Flags' section")
+                processSection(flagsSect, False, platform)
 
 
 def getVersion() -> str:
