@@ -69,13 +69,6 @@ class Cache:
                 # Removes empty headers, empty lines and breaks before the end of the documentation
                 string = re.sub(REMOVE_EXTRAS_REGEX, r"\7", string)
 
-                # Remove <br> when not needed
-                string = re.sub(REMOVE_BREAKS_BEFORE_ELEMENTS_REGEX, r"\n\2\3", string)
-
-                # Merge adjacent lists
-                string = string.replace("         * </ul>\n         * \n         * <ul>\n", "")
-                string = string.replace("         * </dl>\n         * \n         * <dl>\n", "")
-
                 # Remove extra spaces
                 def removeExtraWhitespace(match) -> str:
                         return f"{match.group(1)}{match.group(2) or ''}{re.sub(r' {2,}', ' ', match.group(4)).strip()}"
@@ -84,6 +77,13 @@ class Cache:
                 string = re.sub(REMOVE_EMPTY_LINE_AFTER_DEFINITION_TERM_REGEX, r"\1", string)
                 string = string.replace("<li> ", "<li>")
                 string = string.replace(" , ", ", ")
+
+                # Remove <br> when not needed
+                string = re.sub(REMOVE_BREAKS_BEFORE_ELEMENTS_REGEX, r"\n\2\3", string)
+
+                # Merge adjacent lists
+                string = string.replace("         * </ul>\n         * \n         * <ul>\n", "")
+                string = string.replace("         * </dl>\n         * \n         * <dl>\n", "")
 
                 # Writes the fixed cache
                 file.write(string)
