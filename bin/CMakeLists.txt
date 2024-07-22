@@ -19,11 +19,12 @@ add_custom_command(
         WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
         COMMAND ${CMAKE_COMMAND} -E env python generate.py
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp
+        DEPENDS generate.py
 )
 add_custom_target(pre-build DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp)
 
 # Executable just to run generate.py
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp ../vulkan++.hpp)
 
 # Adding the python script as a dependency
 add_dependencies(${PROJECT_NAME} pre-build)

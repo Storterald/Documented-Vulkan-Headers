@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../vulkan++.hpp"
+#include <vulkan/vulkan.h>
 
 int main()
 {
