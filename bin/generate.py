@@ -16,7 +16,8 @@ VULKAN_REGISTRY: str = "https://registry.khronos.org/vulkan/specs/1.3-extensions
 VULKAN_VERSION_CHECK: str = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_API_VERSION.html"
 OUTPUT_FILE: str = "../vulkan++.hpp"
 THREADS: int = 16
-HEADER_REGEX: str = r" {9}\* <b>[A-Za-z0-9 ()]+<\/b><hr><br>\n"
+HEADER_HTML_REGEX: str = r" {9}\* <b>[A-Za-z0-9 ()]+<\/b><hr><br>\n"
+HEADER_MD_REGEX: str = r" {9}\* [a-zA-Z ]+\n {9}\* ---\n"
 EMPTY_LINE_REGEX: str = r" {9}\* \n"
 CHAR_FIX_MAP: dict[str, str] = {
         "\\rfloor": '⌋',
@@ -39,19 +40,21 @@ VERSION: str = ""
 
 # Regex
 FIX_SUBSTRINGS_REGEX = re.compile(r"(?<=[\s,.=])([a-zA-Z])_([a-zA-Z]+)(?=[\s,.=])")
-REMOVE_EXTRAS_REGEX = re.compile(r"(((" + EMPTY_LINE_REGEX + r")*" + HEADER_REGEX + r")|(((<br>)+)(?=\n)))?(\n?)(" + EMPTY_LINE_REGEX + r")+(?=( {8}\*\/))")
+REMOVE_EXTRAS_REGEX = re.compile(r"(((" + EMPTY_LINE_REGEX + r")*" + HEADER_HTML_REGEX + r")|(((<br>)+)(?=\n)))?(\n?)(" + EMPTY_LINE_REGEX + r")+(?=( {8}\*\/))")
 REMOVE_BREAKS_BEFORE_ELEMENTS_REGEX = re.compile(r"(<br>)+\n(" + EMPTY_LINE_REGEX + r")*( {9}\* (@|(<dl>)|(<ul>)|(<pre>)))")
 REMOVE_EXTRA_WHITESPACE_REGEX = re.compile(r"^( {9}\* )(?!\|)(( {4})*)(.*)$", re.MULTILINE)
+REMOVE_EMPTY_LINES_REGEX = re.compile(r"(" + EMPTY_LINE_REGEX + ")*(" + EMPTY_LINE_REGEX + ")")
 REMOVE_EMPTY_LINE_AFTER_DEFINITION_TERM_REGEX = re.compile(r"(<dd>)(\n {9}\* (?: {4})*)")
+REMOVE_EMPTY_HEADERS_MD_REGEX = re.compile(r"(" + HEADER_MD_REGEX + ")*(" + HEADER_MD_REGEX + ")")
 FIND_VERSION_REGEX = re.compile(r"(?<=Version )([\d.]+)")
 FIND_NAME_FROM_URL_REGEX = re.compile(r"\/(?:.(?!\/))+$")
 FIND_NAME_FROM_HEADER_REGEX = re.compile(r"^[a-zA-Z0-9]+")
-FIND_PROVIDERS = re.compile(r"@code\n {9}\* \/\/ Provided by ((?:[a-zA-Z0-9_]+(?: with [a-zA-Z0-9_]+)?(?:, )?)+)")
-
+FIND_PROVIDERS_HTML_REGEX = re.compile(r"@code\n {9}\* \/\/ Provided by ((?:[a-zA-Z0-9_]+(?: with [a-zA-Z0-9_]+)?(?:, )?)+)")
+FIND_PROVIDERS_MD_REGEX = re.compile(r"```c\n {4}\/\/ Provided by ((?:[a-zA-Z0-9_]+(?: with [a-zA-Z0-9_]+)?(?:, )?)+)")
 
 class Cache:
-        def __init__(self, url: str, platform: str) -> None:
-                self.__platform = platform  # TODO vs and vscode support
+        def __init__(self, url: str, html: bool) -> None:
+                self.__HTML = html
                 self.__URL = url
 
         def write(self, file) -> None:
@@ -64,26 +67,38 @@ class Cache:
                 # Fix math
                 for old, new in CHAR_FIX_MAP.items():
                         string = string.replace(old, new)
-                string = re.sub(FIX_SUBSTRINGS_REGEX, r"\1<sub>\2</sub>", string)
+
+                if self.__HTML:
+                        string = re.sub(FIX_SUBSTRINGS_REGEX, r"\1<sub>\2</sub>", string)
+                        string = re.sub(REMOVE_EXTRAS_REGEX, r"\7", string)
+                else:
+                        string = re.sub(FIX_SUBSTRINGS_REGEX, lambda match: f"{match.group(1).upper()}{match.group(2)}", string)
 
                 # Removes empty headers, empty lines and breaks before the end of the documentation
-                string = re.sub(REMOVE_EXTRAS_REGEX, r"\7", string)
+                string = re.sub(r"\n+", '\n', string)
 
                 # Remove extra spaces
                 def removeExtraWhitespace(match) -> str:
                         return f"{match.group(1)}{match.group(2) or ''}{re.sub(r' {2,}', ' ', match.group(4)).strip()}"
 
                 string = re.sub(REMOVE_EXTRA_WHITESPACE_REGEX, removeExtraWhitespace, string)
-                string = re.sub(REMOVE_EMPTY_LINE_AFTER_DEFINITION_TERM_REGEX, r"\1", string)
-                string = string.replace("<li> ", "<li>")
                 string = string.replace(" , ", ", ")
 
-                # Remove <br> when not needed
-                string = re.sub(REMOVE_BREAKS_BEFORE_ELEMENTS_REGEX, r"\n\2\3", string)
+                if self.__HTML:
+                        string = re.sub(REMOVE_EMPTY_LINE_AFTER_DEFINITION_TERM_REGEX, r"\1", string)
+                        string = re.sub(REMOVE_BREAKS_BEFORE_ELEMENTS_REGEX, r"\n\2\3", string)
 
-                # Merge adjacent lists
-                string = string.replace("         * </ul>\n         * \n         * <ul>\n", "")
-                string = string.replace("         * </dl>\n         * \n         * <dl>\n", "")
+                        # Remove space after list entry begin
+                        string = string.replace("<li> ", "<li>")
+
+                        # Merge adjacent lists
+                        string = string.replace("         * </ul>\n         * \n         * <ul>\n", "")
+                        string = string.replace("         * </dl>\n         * \n         * <dl>\n", "")
+                else:
+                        string = re.sub(REMOVE_EMPTY_HEADERS_MD_REGEX, r"\2", string)
+                        string = string.replace("         * -\n", '')
+                        string = re.sub(REMOVE_EMPTY_LINES_REGEX, r"\2", string)
+                        string = string.replace("         * \n        */", "        */")
 
                 # Writes the fixed cache
                 file.write(string)
@@ -101,7 +116,18 @@ class Cache:
                 :param listLevel: the level of indentation
                 """
                 if not singleLine:
-                        self.__value += f"         * {listLevel * "    "}"
+                        if self.__HTML:
+                                self.__value += f"         * {listLevel * "    "}"
+                        else:  # Empty chars are different
+                                self.__value += f"         * {listLevel * "⠀⠀⠀⠀"}"
+                                
+                if not self.__HTML:
+                        self.__value += f"{prefix}{anchor.getText(strip=True).replace('\n', ' ')}"
+
+                        if not singleLine:
+                                self.__value += '\n'
+
+                        return
 
                 # We keep the href only if it's a valid link
                 if anchor.has_attr('href'):
@@ -126,8 +152,10 @@ class Cache:
                 :param singleLine: if the break is in a single line
                 :param listLevel: the level of indentation
                 """
-                self.__value += "<br>\n"
-                # A break must always create a new line
+                if self.__HTML:
+                        self.__value += "<br>"
+
+                self.__value += "\n"
                 if singleLine:
                         self.__value += f"         * {listLevel * "    "}"
 
@@ -142,8 +170,10 @@ class Cache:
                 if not code:
                         return
 
-                text: str = f"<b>{code.getText(strip=True).replace('\n', ' ')}</b>"
-                self.addGeneric(text, prefix, singleLine, listLevel)
+                if self.__HTML:
+                        self.addGeneric(f"<b>{code.getText(strip=True).replace('\n', ' ')}</b>", prefix, singleLine, listLevel)
+                else:
+                        self.addGeneric(code.getText(strip=True).replace('\n', ' '), prefix, singleLine, listLevel)
 
         def addDefinitionTerm(self, definitionTerm, prefix: str = '', listLevel: int = 0) -> None:
                 """
@@ -159,9 +189,12 @@ class Cache:
                 if text.strip() == "":
                         return
 
-                self.__value += f"         * {listLevel * "    "}{prefix}<dt>{text}\n"
+                if self.__HTML:
+                        self.__value += f"         * {listLevel * "    "}{prefix}<dt>{text}\n"
+                else:  # The spaces after "####" are 1 space and 1 unicode U+2800 '⠀'
+                        self.__value += f"         * \n         * {listLevel * "⠀⠀⠀⠀"}{prefix}#### ⠀{text}\n         * \n"
 
-        def addEmphasized(self, emphasized, prefix: str= '', singleLine: bool = False, listLevel: int = 0) -> None:
+        def addEmphasized(self, emphasized, prefix: str = '', singleLine: bool = False, listLevel: int = 0) -> None:
                 """
                 Adds an emphasized element to the cache
                 :param emphasized: the emphasized element
@@ -172,8 +205,10 @@ class Cache:
                 if not emphasized:
                         return
 
-                text: str = f"<i>{emphasized.getText(strip=True).replace('\n', ' ')}</i>"
-                self.addGeneric(text, prefix, singleLine, listLevel)
+                if self.__HTML:
+                        self.addGeneric(f"<i>{emphasized.getText(strip=True).replace('\n', ' ')}</i>", prefix, singleLine, listLevel)
+                else:
+                        self.addGeneric(emphasized.getText(strip=True).replace('\n', ' '), prefix, singleLine, listLevel)
 
         def addGeneric(self, string: str, prefix: str, singleLine: bool, listLevel: int) -> None:
                 """
@@ -184,7 +219,10 @@ class Cache:
                 :param listLevel: the level of indentation
                 """
                 if not singleLine:
-                        self.__value += f"         * {listLevel * "    "}"
+                        if self.__HTML:
+                                self.__value += f"         * {listLevel * "    "}"
+                        else:
+                                self.__value += f"         * {listLevel * "⠀⠀⠀⠀"}"
 
                 self.__value += prefix + string
                 if not singleLine:
@@ -205,9 +243,14 @@ class Cache:
                 if singleLine:
                         self.__value += '\n'
 
-                self.__value += f"         * {listLevel * "    "}{prefix}<{listType}l>\n"
+                if self.__HTML:
+                        self.__value += f"         * {listLevel * "    "}{prefix}<{listType}l>\n"
 
-                getHTML(list, self, prefix, listLevel=listLevel + 1)
+                getHTML(list, self, prefix, listLevel=listLevel + (1 if self.__HTML else 0))
+
+                if not self.__HTML:
+                        self.__value += "         * \n"
+                        return
 
                 self.__value += f"         * {listLevel * "    "}{prefix}</{listType}l>"
 
@@ -215,6 +258,7 @@ class Cache:
                         return
 
                 self.__value += "\n"
+
                 if prefix == '':
                         self.__value += "         * \n"
 
@@ -226,9 +270,16 @@ class Cache:
                 :param prefix: the prefix string
                 :param listLevel: the level of indentation
                 """
-                self.__value += f"         * {listLevel * "    "}{prefix}<{entryType}>"
+                if self.__HTML:
+                        self.__value += f"         * {listLevel * "    "}{prefix}<{entryType}>"
+                else:  # Since VS is shit, it does not support nested list, so we add 4 U+2800 '⠀' after the -
+                        self.__value += f"         * {prefix} - {listLevel * "⠀⠀⠀⠀"}"
+
                 getHTML(listEntry, self, singleLine=True, listLevel=listLevel + 1)
+
                 self.__value += '\n'
+                if not self.__HTML:
+                        self.__value += "         * \n"
 
         def addRaw(self, string: str):
                 """
@@ -250,7 +301,7 @@ class Cache:
 
                 text: str = span.getText(strip=True)
                 if span.get('class') and span.get('class') == ['eq']:
-                        tempCache = Cache(self.__URL, self.__platform)
+                        tempCache = Cache(self.__URL, self.__HTML)
                         getHTML(span, tempCache, singleLine=True)
                         text = tempCache.__value
 
@@ -258,7 +309,10 @@ class Cache:
                         return
 
                 if not singleLine:
-                        self.__value += f"         * {listLevel * "    "}"
+                        if self.__HTML:
+                                self.__value += f"         * {listLevel * "    "}"
+                        else:
+                                self.__value += f"         * {listLevel * "⠀⠀⠀⠀"}"
 
                 self.__value += f"{prefix}{text.replace('\n', ' ')}"
 
@@ -273,17 +327,22 @@ class Cache:
                 if not strong:
                         return
 
-                text: str = f" <i><b>{strong.getText(strip=True).replace('\n', ' ')}</b></i>"
-                self.addGeneric(text, prefix, singleLine, listLevel)
+                if self.__HTML:
+                        self.addGeneric(f" <i><b>{strong.getText(strip=True).replace('\n', ' ')}</b></i>", prefix, singleLine, listLevel)
+                else:
+                        self.addGeneric(f" {strong.getText(strip=True).replace('\n', ' ')}", prefix, singleLine, listLevel)
 
         def addSub(self, sub) -> None:
                 """
                 Adds a sub element to the cache
                 :param sub: the sub element
                 """
-                tempCache = Cache(self.__URL, self.__platform)
+                tempCache = Cache(self.__URL, self.__HTML)
                 getHTML(sub, tempCache, singleLine=True)
-                self.__value += "<sub>" + tempCache.__value + "</sub>"
+                if self.__HTML:
+                        self.__value += "<sub>" + tempCache.__value + "</sub>"
+                else:
+                        self.__value += tempCache.__value
 
         def addTable(self, table) -> None:
                 """
@@ -320,27 +379,40 @@ class Cache:
                 columnsWidths: list[int] = [max(len(line) for cell in col for line in cell.split('\n')) + 2 for col in zip(*columns)]
 
                 # Print the table with proper formatting
-                def format_row(row: list[str]):
-                        formatted_lines: list[list[str]] = [cell.split('\n') for cell in row]
-                        return [(
-                                f"         * |  {'  |  '.join([f'{(lines[line_index] if line_index < len(lines) else '')
-                                :<{columnsWidths[cell_index] - 2}}' for cell_index, lines in enumerate(formatted_lines)])}  |<br>"
-                        ) for line_index in range(max(len(lines) for lines in formatted_lines))]
+                def format_row(row: list[str]) -> list[str]:
+                        if self.__HTML:
+                                formatted_lines: list[list[str]] = [cell.split('\n') for cell in row]
+                                return [(
+                                        f"         * |  {'  |  '.join([f'{(lines[line_index] if line_index < len(lines) else '')
+                                        :<{columnsWidths[cell_index] - 2}}' for cell_index, lines in enumerate(formatted_lines)])}  |<br>"
+                                ) for line_index in range(max(len(lines) for lines in formatted_lines))]
+                        else:  # The fake bar is unicode U+FF5C '｜'
+                                return [f"         * |｜ {' |｜ '.join(row).replace('\n', ', ')} |｜ |"]
 
                 breakLine: str = "         * " + '-' * (sum(columnsWidths) + 3 * len(columnsWidths) + 1) + "<br>"
 
                 # The whole table, initialized with the headers
-                tableRows: list[str] = [breakLine, *format_row(headers), breakLine]
+                tableRows: list[str] = []
+                if self.__HTML:
+                        tableRows = [breakLine, *format_row(headers), breakLine]
+                else:
+                        # Adding an extra column for the closing bar
+                        tableRows = [*format_row(headers), "         * " + ''.join(["| :-- " for _ in headers]) + '| :-- |']
 
                 # Adds all the rows
                 for row in rows:
                         tableRows.extend(format_row(row))
-                        tableRows.append(breakLine)
+                        if self.__HTML:
+                                tableRows.append(breakLine)
 
                 # Saves the table
-                self.__value += "         * <pre>\n"
+                if self.__HTML:
+                        self.__value += "         * <pre>\n"
+
                 self.__value += '\n'.join(tableRows) + '\n'
-                self.__value += "         * </pre><br>\n         * \n"
+
+                if self.__HTML:
+                        self.__value += "         * </pre><br>\n         * \n"
 
         #                                        #
         # ---------------- DIVS ---------------- #
@@ -351,9 +423,14 @@ class Cache:
                 Adds a listingblock div to the cache
                 :param listingblock: the listingblock div
                 """
-                self.__value += f"         * @code\n"
-                self.__value += f"         * {listingblock.find('pre').getText(strip=True).replace('\n', "\n         * ")}\n"
-                self.__value += f"         * @endcode\n         * \n"
+                if self.__HTML:
+                        self.__value += f"         * @code\n"
+                        self.__value += f"         * {listingblock.find('pre').getText(strip=True).replace('\n', "\n         * ")}\n"
+                        self.__value += f"         * @endcode\n         * \n"
+                else:
+                        self.__value += f"    ```c\n"
+                        self.__value += f"    {listingblock.find('pre').getText(strip=True).replace('\n', "\n    ")}\n"
+                        self.__value += f"    ```\n         * \n"
 
         def addNote(self, note, listLevel: int = 0) -> None:
                 """
@@ -376,7 +453,11 @@ class Cache:
                 if listLevel != 0:
                         self.__value += '\n'
 
-                self.__value += f"         * {listLevel * "    "} @note "
+                if self.__HTML:
+                        self.__value += f"         * {listLevel * "    "} @note "
+                else:
+                        self.__value += f"         * {listLevel * "⠀⠀⠀⠀"} @note "
+
                 for paragraph in td.findAll('div', class_='paragraph'):
                         getHTML(paragraph, self, singleLine=True)
 
@@ -397,8 +478,11 @@ class Cache:
 
                 getHTML(paragraph, self, singleLine=True)
 
+                if self.__HTML:
+                        self.__value += "<br><br>"
+
                 if not singleLine:
-                        self.__value += f"<br><br>\n         * \n"
+                        self.__value += f"\n         * \n"
 
         def addTitle(self, title) -> None:
                 """
@@ -409,6 +493,11 @@ class Cache:
                         return
 
                 self.__value += "         * "
+
+                if not self.__HTML:
+                        self.__value += f"## {title.getText(strip=True).replace('\n', ' ')}\n         * \n"
+                        return
+
                 if title.find('a'):
                         self.addAnchor(title.find('a'), '', True)
 
@@ -416,21 +505,18 @@ class Cache:
 
         __value: str = ""
         __URL: str = ""
+        __HTML: bool = True
 
         @property
         def value(self) -> str:
                 return self.__value
 
         @property
-        def url(self) -> str:
-            return self.__URL
-
-        @property
         def providers(self) -> list[str]:
                 """
                 Gets the providers with the current value
                 """
-                matches = re.findall(FIND_PROVIDERS, self.__value)
+                matches = re.findall(FIND_PROVIDERS_HTML_REGEX if self.__HTML else FIND_PROVIDERS_MD_REGEX, self.__value)
                 return [
                         f"defined {parts[0].strip()} && defined {parts[1].strip()}" if ' with ' in pair else f"defined {pair.strip()}"
                         for match in matches for pair in re.split(r",\s*", match) for parts in [pair.split(' with ')]
@@ -522,12 +608,12 @@ def getHTML(element, cache: Cache, prefix: str = '', singleLine: bool = False, l
                                 getHTML(subElement, cache, prefix, singleLine, listLevel)
 
 
-def parseHtml(lock: Lock, url: str, platform: str) -> None:
+def parseHtml(lock: Lock, url: str, html: bool) -> None:
         """
         Function to parse and extract the required information
         :param lock: the thread lock
         :param url: the url to get the html from
-        :param platform: the IDE documentation format
+        :param html: if the header uses HTML or Markdown format
         """
         htmlText: str = fetchUrl(url)
         soup = BeautifulSoup(htmlText, "html.parser")
@@ -543,10 +629,13 @@ def parseHtml(lock: Lock, url: str, platform: str) -> None:
                 return
 
         USED_NAMES.append(name)
-        cache: Cache = Cache(url, platform)
+        cache: Cache = Cache(url, html)
 
         # Documentation start
-        cache.addRaw(f"        /**\n         * <b>Name</b><hr><br>\n         * \n")
+        if html:
+                cache.addRaw(f"        /**\n         * <b>Name</b><hr><br>\n         * \n")
+        else:
+                cache.addRaw(f"        /**\n         * ## Name\n         * \n")
         cache.addParagraph(nameHeader.findNext('div', class_="sectionbody"))
 
         # All the info is inside the content div inside divs named sect1
@@ -591,16 +680,15 @@ def parseHtml(lock: Lock, url: str, platform: str) -> None:
                                 file.write(f"#if {providers[0]}\n")
                                 cache.addRaw(f"#endif // {providers[0]}\n")
 
-                cache.addRaw('\n')
-
                 # Writes cache to file
                 cache.write(file)
+                file.write('\n')
 
 
-def writeDocumentation(platform: str) -> None:
+def writeDocumentation(html: bool) -> None:
         """
         Writes all the documentation with the given platform style
-        :param platform: the IDE documentation format
+        :param html: if the header uses HTML or Markdown format
         """
         # Split the elements into 1 chunks per thread
         chunkSize: int = math.ceil(len(VALID_ELEMENTS) / THREADS)
@@ -613,7 +701,7 @@ def writeDocumentation(platform: str) -> None:
 
         def processThread(chunk: list[str]):
                 for name in chunk:
-                        parseHtml(lock, getRegistryURL(name), platform)
+                        parseHtml(lock, getRegistryURL(name), html)
 
         # Start threads
         threads: list[Thread] = []
@@ -702,9 +790,13 @@ def getValidElements() -> list[str]:
         return elements
 
 
-def main(platform: str) -> None:
+def main(html: bool) -> None:
         print(f"Writing documentation for vulkan from url '{VULKAN_REGISTRY}'")
         initTime: float = time()
+
+        if not html:
+                global OUTPUT_FILE
+                OUTPUT_FILE = "../vulkan++-M.hpp"
 
         global VERSION
         VERSION = getVersion()
@@ -720,7 +812,7 @@ def main(platform: str) -> None:
         VALID_ELEMENTS = getValidElements()
 
         # Writes the documentation
-        writeDocumentation(platform)
+        writeDocumentation(html)
 
         # Writes the file end block
         with open(OUTPUT_FILE, 'a', encoding="utf-8") as file, open("./suf.txt", 'r', encoding="utf-8") as suffix:
@@ -730,4 +822,7 @@ def main(platform: str) -> None:
 
 
 if __name__ == "__main__":
-        main('clion' if len(sys.argv) < 2 else sys.argv[1])
+        if len(sys.argv) == 2:
+                main(sys.argv[1] == 'H')
+        else:
+                main(True)
