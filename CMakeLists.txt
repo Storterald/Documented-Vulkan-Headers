@@ -16,6 +16,11 @@ add_custom_command(
 )
 add_custom_target(pre-build DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp)
 
+# Move the headers in a include directory
+if (VULKAN_WITH_DOC_INSTALL)
+        install(DIRECTORY include/vulkan DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN vulkan++.hpp)
+endif ()
+
 # Executable just to run generate.py
 add_library(VULKAN_WITH_DOC OBJECT ${BIN_DIR}/dummy.cpp)
 
