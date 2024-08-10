@@ -24,7 +24,7 @@ include(ExternalProject)
 ExternalProject_Add(vulkanWithDocumentation
     URL "https://github.com/Storterald/VulkanWithDocumentation/releases/latest/download/source.tar.gz"
     CMAKE_ARGS
-        -DVULKAN_WITH_DOC_FLAGS="-M" # Generate the markdown documentation
+        -DVULKAN_WITH_DOC_FLAGS="M" # Generate the markdown documentation
 )
 
 # Generate before project build
