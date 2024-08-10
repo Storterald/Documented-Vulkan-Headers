@@ -3,8 +3,11 @@ cmake_minimum_required(VERSION 3.5)
 # Project
 project(VULKAN_WITH_DOC CXX)
 
+# Includes
+include(GNUInstallDirs)
+
 # Directory with python script
-set(BIN_DIR ${CMAKE_HOME_DIRECTORY}/bin)
+set(BIN_DIR bin)
 
 # Install by default
 option(VULKAN_WITH_DOC_INSTALL "Generate installation target" ON)
