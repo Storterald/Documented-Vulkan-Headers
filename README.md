@@ -14,13 +14,13 @@ To include vulkan **VULKANPP_INCLUDE_VULKAN** must be defined:
 
 In the `C++` file:
 ```cpp
-    #define VULKANPP_INCLUDE_VULKAN
-    #include <vulkan/vulkan++.hpp>
+#define VULKANPP_INCLUDE_VULKAN
+#include <vulkan/vulkan++.hpp>
 ```
 Or in the `CMake` file *(recommended)*:
 ```cmake
-    target_compile_definitions(${PROJECT_NAME} PRIVATE VULKANPP_INCLUDE_VULKAN)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${VK_DOC_PATH}/include/)
+target_compile_definitions(${PROJECT_NAME} PRIVATE VULKANPP_INCLUDE_VULKAN)
+target_include_directories(${PROJECT_NAME} PRIVATE ${VK_DOC_PATH}/include/)
 ```
 
 ### Manually generating the headers
