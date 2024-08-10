@@ -734,7 +734,7 @@ def fetchUrl(url: str) -> str:
         """
         Fetches the HTML content of a URL
         :param url: the url to fetch
-        :return: the html content as a string
+        :return: the HTML content as a string
         """
         search = re.search(FIND_NAME_FROM_URL_REGEX, url)
 
@@ -801,7 +801,17 @@ def main(html: bool) -> None:
         global VERSION
         VERSION = getVersion()
         if not os.path.exists(f"./.{VERSION}/"):
+                print("Cached HTML files directory not found.")
+
+                # Remove different version cached files
+                for item in os.listdir("./"):
+                        path: str = os.path.join("./", item)
+                        if item.startswith('.') and os.path.isdir(path):
+                                os.rmdir(path)
+
                 os.mkdir(f"./.{VERSION}/")
+        else:
+                print("Cached HTML files directory found.")
 
         # Writes the file start block
         with open(OUTPUT_FILE, 'w', encoding="utf-8") as file, open("./pre.txt", 'r', encoding="utf-8") as prefix:
