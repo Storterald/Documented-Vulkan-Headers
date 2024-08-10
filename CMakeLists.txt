@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Project
-project(vulkan++ CXX)
+project(VULKAN_WITH_DOC CXX)
 
 # Directory with python script
 set(BIN_DIR ${CMAKE_HOME_DIRECTORY}/bin)
@@ -17,7 +17,7 @@ add_custom_command(
 add_custom_target(pre-build DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp)
 
 # Executable just to run generate.py
-add_executable(${PROJECT_NAME} ${BIN_DIR}/dummy.cpp vulkan++.hpp)
+add_library(VULKAN_WITH_DOC OBJECT ${BIN_DIR}/dummy.cpp)
 
 # Adding the python script as a dependency
-add_dependencies(${PROJECT_NAME} pre-build)
+add_dependencies(VULKAN_WITH_DOC pre-build)
