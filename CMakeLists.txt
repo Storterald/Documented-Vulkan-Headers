@@ -6,6 +6,9 @@ project(VULKAN_WITH_DOC CXX)
 # Directory with python script
 set(BIN_DIR ${CMAKE_HOME_DIRECTORY}/bin)
 
+# Install by default
+option(VULKAN_WITH_DOC_INSTALL "Generate installation target" ON)
+
 # Embed shaders
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/pre-build.stamp
