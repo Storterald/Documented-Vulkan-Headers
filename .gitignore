@@ -1,11 +1,13 @@
-# build output
-build/
-
-# jetbrains
+# IDEs directories
 .idea/
-
-# vscode
 .vscode/
 
-# HTML cache dir
+# build directory
+build/
+
+# Generated directories
 bin/.*/
+include/
+
+# Source archive
+source.tar.gz
