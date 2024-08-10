@@ -7,7 +7,7 @@ project(VULKAN_WITH_DOC CXX)
 include(GNUInstallDirs)
 
 # Directory with python script
-set(BIN_DIR bin)
+set(BIN_DIR ${CMAKE_HOME_DIRECTORY}/bin)
 
 # Install by default
 option(VULKAN_WITH_DOC_INSTALL "Generate installation target" ON)
