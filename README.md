@@ -38,7 +38,7 @@ ExternalProject_Add(${VK_DOC_NAME}
 )
 
 # Generate before project build
-add_dependencies(${PROJECT_NAME} vulkanWithDocumentation)
+add_dependencies(${PROJECT_NAME} ${VK_DOC_NAME})
 
 # Include the generated header. The path is the 'PREFIX' parameter + the library name + the header name
 target_include_directories(${PROJECT_NAME} PRIVATE ${VK_DOC_PATH}/${VK_DOC_NAME}/vulkan++-M.hpp)
