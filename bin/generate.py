@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup, NavigableString
 # Constants
 VULKAN_REGISTRY: str = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/"
 VULKAN_VERSION_CHECK: str = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_API_VERSION.html"
-OUTPUT_FILE: str = "../include/vulkan/vulkan++.hpp"
+OUTPUT_FILE: str = "../include/vulkan/vulkan++-H.hpp"
 THREADS: int = 16
 HEADER_HTML_REGEX: str = r" {9}\* <b>[A-Za-z0-9 ()]+<\/b><hr><br>\n"
 HEADER_MD_REGEX: str = r" {9}\* [a-zA-Z ]+\n {9}\* ---\n"
@@ -808,6 +808,12 @@ def main(html: bool) -> None:
                 os.mkdir(f"./.{VERSION}/")
         else:
                 print("Cached HTML files directory found.")
+
+        # Creates the include directories
+        if not os.path.exists("../include"):
+                os.mkdir("../include")
+        if not os.path.exists("../include/vulkan"):
+                os.mkdir("../include/vulkan")
 
         # Writes the file start block
         with open(OUTPUT_FILE, 'w', encoding="utf-8") as file, open("./pre.txt", 'r', encoding="utf-8") as prefix:
