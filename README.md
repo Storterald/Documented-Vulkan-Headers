@@ -17,16 +17,29 @@ The python script can also be executed with the `CMakeLists.txt` cmake file.
 Example `CMAKE` code to automatically download and generate the headers:
 
 ```cmake
-# Include ExternalProject
-include(ExternalProject)
+set(VK_DOC_PATH ${CMAKE_HOME_DIRECTORY}/docs) # Where the library is stored
+set(VK_DOC_NAME vk_doc) # The name of the library
 
-# Fetch latest release
-ExternalProject_Add(vulkanWithDocumentation
+# This fetches the latest release
+include(ExternalProject)
+ExternalProject_Add(${VK_DOC_NAME}
+    # The URL to the latest release
     URL "https://github.com/Storterald/VulkanWithDocumentation/releases/latest/download/source.tar.gz"
+    
+    # Important! Won't compile if missing
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "Skipping install step."
+
+    # Where the library is stored    
+    PREFIX ${VK_DOC_PATH}
+        
+    # Optional. Set 'VULKAN_WITH_DOC_FLAGS' with the arguments to pass to the python script.
     CMAKE_ARGS
-        -DVULKAN_WITH_DOC_FLAGS="M" # Generate the markdown documentation
+        -DVULKAN_WITH_DOC_FLAGS="M"
 )
 
 # Generate before project build
 add_dependencies(${PROJECT_NAME} vulkanWithDocumentation)
+
+# Include the generated header. The path is the 'PREFIX' parameter + the library name + the header name
+target_include_directories(${PROJECT_NAME} PRIVATE ${VK_DOC_PATH}/${VK_DOC_NAME}/vulkan++-M.hpp)
 ```
