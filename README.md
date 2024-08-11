@@ -10,7 +10,7 @@ Wrappers for the `vulkan.h` header. ***Incompatible*** with the `vulkan.hpp` hea
 
 ### Include vulkan
 
-To include vulkan **VULKANPP_INCLUDE_VULKAN** must be defined:
+To include vulkan, **VULKANPP_INCLUDE_VULKAN** must be defined:
 
 In the `C++` file:
 ```cpp
