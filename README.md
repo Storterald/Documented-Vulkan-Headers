@@ -1,63 +1,53 @@
 # Vulkan With Documentation
 
-Wrappers for the `vulkan.h` header. ***Incompatible*** with the `vulkan.hpp` header (throws compile time error).
+Automatically generated headers meant to *replace* the original Vulkan headers with ***documentation*** added to 
+every `function`, `struct`, `enum`, `flag`, `handle` and `typedef`. 
 
-### Contents
+Everything has the original Vulkan generated signature and can be used with the ***default*** vulkan library.
 
-`vulkan++H.hpp` header file: contains documentation written in `HTML`.
+The script fetches the [Vulkan Header](https://github.com/KhronosGroup/Vulkan-Headers) using **git**.
 
-`vulkan++M.hpp` header file: contains documentation written in `MARKDOWN`.
+The `generate.py` script can be run with the `-N` **flag** to generate an alias in the namespace `vk`. 
+This is what an alias may look like:
 
-### Include vulkan
-
-To include vulkan **VULKANPP_INCLUDE_VULKAN** must be defined:
-
-In the `C++` file:
-```cpp
-#define VULKANPP_INCLUDE_VULKAN
-#include <vulkan/vulkan++.hpp>
-```
-Or in the `CMake` file *(recommended)*:
-```cmake
-target_compile_definitions(${PROJECT_NAME} PRIVATE VULKANPP_INCLUDE_VULKAN)
-target_include_directories(${PROJECT_NAME} PRIVATE ${VK_DOC_PATH}/include/)
+```c++
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
+namespace vk {
+        /** Full documentation
+         */
+        using CommandPool = VkCommandPool;
+}
 ```
 
-### Manually generating the headers
+## Script arguments
 
-Both files can be generated via the python script located in `bin/generate.py`. The output will be an **HTML** formatted
-file by default, if the script is run with the `M` flag, the output will be a **MARKDOWN** formatted file.
+Required Arguments
+ : `output path` The first script argument **must** be the output directory where the `vulkan` and `vk_video` folder
+   will be generated.
 
-The python script can also be executed with the `CMakeLists.txt` cmake file.
+Style Flags
+ : `-CL` Generates the vulkan headers with **CLion** styled documentation. *DEFAULT*
+ : `-RS` Generates the vulkan headers with **ReSharper** *(Visual Studio Extension)* styled documentation.
+ : `-VS` Generates the vulkan headers with **Visual Studio** styled documentation.
 
-This is an example `CMAKE` code that automatically downloads and generates the headers at configuration time using the
-`ExternalProject` cmake library:
+Boolean Flags
+ : `-N` If the script should generate a *namespace* alias, like shown above. *DEFAULT=FALSE*
+
+## CMake integration
+
+Along the python script, a `generate.cmake` file is provided, with the function `generate_headers`.
+These are the arguments of the function:
 
 ```cmake
-set(VK_DOC_PATH ${CMAKE_HOME_DIRECTORY}/docs) # Where the library is stored
-set(VK_DOC_NAME vk_doc) # The name of the library
+include(generate.cmake)
 
-# This fetches the latest release
-include(ExternalProject)
-ExternalProject_Add(${VK_DOC_NAME}
-    # The URL to the latest release
-    URL "https://github.com/Storterald/VulkanWithDocumentation/releases/latest/download/source.tar.gz"
-
-    # Where the library is stored
-    PREFIX ${VK_DOC_PATH}
-
-    CMAKE_ARGS
-        # Where the library is installed, this is where the include/vulkan/vulkan++.hpp
-        # directory and header will be placed
-        -DCMAKE_INSTALL_PREFIX:PATH=${VK_DOC_PATH}
-        # Optional. Set 'VULKAN_WITH_DOC_FLAGS' with the arguments for the python script.
-        -DVULKAN_WITH_DOC_FLAGS="M"
+# Important! The flags must be a list, not a string:
+# This is valid: set(YOUR_FLAGS_HERE -CL -N)
+# This is not: set(YOUR_FLAGS_HERE "-CL -N")
+generate_headers(
+        OUTPUT_DIRECTORY ${YOUR_DIRECTORY_HERE}
+        # Flags is a multi-argument parameter, it's not necessary to
+        # declare a list outside the function call
+        FLAGS ${YOUR_FLAGS_HERE}
 )
-
-# Generate before project build
-add_dependencies(${PROJECT_NAME} ${VK_DOC_NAME})
-
-# Include the generated header. The path is the 'PREFIX' parameter + "/include/"
-# The header will be available with #include <vulkan/vulkan++.hpp>
-target_include_directories(${PROJECT_NAME} PRIVATE ${VK_DOC_PATH}/include/)
 ```

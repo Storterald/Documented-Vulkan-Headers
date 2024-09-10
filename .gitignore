@@ -2,12 +2,12 @@
 .idea/
 .vscode/
 
-# build directory
-build/
-
 # Generated directories
-bin/.*/
-include/
+build/
+.*/
+tmp/
 
-# Source archive
-source.tar.gz
+# Test sources
+include/
+test.cpp
+CMakeLists.txt
