@@ -867,6 +867,10 @@ def prepareEnvironment(outputPath: str, version: str) -> None:
         else:
                 print("Cached HTML files directory found.")
 
+        # If output path is a new directory
+        if not os.path.exists(outputPath):
+                os.mkdir(outputPath)
+
         os.mkdir(outputPath + "/vulkan/")
 
 
