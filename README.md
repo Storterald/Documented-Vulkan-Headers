@@ -4,7 +4,7 @@ Automatically generated headers meant to *replace* the original Vulkan headers w
 every `function`, `struct`, `enum`, `flag`, `handle` and `typedef`. 
 
 Everything has the original Vulkan generated signature and can be used with the ***default*** vulkan library.
-The script fetches the [Vulkan Header](https://github.com/KhronosGroup/Vulkan-Headers) using **git**.
+The script fetches the [Vulkan Headers](https://github.com/KhronosGroup/Vulkan-Headers) using **git**.
 
 `Visual Studio` is only supported with the `-RS` flag with `ReSharper` extension or with the `-TXT` flag, as it does not support neither **markdown** nor **html**
 styled documentation.
