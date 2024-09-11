@@ -14,8 +14,6 @@ function(generate_headers)
                 return()
         endif ()
 
-        message(STATUS "Generating header with flags: '${ARGS_FLAGS}'")
-
         # Run script at configuration time
         execute_process(
                 COMMAND ${CMAKE_COMMAND} -E env python ${BIN_DIR}/generate.py ${ARGS_OUTPUT_DIRECTORY} ${ARGS_FLAGS}

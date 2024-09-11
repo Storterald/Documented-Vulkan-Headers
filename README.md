@@ -4,8 +4,10 @@ Automatically generated headers meant to *replace* the original Vulkan headers w
 every `function`, `struct`, `enum`, `flag`, `handle` and `typedef`. 
 
 Everything has the original Vulkan generated signature and can be used with the ***default*** vulkan library.
-
 The script fetches the [Vulkan Header](https://github.com/KhronosGroup/Vulkan-Headers) using **git**.
+
+`Visual Studio` is only supported with the `-RS` flag with `ReSharper` extension or with the `-TXT` flag, as it does not support neither **markdown** nor **html**
+styled documentation.
 
 The `generate.py` script can be run with the `-N` **flag** to generate an alias in the namespace `vk`. 
 This is what an alias may look like:
@@ -26,12 +28,13 @@ Required Arguments
    will be generated.
 
 Style Flags
- : `-CL` Generates the vulkan headers with **CLion** styled documentation. *DEFAULT*
- : `-RS` Generates the vulkan headers with **ReSharper** *(Visual Studio Extension)* styled documentation.
- : `-VS` Generates the vulkan headers with **Visual Studio** styled documentation.
+ : `-CL` Uses **CLion** styled documentation.
+ : `-RS` Uses **ReSharper** *(Visual Studio Extension)* styled documentation.
+ : `-VSC` Uses **Visual Studio Code** styled documentation.
+ : `-TXT` Uses plain text documentation
 
 Boolean Flags
- : `-N` If the script should generate a *namespace* alias, like shown above. *DEFAULT=FALSE*
+ : `-N` If the script should generate a *namespace* alias, like shown above.
 
 ## CMake integration
 

@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import pip
 import html
 import stat
 import shutil
@@ -12,16 +13,18 @@ import subprocess
 from time import time
 from enum import Enum
 from threading import Thread
-from bs4 import BeautifulSoup, NavigableString, Tag, ResultSet
 
 
 class Style(Enum):
         """
         The program acceptable styles
         """
-        CL = 0
-        VS = 1
-        RS = 2
+
+        TXT = -1  # Plain text
+
+        CL = 0    # CLion
+        RS = 1    # ReSharper
+        VSC = 2   # Visual Studio Code
 
 
 # Constants
@@ -50,7 +53,7 @@ class DocumentationBlock:
                 self.__STYLE = style
                 self.__URL = url
                 self.__INDENT_LEVEL = indentLevel
-                self.__PREFIX = indentLevel * "    " + " * "
+                self.__PREFIX = self.__INDENT_LEVEL * "    " + " * "
 
         def addRaw(self, string: str):
                 """
@@ -182,7 +185,7 @@ class DocumentationBlock:
                 RETURN_REPLACE: str = f"{f"{"<br>\n" if self.__STYLE == Style.CL else '\n'}" if not singleLine else ''}"
 
                 # We keep the href only if it's a valid link
-                if anchor.has_attr('href') and self.__STYLE != Style.RS:
+                if anchor.has_attr('href') and self.__STYLE not in [Style.RS, Style.TXT]:
                         # Cannot use anchor in ReSharper
 
                         CONTENT: str = anchor['href'].strip()
@@ -219,7 +222,7 @@ class DocumentationBlock:
                 :param listLevel: the level of indentation
                 """
                 if self.__STYLE == Style.CL:
-                        # Only CLion supports the <br> element
+                        # Only CLion requires a break the <br> element
                         self.__value += "<br>"
 
                 self.__value += "\n" + self.__getBase(listLevel)
@@ -233,10 +236,10 @@ class DocumentationBlock:
                 """
                 assert code, "Invalid element given to 'addCode'"
 
-                if self.__STYLE == Style.CL or self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.CL, Style.RS]:
                         self.addString(f"<b>{code.getText(strip=True).replace('\n', '')}</b>", singleLine, listLevel)
                 else:
-                        # Visual Studio does not support html nor markdown bold or italic
+                        # Visual Studio Code does not support html nor markdown bold or italic
                         self.addString(f"{code.getText(strip=True).replace('\n', '')}", singleLine, listLevel)
 
         def addDefinitionTerm(self, definitionTerm, listLevel: int = 0) -> None:
@@ -258,7 +261,7 @@ class DocumentationBlock:
                 if self.__value[-3:] != "* \n":
                         self.__value += f"{self.__PREFIX}\n"
 
-                if self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.RS, Style.TXT]:
                         self.__value += f"{self.__PREFIX}{listLevel * "  "}{text}\n"
                 else:
                         # The empty chars are different, also uses h4 markdown
@@ -273,10 +276,10 @@ class DocumentationBlock:
                 """
                 assert emphasized, "Invalid element given to 'addEmphasized'"
 
-                if self.__STYLE == Style.CL or self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.CL, Style.RS]:
                         self.addString(f"<i>{emphasized.getText(strip=True).replace('\n', '')}</i>", singleLine, listLevel)
                 else:
-                        # Visual Studio does not support html nor markdown bold or italic
+                        # Visual Studio Code does not support html nor markdown bold or italic
                         self.addString(f"{emphasized.getText(strip=True).replace('\n', '')}", singleLine, listLevel)
 
         def addList(self, list, listType: str, singleLine: bool = False, listLevel: int = 0) -> None:
@@ -320,8 +323,8 @@ class DocumentationBlock:
                                 self.__value += f"{self.__PREFIX}{listLevel * "    "}<{entryType}>"
                         case Style.RS:
                                 self.__value += f"{self.__PREFIX}{listLevel * "  "}- "
-                        case Style.VS:
-                                # Visual Studio does not support nested list, so we add 4 U+2800 '⠀' after the -
+                        case _:
+                                # Visual Studio Code does not support nested list, so we add 4 U+2800 '⠀' after the -
                                 self.__value += f"{self.__PREFIX}- {listLevel * "⠀  ⠀"}"
 
                 self.addSubElements(listEntry, True, listLevel + 1)
@@ -375,8 +378,8 @@ class DocumentationBlock:
                         case Style.RS:
                                 # ReSharper breaks bold italic, so we only use bold
                                 self.addString(f"<b>{strong.getText(strip=True).replace('\n', ' ')}</b>", singleLine, listLevel)
-                        case Style.VS:
-                                # Visual Studio does not support html nor markdown bold or italic
+                        case _:
+                                # Visual Studio Code does not support html nor markdown bold or italic
                                 self.addString(f"{strong.getText(strip=True).replace('\n', ' ')}", singleLine, listLevel)
 
         def addSub(self, sub) -> None:
@@ -390,7 +393,7 @@ class DocumentationBlock:
                 tmpDoc = DocumentationBlock(self.__URL, self.__STYLE, self.__INDENT_LEVEL)
                 tmpDoc.addSubElements(sub, True)
 
-                if self.__STYLE == Style.CL or self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.CL, Style.RS]:
                         self.__value += "<sub>" + tmpDoc.__value + "</sub>"
                 else:
                         self.__value += tmpDoc.__value
@@ -403,7 +406,7 @@ class DocumentationBlock:
                 assert table, "Invalid element given to 'addTable'"
 
                 # Tables are not supported with the ReSharper option.
-                if self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.RS, Style.TXT]:
                         return
 
                 # Removes whitespace and breaks, adds spaces when needed
@@ -479,17 +482,21 @@ class DocumentationBlock:
                 """
                 assert listingblock, "Invalid element given to 'addListingblock'"
 
-                if self.__STYLE == Style.CL or self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.CL, Style.RS]:
                         self.__value += f"{self.__PREFIX}@code\n"
                         self.__value += f"{self.__PREFIX}{listingblock.find('pre').getText(strip=True).replace('\n', f"\n{self.__PREFIX}")}\n"
                         self.__value += f"{self.__PREFIX}@endcode\n{self.__PREFIX}\n"
-                else:
+                elif self.__STYLE == Style.VSC:
                         SPACES: str = self.__INDENT_LEVEL * "    "
 
                         # Visual studio does not support the @code or <code> tag
                         self.__value += f"```c\n"
                         self.__value += f"{SPACES}{listingblock.find('pre').getText(strip=True).replace('\n', f"\n{SPACES}")}\n"
                         self.__value += f"```\n{self.__PREFIX}\n"
+                else:
+                        self.__value += f"{self.__PREFIX}\n"
+                        self.__value += f"{self.__PREFIX}{listingblock.find('pre').getText(strip=True).replace('\n', f"\n{self.__PREFIX}")}\n"
+                        self.__value += f"{self.__PREFIX}\n"
 
         def addNote(self, note, listLevel: int = 0) -> None:
                 """
@@ -511,8 +518,8 @@ class DocumentationBlock:
 
                 self.__value += self.__getBase(listLevel)
 
-                # CLion ReSharper changes how the @note tag works, breaking it.
-                if self.__STYLE == Style.CL or self.__STYLE == Style.VS:
+                # ReSharper changes how the @note tag works, breaking it.
+                if self.__STYLE in [Style.CL, Style.VSC]:
                         self.__value += "@note "
 
                 for paragraph in td.findAll('div', class_='paragraph'):
@@ -567,7 +574,7 @@ class DocumentationBlock:
                                 self.__value += f"{self.__PREFIX}\n"
 
                 self.__value += f"{self.__PREFIX}"
-                if self.__STYLE == Style.VS:
+                if self.__STYLE == Style.VSC:
                         # To correctly render the header, it needs to be before everything else
                         self.__value += "## "
 
@@ -579,7 +586,7 @@ class DocumentationBlock:
                                 self.__value += f"<b>{title.getText(strip=True).replace('\n', ' ')}</b><hr>"
                         case Style.RS:
                                 self.__value += f"<b>{title.getText(strip=True).replace('\n', ' ')}</b><br>"
-                        case Style.VS:
+                        case _:
                                 self.__value += f"{title.getText(strip=True).replace('\n', ' ')}"
 
                 self.__value += f"\n{self.__PREFIX}\n"
@@ -595,7 +602,7 @@ class DocumentationBlock:
                         case Style.RS:
                                 # ReSharper uses markdown lists
                                 return f"{self.__PREFIX}{listLevel * "  "}"
-                        case Style.VS:
+                        case _:
                                 # The empty chars are different
                                 return f"{self.__PREFIX}{listLevel * "⠀⠀"}"
 
@@ -622,7 +629,7 @@ class DocumentationBlock:
                 SPACE_COUNT: int = self.__INDENT_LEVEL * 4
                 EMPTY_LINE_REGEX: str = rf" {{{SPACE_COUNT + 1}}}\* "
 
-                if self.__STYLE == Style.CL or self.__STYLE == Style.RS:
+                if self.__STYLE in [Style.CL, Style.RS]:
                         # Remove break before code block
                         string = re.sub(rf"(<br>)+(\n{EMPTY_LINE_REGEX}\n {{{SPACE_COUNT + 1}}}\* @code)", r"\2", string)
 
@@ -651,20 +658,27 @@ class DocumentationBlock:
                 if self.__STYLE == Style.RS:
                         string = re.sub(r"(@endcode[ \n*]+)<br>", r"\1", string)
 
-                if self.__STYLE == Style.VS:
+                if self.__STYLE == Style.VSC:
                         # Visual studio documentation may be broken as it contains many
                         # '*' and math expressions
                         string = string.replace("*/", "* /")
                         string = string.replace("/*", "/ *")
+
+                if self.__STYLE == Style.TXT:
+                        SPACES_COUNT: int = self.__INDENT_LEVEL * 4
+                        string = re.sub(rf"^ {{{SPACES_COUNT}}} \* ", '', string, flags=re.MULTILINE)
+
+                PREFIX: str = f"{self.__INDENT_LEVEL * "    "}/**\n"
+                SUFFIX: str = f"{self.__INDENT_LEVEL * "    "}*/\n"
 
                 # Documentation end
                 if string[-3:] == "* \n":
                         # Avoid adding empty line
                         string = string[:-2] + "/\n"
                 else:
-                        string += f"{self.__INDENT_LEVEL * "    "}*/\n"
+                        string += SUFFIX
 
-                return f"{self.__INDENT_LEVEL * "    "}/**\n" + string
+                return PREFIX + string
 
 
 def getDocumentationFromURL(version: str, url: str, style: Style, useNamespace: bool) -> str:
@@ -914,6 +928,18 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
 
 
 if __name__ == "__main__":
+        print("Generating headers with flags: ", sys.argv[2:])
+
+        try:
+                # Try to import bs4
+                __import__("bs4")
+        except ImportError:
+                # If bs4 is not installed, install it
+                pip.main(["install", "bs4"])
+
+        # Now that bs4 is imported, import dependencies
+        from bs4 import BeautifulSoup, NavigableString, Tag, ResultSet
+
         assert sys.argv[1], "Script must be run with the output path as its first argument"
         _output_path: str = sys.argv[1]
 
