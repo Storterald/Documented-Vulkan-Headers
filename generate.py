@@ -3,6 +3,7 @@ import os
 import sys
 import pip
 import html
+import math
 import stat
 import shutil
 import hashlib
@@ -10,9 +11,11 @@ import requests
 import threading
 import subprocess
 
+from re import Match
 from time import time
 from enum import Enum
 from threading import Thread
+from requests import Response
 
 
 class Style(Enum):
@@ -30,7 +33,7 @@ class Style(Enum):
 # Constants
 VULKAN_REGISTRY: str = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/"
 NOT_PRINTED_DIVS: list[str] = ["Document Notes", "See Also", "Copyright"]
-THREADS: int = 16
+THREADS: int = os.cpu_count()
 CHAR_FIX_MAP: dict[str, str] = {
         "\\rfloor": '⌋',
         "\\lfloor": '⌊',
@@ -250,7 +253,7 @@ class DocumentationBlock:
                 """
                 assert definitionTerm, "Invalid element given to 'addDefinitionTerm'"
 
-                text = definitionTerm.getText(strip=True)
+                text: str = definitionTerm.getText(strip=True)
                 if text.strip() == "":
                         return
 
@@ -410,11 +413,11 @@ class DocumentationBlock:
                         return
 
                 # Removes whitespace and breaks, adds spaces when needed
-                def fixHTML(item) -> str:
+                def fixHTML(item: Tag) -> str:
                         for br in item.findAll("br"):
                                 br.replace_with('\n')
 
-                        text = ''.join(str(content) for content in item.contents)
+                        text: str = ''.join(str(content) for content in item.contents)
 
                         # Remove html, extra '\n' and ' '
                         text = re.sub(r"\s*\n\s*", '\n', text.strip())
@@ -424,8 +427,8 @@ class DocumentationBlock:
                         return html.unescape(text)
 
                 headElements = table.find('thead').find('tr').findAll('th') if table.find('thead') else table.findAll('tr')[0].findAll('td')
-                headers = [fixHTML(cell) for cell in headElements]
-                rows = [[fixHTML(cell) for cell in tr.findAll(['th', 'td'])] for tr in table.findAll('tr')[1:]]
+                headers: list[str] = [fixHTML(cell) for cell in headElements]
+                rows: list[list[str]] = [[fixHTML(cell) for cell in tr.findAll(['th', 'td'])] for tr in table.findAll('tr')[1:]]
 
                 # Adding empty cells when needed
                 for row in rows:
@@ -504,13 +507,13 @@ class DocumentationBlock:
                 :param note: the note div
                 :param listLevel: the level of indentation
                 """
-                table = note.find('table')
+                table: Tag = note.find('table')
                 assert table, "Invalid element given to 'addNote'"
 
-                tr = table.find('tr')
+                tr: Tag = table.find('tr')
                 assert tr, "Invalid element given to 'addNote'"
 
-                td = tr.find('td', class_='content')
+                td: Tag = tr.find('td', class_='content')
                 assert td, "Invalid element given to 'addNote'"
 
                 if listLevel != 0:
@@ -692,10 +695,10 @@ def getDocumentationFromURL(version: str, url: str, style: Style, useNamespace: 
         htmlText: str = fetchHTML(version, url)
         soup = BeautifulSoup(htmlText, "html.parser")
 
-        mainHeader = soup.find('h1')
+        mainHeader: Tag = soup.find('h1')
         assert mainHeader, f"Could not find main header for URL '{url}'"
 
-        content = soup.find('div', id='content')
+        content: Tag = soup.find('div', id='content')
         assert content, f"Could not find content div for URL '{url}'"
 
         # When not using the namespace aliases, the documentation is above the
@@ -704,12 +707,12 @@ def getDocumentationFromURL(version: str, url: str, style: Style, useNamespace: 
         documentation = DocumentationBlock(url, style, indentLevel)
 
         # Add name header
-        nameTitle = mainHeader.findNext('h2')
+        nameTitle: Tag = mainHeader.findNext('h2')
         assert nameTitle, f"Could not find name header for URL '{url}'"
         documentation.addTitle(nameTitle)
 
         # Add name paragraph
-        nameParagraph = mainHeader.findNext('div', class_="sectionbody")
+        nameParagraph: Tag = mainHeader.findNext('div', class_="sectionbody")
         assert nameParagraph, f"Could not find name paragraph for URL '{url}'"
         documentation.addParagraph(nameParagraph)
 
@@ -791,30 +794,31 @@ def fetchHTML(version: str, url: str) -> str:
         :param url: the url to fetch
         :return: the HTML content as a string
         """
-        search = re.search(r"\/(?:.(?!\/))+$", url)
-
         def createHashName() -> str:
                 return str(int(hashlib.sha1(url.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
 
-        NAME: str = search.group(0) if search else f"/unknown{createHashName()}.html"
+        SEARCH: Match[str] = re.search(r"\/(?:.(?!\/))+$", url)
+        NAME: str = SEARCH.group(0) if SEARCH else f"/unknown{createHashName()}.html"
 
+        # File must be an HTML file
         if not NAME.endswith(".html"):
-                # File must be an HTML file
                 NAME += ".html"
 
-        if os.path.exists(f"./.v{version}{NAME}"):
-                # Cached file exists
-                with open(f"./.v{version}{NAME}", 'r', encoding='utf-8') as file:
-                        return file.read()
+        # If cached file does not exist, fetch the HTML content
+        if not os.path.exists(f"./.v{version}/{NAME}"):
+                response: Response = requests.get(url)
 
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an error for bad status codes
+                # Raise an error for bad status codes
+                response.raise_for_status()
+                response.encoding = "utf-8"
 
-        response.encoding = "utf-8"
-        with open(f"./.v{version}{NAME}", 'w', encoding='utf-8') as file:
-                file.write(response.text)
+                with open(f"./.v{version}/{NAME}", 'w', encoding='utf-8') as file:
+                        file.write(response.text)
 
-        return response.text
+                return response.text
+
+        with open(f"./.v{version}/{NAME}", 'r', encoding='utf-8') as file:
+                return file.read()
 
 
 def getValidElements(version: str) -> list[str]:
@@ -823,8 +827,8 @@ def getValidElements(version: str) -> list[str]:
         :param version: the current Vulkan version
         :return: the valid elements as a list of strings
         """
-        content: str = fetchHTML(version, VULKAN_REGISTRY)
-        soup = BeautifulSoup(content, "html.parser")
+        REGISTRY: str = fetchHTML(version, VULKAN_REGISTRY)
+        soup = BeautifulSoup(REGISTRY, "html.parser")
 
         files: Tag = soup.find('div', id='files')
         assert files, "Could not get 'files' div"
@@ -835,7 +839,7 @@ def getValidElements(version: str) -> list[str]:
         cells: ResultSet[Tag] = table.select('td a')
         assert cells, "Could not find element names"
 
-        elements: list[str] = list[str]()
+        elements: list[str] = []
         for cell in cells:
                 text: str = cell.getText(strip=True)
 
@@ -844,6 +848,24 @@ def getValidElements(version: str) -> list[str]:
                         continue
 
                 elements.append(os.path.splitext(text)[0])
+
+        # Split the elements into 1 chunks per thread
+        CHUNK_SIZE: int = math.ceil(len(elements) / THREADS)
+        CHUNKS: list[list[str]] = [elements[i:i + CHUNK_SIZE] for i in range(0, len(elements), CHUNK_SIZE)]
+
+        def threadFunction(chunk: list[str]) -> None:
+                [fetchHTML(version, f"{VULKAN_REGISTRY}{name}.html") for name in chunk]
+
+        # Download all elements now
+        threads: list[Thread] = []
+        for i in range(THREADS):
+                thread: Thread = threading.Thread(target=threadFunction, args=(CHUNKS[i],))
+                threads.append(thread)
+                thread.start()
+
+        # Wait for all threads to complete
+        for thread in threads:
+                thread.join()
 
         return elements
 
@@ -908,7 +930,7 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
 
         threads: list[Thread] = []
         for i in range(THREADS):
-                thread = threading.Thread(target=threadFunction, args=(i,))
+                thread: Thread = threading.Thread(target=threadFunction, args=(i,))
                 threads.append(thread)
                 thread.start()
 
@@ -917,7 +939,7 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
                 thread.join()
 
         # Delete fetched headers
-        def onerror(func, path: str, _):
+        def onerror(func, path: str, _) -> None:
                 if not os.access(path, os.W_OK):
                         # Change file permission
                         os.chmod(path, stat.S_IWUSR)
