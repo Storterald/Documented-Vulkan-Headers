@@ -23,18 +23,18 @@ namespace vk {
 
 ## Script arguments
 
-Required Arguments
- : `output path` The first script argument **must** be the output directory where the `vulkan` and `vk_video` folder
+#### Required Arguments
+ - `output path` The first script argument **must** be the output directory where the `vulkan` and `vk_video` folder
    will be generated.
 
-Style Flags
- : `-CL` Uses **CLion** styled documentation.
- : `-RS` Uses **ReSharper** *(Visual Studio Extension)* styled documentation.
- : `-VSC` Uses **Visual Studio Code** styled documentation.
- : `-TXT` Uses plain text documentation
+#### Style Flags
+ - `-CL` Uses **CLion** styled documentation.
+ - `-RS` Uses **ReSharper** *(Visual Studio Extension)* styled documentation.
+ - `-VSC` Uses **Visual Studio Code** styled documentation.
+ - `-TXT` Uses plain text documentation
 
-Boolean Flags
- : `-N` If the script should generate a *namespace* alias, like shown above.
+#### Boolean Flags
+ - `-N` If the script should generate a *namespace* alias, like shown above.
 
 ## CMake integration
 
