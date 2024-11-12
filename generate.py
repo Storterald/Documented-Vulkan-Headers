@@ -3,6 +3,7 @@ import os
 import sys
 import pip
 import html
+import json
 import math
 import stat
 import shutil
@@ -15,7 +16,6 @@ from re import Match
 from time import time
 from enum import Enum
 from threading import Thread
-from requests import Response
 
 
 class Style(Enum):
@@ -782,9 +782,9 @@ def getVersion() -> str:
         :return: the version as a string
         """
         with open("./tmp/registry/validusage.json", 'r', encoding='utf-8') as f:
-                DATA: str = f.read()
+                DATA: dict = json.load(f)
 
-        return re.search(r"\"api version\": \"([1-9.]+)\"", DATA).group(1)
+        return DATA["version info"]["api version"]
 
 
 def fetchHTML(version: str, url: str) -> str:
@@ -956,14 +956,13 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
 if __name__ == "__main__":
         print("Generating headers with flags: ", sys.argv[2:])
 
-        try:
-                # Try to import bs4
-                __import__("bs4")
-        except ImportError:
-                # If bs4 is not installed, install it
-                pip.main(["install", "bs4"])
+        for lib in ["bs4", "requests"]:
+                try:
+                        __import__(lib)
+                except ImportError:
+                        pip.main(["install", "lib"])
 
-        # Now that bs4 is imported, import dependencies
+        from requests import Response
         from bs4 import BeautifulSoup, NavigableString, Tag, ResultSet
 
         assert sys.argv[1], "Script must be run with the output path as its first argument"
