@@ -1,4 +1,4 @@
-# Vulkan With Documentation
+# Documented Vulkan Headers
 
 Automatically generated headers meant to *replace* the original Vulkan headers with ***documentation*** added to 
 every `function`, `struct`, `enum`, `flag`, `handle` and `typedef`. 
