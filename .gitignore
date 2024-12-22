@@ -9,5 +9,7 @@ tmp/
 
 # Test sources
 include/
+.version.txt
 test.cpp
 CMakeLists.txt
+CMakePresets.json

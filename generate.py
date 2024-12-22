@@ -31,7 +31,9 @@ class Style(Enum):
 
 
 # Constants
+VULKAN_VALID_USAGE: str = "https://registry.khronos.org/vulkan/specs/latest/validation/validusage.json"
 VULKAN_REGISTRY: str = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/"
+VERSION_FILE: str = "./.version.txt"
 NOT_PRINTED_DIVS: list[str] = ["Document Notes", "See Also", "Copyright"]
 THREADS: int = os.cpu_count()
 CHAR_FIX_MAP: dict[str, str] = {
@@ -43,7 +45,7 @@ CHAR_FIX_MAP: dict[str, str] = {
 }
 
 # Global variables
-VALID_ELEMENTS: list[str] = []
+validElements: list[str] = []
 
 # Regexes
 HANDLE_REGEX = re.compile(r"^((VK_DEFINE_HANDLE\(([^\n)]+)\))\n|(VK_DEFINE_NON_DISPATCHABLE_HANDLE\(([^\n)]+)\))\n(?!```))", re.MULTILINE)
@@ -205,7 +207,7 @@ class DocumentationBlock:
                                 text: str = anchor.getText(strip=True).replace('\n', RETURN_REPLACE)
                                 link: str = f"{VULKAN_REGISTRY}{CONTENT}"
                         else:
-                                assert False, "Unknown anchor href given to 'addAnchor'"
+                                raise Exception("Unknown anchor href given to 'addAnchor'")
 
                         if self.__STYLE == Style.CL:
                                 self.__value += f"<a href=\"{link}\">{text}</a>"
@@ -746,7 +748,7 @@ def writeDocumentation(outputPath: str, version: str, file: str, style: Style, u
                         return string[0].lower() + string[1:]
 
                 # Some headers may use handles without documentation
-                if name not in VALID_ELEMENTS:
+                if name not in validElements:
                         return match.group(0)
 
                 # The element URL, would cause an error with an invalid element
@@ -781,10 +783,11 @@ def getVersion() -> str:
         Gets the current Vulkan version
         :return: the version as a string
         """
-        with open("./tmp/registry/validusage.json", 'r', encoding='utf-8') as f:
-                DATA: dict = json.load(f)
+        request: Response = requests.get(VULKAN_VALID_USAGE)
+        data: dict = request.json()
+        version: str = data["version info"]["api version"]
 
-        return DATA["version info"]["api version"]
+        return version
 
 
 def fetchHTML(version: str, url: str) -> str:
@@ -870,6 +873,16 @@ def getValidElements(version: str) -> list[str]:
         return elements
 
 
+def onerror(func, path: str, _) -> None:
+        if not os.access(path, os.W_OK):
+                # Change file permission
+                os.chmod(path, stat.S_IWUSR)
+                func(path)
+        else:
+                # If error is not due to permission issues, raise
+                raise Exception("Could not delete cloned directory.")
+
+
 def prepareEnvironment(outputPath: str, version: str) -> None:
         """
         Deletes all directories and files and creates new empty ones
@@ -890,31 +903,48 @@ def prepareEnvironment(outputPath: str, version: str) -> None:
                 print("Cached HTML files directory found.")
 
         # If output path is a new directory
-        if not os.path.exists(outputPath):
-                os.mkdir(outputPath)
-
+        if os.path.exists(outputPath):
+                shutil.rmtree(outputPath, onexc=onerror)
+        
+        os.mkdir(outputPath)
         os.mkdir(outputPath + "/vulkan/")
+
+        # Move vk_video directory
+        shutil.move("./tmp/include/vk_video/", outputPath)
 
 
 def main(outputPath: str, style: Style, useNamespace: bool) -> None:
         INIT_TIME: float = time()
 
-        # Download original headers
-        subprocess.run(["git", "clone", "https://github.com/KhronosGroup/Vulkan-Headers.git", "--branch", "main", "--single-branch", "./tmp"], check=True)
-
         # The version as string, since it's not a valid float
         VERSION: str = getVersion()
+
+        OUT_STRING: str = f"{VERSION} {style} {useNamespace}"
+        if os.path.exists(VERSION_FILE) and os.path.exists(outputPath):
+                with open(VERSION_FILE, 'r', encoding="utf-8") as f:
+                        DATA: str = f.read()
+
+                if DATA == OUT_STRING:
+                        print(f"Current headers match the most recent version of Vulkan ({VERSION}) and use the correct flags. Not generating.")
+                        print(f"Action completed in {time() - INIT_TIME}s")
+                        return
+
+                if DATA.split(' ')[0] == VERSION:
+                        print(f"Current headers match the most recent version of Vulkan ({VERSION}), but use the wrong flags.")
+                else:
+                        print(f"Current headers (v {DATA[0]}) do not match the most recent version of Vulkan ({VERSION}).")
+
         print(f"Writing documentation for vulkan from url '{VULKAN_REGISTRY}', version: '{VERSION}'...")
+
+        # Download original headers
+        subprocess.run(["git", "clone", "https://github.com/KhronosGroup/Vulkan-Headers.git", "--branch", "main", "--single-branch", "./tmp"], check=True)
 
         # Create and delete directories
         prepareEnvironment(outputPath, VERSION)
 
         # Gets all valid elements
-        global VALID_ELEMENTS
-        VALID_ELEMENTS = getValidElements(VERSION)
-
-        # Move vk_video directory
-        shutil.move("./tmp/include/vk_video/", outputPath)
+        global validElements
+        validElements = getValidElements(VERSION)
 
         # Adds the documentation to all headers
         FILES: list[str] = [path for path in os.listdir("./tmp/include/vulkan/") if path.endswith(".h")]
@@ -938,24 +968,16 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
         for thread in threads:
                 thread.join()
 
-        # Delete fetched headers
-        def onerror(func, path: str, _) -> None:
-                if not os.access(path, os.W_OK):
-                        # Change file permission
-                        os.chmod(path, stat.S_IWUSR)
-                        func(path)
-                else:
-                        # If error is not due to permission issues, raise
-                        assert False, "Could not delete cloned directory."
-
+        # Delete cloned git repository
         shutil.rmtree("./tmp", onexc=onerror)
 
-        print(f"Documentation extracted and written in {time() - INIT_TIME}s")
+        with open(VERSION_FILE, 'w', encoding="utf-8") as f:
+                f.write(OUT_STRING)
+
+        print(f"Action completed in {time() - INIT_TIME}s")
 
 
 if __name__ == "__main__":
-        print("Generating headers with flags: ", sys.argv[2:])
-
         for lib in ["bs4", "requests"]:
                 try:
                         __import__(lib)
@@ -980,7 +1002,7 @@ if __name__ == "__main__":
                 elif flag == "-N":
                         _useNamespace = True
                 else:
-                        assert False, f"Unknown flag '{flag}' given."
+                        raise Exception(f"Unknown flag '{flag}' given.")
 
         # If flag is valid pass the flag without the '-'
         main(_output_path, _style, _useNamespace)
