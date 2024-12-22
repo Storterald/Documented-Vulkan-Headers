@@ -28,10 +28,10 @@ namespace vk {
    will be generated.
 
 #### Style Flags
- - `-CL` Uses **CLion** styled documentation.
- - `-RS` Uses **ReSharper** *(Visual Studio Extension)* styled documentation.
- - `-VSC` Uses **Visual Studio Code** styled documentation.
- - `-TXT` Uses plain text documentation
+ - `-CL` **CLion** styled documentation.
+ - `-RS` **ReSharper** *(Visual Studio Extension)* styled documentation.
+ - `-VSC` **Visual Studio Code** styled documentation.
+ - `-TXT` **Plain text** documentation
 
 #### Boolean Flags
  - `-N` If the script should generate a *namespace* alias, like shown above.
