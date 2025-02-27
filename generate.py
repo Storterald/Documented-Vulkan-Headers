@@ -3,7 +3,6 @@ import os
 import sys
 import pip
 import html
-import json
 import math
 import stat
 import shutil
@@ -983,6 +982,7 @@ if __name__ == "__main__":
                 except ImportError:
                         pip.main(["install", "lib"])
 
+        import requests
         from requests import Response
         from bs4 import BeautifulSoup, NavigableString, Tag, ResultSet
 
