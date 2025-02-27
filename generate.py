@@ -8,7 +8,6 @@ import math
 import stat
 import shutil
 import hashlib
-import requests
 import threading
 import subprocess
 
