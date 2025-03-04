@@ -934,8 +934,8 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
         print(f"Writing documentation for vulkan from url '{VULKAN_REGISTRY}', version: '{VERSION}'...")
 
         # True if previous run failed
-        if os.path.exists(".tmp"):
-                shutil.rmtree(".tmp", onexc=onerror)
+        if os.path.exists("./tmp"):
+                shutil.rmtree("./tmp", onexc=onerror)
 
         # Download original headers
         subprocess.run(["git", "clone", "https://github.com/KhronosGroup/Vulkan-Headers.git", "--branch", "main", "--single-branch", "./tmp"], check=True)

@@ -1,5 +1,10 @@
 # Documented Vulkan Headers
 
+> 🔴**IMPORTANT**🔴<br>
+> **Python** `3.12` is **required** as the script uses string manipulations that error on
+> older python versions.
+
+
 Automatically generated headers meant to *replace* the original Vulkan headers with ***documentation*** added to 
 every `function`, `struct`, `enum`, `flag`, `handle` and `typedef`. 
 
