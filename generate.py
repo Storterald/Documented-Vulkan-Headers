@@ -980,7 +980,7 @@ if __name__ == "__main__":
                 try:
                         __import__(lib)
                 except ImportError:
-                        pip.main(["install", "lib"])
+                        subprocess.check_call([sys.executable, "-m", "pip", "install", lib])
 
         import requests
         from requests import Response
