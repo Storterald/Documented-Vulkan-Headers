@@ -4,12 +4,14 @@
 > **Python** `3.12` is **required** as the script uses string manipulations that error on
 > older python versions.
 
-
-Automatically generated headers meant to *replace* the original Vulkan headers with ***documentation*** added to 
-every `function`, `struct`, `enum`, `flag`, `handle` and `typedef`. 
+Automatically generated headers meant to *replace* the original Vulkan headers with
+***documentation*** added to every `definition`, `function`, `struct`, `enum`, `flag`,
+`handle` and `typedef` with an available description in the
+[**Vulkan Registry**](https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/).
 
 Everything has the original Vulkan generated signature and can be used with the ***default*** vulkan library.
-The script fetches the [Vulkan Headers](https://github.com/KhronosGroup/Vulkan-Headers) using **git**.
+The script fetches the [Vulkan Headers](https://github.com/KhronosGroup/Vulkan-Headers) and the
+[Vulkan Registry](https://github.com/KhronosGroup/Vulkan-Registry) using **git**.
 
 `Visual Studio` is only supported with the `-RS` flag with `ReSharper` extension or with the `-TXT` flag, as it does not support neither **markdown** nor **html**
 styled documentation.
@@ -40,6 +42,7 @@ namespace vk {
 
 #### Boolean Flags
  - `-N` If the script should generate a *namespace* alias, like shown above.
+ - `--force` Forces the script to **regenerate** the headers.
 
 ## CMake integration
 

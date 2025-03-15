@@ -14,10 +14,18 @@ function(generate_headers)
         # Check if python3 is installed.
         include(FindPython3)
         find_package(Python3 COMPONENTS Interpreter REQUIRED)
-        get_filename_component(PYTHON ${Python3_EXECUTABLE} NAME)
 
         # Directories
         set(DIR ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
+
+        # Not using the python found by find_package since it prefers toolchain
+        # python installations, this way the one used is the one defined in the
+        # environment variables.
+        if (WIN32)
+                set(PYTHON python)
+        else ()
+                set(PYTHON python3)
+        endif ()
 
         execute_process(
                 COMMAND ${CMAKE_COMMAND} -E env ${PYTHON} "${DIR}/bin/check_requirements.py"
