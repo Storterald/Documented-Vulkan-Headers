@@ -35,10 +35,12 @@ HEADERS_REPO_PATH: Final  = "./.hds"
 REGISTRY_REPO_PATH: Final = "./.rex"
 BLANK_CHAR: Final         = '\u2800'
 FAKE_PIPE_CHAR: Final     = '\uFF5C'
-DEFINITION_REGEX: Final  = re.compile(r" *#define (VK_[^\n (]+)")
-HANDLE_REGEX: Final      = re.compile(r"^((VK_DEFINE_HANDLE\(([^\n)]+)\))\n|(VK_DEFINE_NON_DISPATCHABLE_HANDLE\(([^\n)]+)\))\n(?!```))", re.MULTILINE)
-FUNCTION_REGEX: Final    = re.compile(r"^(VKAPI_ATTR [^\n ]+ VKAPI_CALL (vk[^ \n]+)\([^;]+);\n(?!```)", re.MULTILINE)
-TYPEDEF_REGEX: Final     = re.compile(r"^(typedef [^ \n]+ (Vk[^ \n]+)( {\n[^}]+} [^;]+)?;\n(?!```))", re.MULTILINE)
+FAKE_SLASH_CHAR: Final    = '\u29F8'
+COMMENT_REGEX: Final      = re.compile(r"(\/\/.+)|(\/\*(.|\n)+?\*\/)")
+DEFINITION_REGEX: Final   = re.compile(r" *#define (VK_[^\n (]+)")
+HANDLE_REGEX: Final       = re.compile(r"^((VK_DEFINE_HANDLE\(([^\n)]+)\))\n|(VK_DEFINE_NON_DISPATCHABLE_HANDLE\(([^\n)]+)\))\n(?!```))", re.MULTILINE)
+FUNCTION_REGEX: Final     = re.compile(r"^(VKAPI_ATTR [^\n ]+ VKAPI_CALL (vk[^ \n]+)\([^;]+);\n(?!```)", re.MULTILINE)
+TYPEDEF_REGEX: Final      = re.compile(r"^(typedef [^ \n]+ (Vk[^ \n]+)( {\n[^}]+} [^;]+)?;\n(?!```))", re.MULTILINE)
 
 
 class DocumentationBlock:
@@ -508,6 +510,10 @@ class DocumentationBlock:
                 if self.__STYLE == Style.TXT:
                         string = re.sub(rf"^ {{{spaceCount}}} \* ", '', string, flags=re.MULTILINE)
                 
+                # Some documentation blocks may contain comments inside the @code
+                # blocks, this avoids closing the documentation early.
+                string = string.replace("*/", f"*{FAKE_SLASH_CHAR}")
+                
                 prefix: str = f"{self.__INDENT_LEVEL * "    "}/**\n"
                 suffix: str = f"{self.__INDENT_LEVEL * "    "}*/\n"
                 
@@ -647,6 +653,9 @@ def generate_documentations(style: Style, useNamespace: bool) -> dict[str, str]:
 def write_file_documentation(outputPath: str, path: str, docs: dict[str, str], useNamespace: bool) -> None:
         with open(path, 'r', encoding="utf-8") as f:
                 data: str = f.read()
+        
+        # Remove all the comments in header
+        data = re.sub(COMMENT_REGEX, '', data)
         
         def add_documentation(match: Match[str], name: str, function: bool = False, macro: bool = False) -> str:
                 def camel_case(string: str) -> str:
