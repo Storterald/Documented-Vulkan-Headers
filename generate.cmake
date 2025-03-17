@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 
 function(generate_headers)
         # Parse args
@@ -11,6 +11,14 @@ function(generate_headers)
                                     "in call to generate_headers().")
         endif ()
 
+        if (NOT DEFINED Python3_FIND_REGISTRY)
+                set(Python3_FIND_REGISTRY LAST)  # Prefer the python in the environment
+        endif ()
+
+        if (NOT DEFINED Python3_FIND_STRATEGY)
+                set(Python3_FIND_STRATEGY VERSION)  # Find the latest python
+        endif ()
+
         # Check if python3 is installed.
         include(FindPython3)
         find_package(Python3 COMPONENTS Interpreter REQUIRED)
@@ -18,17 +26,8 @@ function(generate_headers)
         # Directories
         set(DIR ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
 
-        # Not using the python found by find_package since it prefers toolchain
-        # python installations, this way the one used is the one defined in the
-        # environment variables.
-        if (WIN32)
-                set(PYTHON python)
-        else ()
-                set(PYTHON python3)
-        endif ()
-
         execute_process(
-                COMMAND ${CMAKE_COMMAND} -E env ${PYTHON} "${DIR}/bin/check_requirements.py"
+                COMMAND ${Python3_EXECUTABLE} "${DIR}/bin/check_requirements.py"
                 OUTPUT_QUIET
                 ERROR_QUIET
                 RESULT_VARIABLE RET
@@ -40,7 +39,7 @@ function(generate_headers)
         endif ()
 
         execute_process(
-                COMMAND ${CMAKE_COMMAND} -E env ${PYTHON} "${DIR}/generate.py" ${ARGS_OUTPUT_DIRECTORY} ${ARGS_FLAGS}
+                COMMAND ${Python3_EXECUTABLE} "${DIR}/generate.py" ${ARGS_OUTPUT_DIRECTORY} ${ARGS_FLAGS}
                 OUTPUT_QUIET
                 ERROR_VARIABLE ERROR
                 RESULT_VARIABLE RET
