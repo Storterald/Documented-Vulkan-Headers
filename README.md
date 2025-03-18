@@ -67,6 +67,6 @@ generate_headers(
 ## CMake Vulkan-Loader support
 
 If the [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) library is
-**built** together with the headers, `CMakeDEFINE_VULKAN_TARGET ON` should be passed
+**built** together with the headers, `DEFINE_VULKAN_TARGET ON` should be passed
 to the `generate_headers` function, this will define the `Vulkan::Headers` target
 **required** by the **loader**.
