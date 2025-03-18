@@ -7,14 +7,15 @@
 Automatically generated headers meant to *replace* the original Vulkan headers with
 ***documentation*** added to every `definition`, `function`, `struct`, `enum`, `flag`,
 `handle` and `typedef` with an available description in the
-[**Vulkan Registry**](https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/).
+[Vulkan Registry](https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/).
 
 Everything has the original Vulkan generated signature and can be used with the ***default*** vulkan library.
 The script fetches the [Vulkan Headers](https://github.com/KhronosGroup/Vulkan-Headers) and the
 [Vulkan Registry](https://github.com/KhronosGroup/Vulkan-Registry) using **git**.
 
-`Visual Studio` is only supported with the `-RS` flag with `ReSharper` extension or with the `-TXT` flag, as it does not support neither **markdown** nor **html**
-styled documentation.
+> 🔵**INFO**🔵<br>
+> `Visual Studio` is only supported with the **-RS** flag with **ReSharper** extension
+> or with the `-TXT` flag.
 
 The `generate.py` script can be run with the `-N` **flag** to generate an alias in the namespace `vk`. 
 This is what an alias may look like:
@@ -62,3 +63,10 @@ generate_headers(
         FLAGS ${YOUR_FLAGS_HERE}
 )
 ```
+
+## CMake Vulkan-Loader support
+
+If the [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) library is
+**built** together with the headers, `CMakeDEFINE_VULKAN_TARGET ON` should be passed
+to the `generate_headers` function, this will define the `Vulkan::Headers` target
+**required** by the **loader**.

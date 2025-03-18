@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 function(generate_headers)
         # Parse args
-        set(ONE_VALUE_ARGS OUTPUT_DIRECTORY)
+        set(ONE_VALUE_ARGS OUTPUT_DIRECTORY DEFINE_VULKAN_TARGET)
         set(MULTI_VALUE_ARGS FLAGS)
         cmake_parse_arguments(ARGS "" "${ONE_VALUE_ARGS}" "${MULTI_VALUE_ARGS}" ${ARGN})
 
@@ -11,20 +11,11 @@ function(generate_headers)
                                     "in call to generate_headers().")
         endif ()
 
-        if (NOT DEFINED Python3_FIND_REGISTRY)
-                set(Python3_FIND_REGISTRY LAST)  # Prefer the python in the environment
-        endif ()
-
-        if (NOT DEFINED Python3_FIND_STRATEGY)
-                set(Python3_FIND_STRATEGY VERSION)  # Find the latest python
-        endif ()
+        set(DIR ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
 
         # Check if python3 is installed.
         include(FindPython3)
         find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
-        # Directories
-        set(DIR ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
 
         execute_process(
                 COMMAND ${Python3_EXECUTABLE} "${DIR}/bin/check_requirements.py"
@@ -47,5 +38,13 @@ function(generate_headers)
 
         if (NOT ${RET} EQUAL "0")
                 message(FATAL_ERROR "Error during script execution:\n${ERROR}")
+        endif ()
+
+        # For compatibility with the Vulkan Loader, add the possibility of defining
+        # the Vulkan::Headers target, required by Vulkan::Loader.
+        if (ARGS_DEFINE_VULKAN_TARGET)
+                add_library(DocumentedVulkanHeaders INTERFACE)
+                add_library(Vulkan::Headers ALIAS DocumentedVulkanHeaders)
+                target_include_directories(DocumentedVulkanHeaders INTERFACE "${DIR}/include")
         endif ()
 endfunction()
