@@ -6,4 +6,4 @@ if __name__ == "__main__":
                 try:
                         importlib.import_module(req)
                 except ImportError:
-                        raise RuntimeError(f"Could not import {req}")
+                        raise ImportError(req)

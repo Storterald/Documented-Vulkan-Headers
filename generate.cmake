@@ -20,13 +20,14 @@ function(generate_headers)
         execute_process(
                 COMMAND ${Python3_EXECUTABLE} "${DIR}/bin/check_requirements.py"
                 OUTPUT_QUIET
-                ERROR_QUIET
+                ERROR_VARIABLE ERROR
                 RESULT_VARIABLE RET
                 WORKING_DIRECTORY ${DIR})
 
         if (NOT ${RET} EQUAL "0")
-                message(FATAL_ERROR "Missing python requirement(s). Please install "
-                                    "the pip modules 'bs4' and 'requests'.")
+                string(REGEX MATCH "ImportError: ([^\n ]+)" MISSING_REQUIREMENT ${ERROR})
+                set(MISSING_REQUIREMENT "${CMAKE_MATCH_1}")
+                message(FATAL_ERROR "Missing python requirement: '${MISSING_REQUIREMENT}'")
         endif ()
 
         execute_process(
