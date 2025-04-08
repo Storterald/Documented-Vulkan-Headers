@@ -49,13 +49,16 @@ class DocumentationBlock:
                 self.__STYLE        = style
                 self.__URL          = f"{VULKAN_REGISTRY}{name}.html"
                 self.__INDENT_LEVEL = indentLevel
-                self.__PREFIX       = self.__INDENT_LEVEL * "    " + " * "
-                
+                self.__PREFIX       = indentLevel * "    " + " * " if style != Style.TXT else ''
+
                 # Function aliases
                 self.__add_dd = self.__add_li if self.__STYLE == Style.CL else self.__add_children
                 self.__add_sectionbody = self.__add_children
-                self.__add_dlist = self.__add_ulist
+                self.__add_dl = self.__add_ul
                 self.__add_title = self.__add_h2
+
+                if style == Style.TXT:
+                        self.__add_p = self.__optional_add_p;
         
         def add(self, e: PageElement, singleLine: bool = False, listLevel: int = 0, type: str | None = None):
                 if isinstance(e, NavigableString):
@@ -70,14 +73,9 @@ class DocumentationBlock:
                 if type:
                         function = getattr(self, make_name(type), None)
                         assert function, "Unsupported type passed to add."
-                        
-                        function(e, singleLine, listLevel)
-                        return
+                        return function(e, singleLine, listLevel)
                 
-                type = e.name
-                if type == "div":
-                        type = ' '.join(e.get('class', []))
-
+                type = e.name if e.name != "div" else ' '.join(e.get('class', []))
                 re.sub("[^a-zA-Z0-9_]", '_', type)
                 
                 function = getattr(self, make_name(type), None)
@@ -94,8 +92,6 @@ class DocumentationBlock:
                 repl: str = f"{"<br>\n" if self.__STYLE == Style.CL else '\n'}" if not singleLine else ''
                 text: str = e.get_text(strip=True).replace('\n', repl)
                 if e.has_attr("href") and self.__STYLE not in [Style.RS, Style.TXT]:
-                        # Cannot use anchor in ReSharper
-                        
                         content: str = e["href"].strip()
                         if content.startswith("http"):
                                 # Direct link
@@ -119,7 +115,7 @@ class DocumentationBlock:
                         # Anchor without link should be printed as text
                         self.__value += text
                 
-                if not singleLine:
+                if not singleLine and self.__STYLE == Style.TXT:
                         self.__value += '\n'
         
         def __add_br(self, _unused1: NoneType = None, _unused2: NoneType = None, listLevel: int = 0) -> None:
@@ -238,7 +234,7 @@ class DocumentationBlock:
                                 self.__value += f"{self.__PREFIX}@endcode\n{self.__PREFIX}\n"
                         case Style.VSC:
                                 spaces: str = self.__INDENT_LEVEL * "    "
-                                self.__value += f"```cpp\n"  # Using C++ parser as it's better than the C one
+                                self.__value += f"```cpp\n"
                                 self.__value += f"{spaces}{text.replace('\n', f"\n{spaces}")}\n"
                                 self.__value += f"```\n{self.__PREFIX}\n"
                         case _:
@@ -246,6 +242,11 @@ class DocumentationBlock:
                                 self.__value += f"{self.__PREFIX}{text.replace('\n', f"\n{self.__PREFIX}")}\n"
                                 self.__value += f"{self.__PREFIX}\n"
         
+        def __optional_add_p(self, e: Tag, singleLine: bool = False, listLevel: int = 0) -> None:
+                self.__add_children(e, singleLine, listLevel)
+                if self.__value[-1] != '\n':
+                        self.__value += '\n'
+
         def __add_paragraph(self, e: Tag, singleLine: bool = False, listLevel: int = 0) -> None:
                 # Some styles require a safety check to ensure that
                 # the paragraph has something at its left
@@ -296,7 +297,6 @@ class DocumentationBlock:
                                 # ReSharper breaks bold italic, so we only use bold
                                 self.__add_formatted(f"<b>{text}</b>", singleLine, listLevel)
                         case _:
-                                # Visual Studio Code does not support html nor markdown bold or italic
                                 self.__add_formatted(text, singleLine, listLevel)
         
         def __add_sub(self, e: Tag, _unused1: NoneType = None, _unused2: NoneType = None) -> None:
@@ -310,9 +310,11 @@ class DocumentationBlock:
                         self.__value += tmp.__value
         
         def __add_table(self, e: Tag, _unused1: NoneType = None, _unused2: NoneType = None) -> None:
-                if self.__STYLE in [Style.RS, Style.TXT]:  # TODO add support for at least TXT
+                if self.__STYLE in [Style.RS]:
                         return
                 
+                term: str = '\n' if self.__STYLE == Style.TXT else "<br>"
+
                 # Removes whitespace and breaks, adds spaces when needed
                 def fix_html(item: Tag) -> str:
                         for br in item.find_all("br"):
@@ -351,7 +353,7 @@ class DocumentationBlock:
                 widths: list = [max(len(line) for cell in col if cell is not None for line in str(cell).split("\n")) + 2 for col in zip(*rows)]
 
                 def format_line(lines: list[list[str]], lineIdx: int) -> str:
-                        if self.__STYLE == Style.CL:
+                        if self.__STYLE in [ Style.CL, Style.TXT ]:
                                 line: str = f"{self.__PREFIX}|  "
                                 
                                 for cellIdx, cellLines in enumerate(lines):
@@ -359,7 +361,10 @@ class DocumentationBlock:
                                         sep: str  = '|' if not cellIdx < len(lines) - 1 or (lineIdx < len(lines[cellIdx + 1]) and lines[cellIdx + 1][lineIdx] is not None) else ' '
                                         line += f"{text:<{widths[cellIdx] - 2}}  {sep}  "
                                 
-                                return line[:-2] + "<br>"
+                                if self.__STYLE == Style.TXT:
+                                        line = line.replace(' ', BLANK_CHAR)
+
+                                return line[:-2] + term
                         else:
                                 line: str = f"{self.__PREFIX}|{FAKE_PIPE_CHAR} "
                                 
@@ -377,20 +382,16 @@ class DocumentationBlock:
                         
                         return [format_line(lines, lineIdx) for lineIdx in lineIdxes]
                 
-                breakLine: str  = self.__PREFIX + '-' * (sum(widths) + 3 * len(widths) + 1) + "<br>"  # CL
-                formatLine: str = self.__PREFIX + "| :-- " * (maxColumns + 1) + '|'  # VSC
-                
-                # The whole table, initialized with the headers
-                if self.__STYLE == Style.CL:
+                if self.__STYLE in [ Style.CL, Style.TXT ]:
+                        breakLine: str  = self.__PREFIX + '-' * (sum(widths) + 3 * len(widths) + 1) + term
                         tableRows: list = [breakLine]
                 else:
-                        # Adding an extra column for the closing bar
+                        formatLine: str = self.__PREFIX + "| :-- " * (maxColumns + 1) + '|'
                         tableRows: list = [*format_row(rows[0]), formatLine]
                 
-                # Adds all the rows
-                for row in rows[(0 if self.__STYLE == Style.CL else 1):]:
+                for row in rows[(0 if self.__STYLE in [ Style.CL, Style.TXT ] else 1):]:
                         tableRows.extend(format_row(row))
-                        if self.__STYLE == Style.CL:
+                        if self.__STYLE in [ Style.CL, Style.TXT ]:
                                 tableRows.append(breakLine)
 
                 # Saves the table
@@ -402,8 +403,8 @@ class DocumentationBlock:
                 if self.__STYLE == Style.CL:
                         self.__value += f"{self.__PREFIX}</pre><br>\n{self.__PREFIX}\n"
                 
-        def __add_ulist(self, e: Tag, singleLine: bool = False, listLevel: int = 0) -> None:
-                type: str = f"{e.get('class')[0][0]}l"
+        def __add_ul(self, e: Tag, singleLine: bool = False, listLevel: int = 0) -> None:
+                type: str = f"{e.name[0]}l"
                 
                 if singleLine:
                         self.__value += '\n'
@@ -439,7 +440,7 @@ class DocumentationBlock:
                 
                 self.__value += string
                 
-                if not singleLine:
+                if not singleLine and self.__STYLE == Style.TXT:
                         self.__value += '\n'
         
         def __add_children(self, e: Tag | NavigableString, singleLine: bool = False, listLevel: int = 0) -> None:
@@ -501,18 +502,13 @@ class DocumentationBlock:
                 if self.__STYLE == Style.RS:
                         string = re.sub(r"(@endcode[ \n*]+)<br>", r"\1", string)
                 
-                if self.__STYLE == Style.VSC:
-                        # VS Code documentation may be broken as it contains many
-                        # '*' and math expressions
-                        string = string.replace("*/", "* /")
-                        string = string.replace("/*", "/ *")
-                
                 if self.__STYLE == Style.TXT:
                         string = re.sub(rf"^ {{{spaceCount}}} \* ", '', string, flags=re.MULTILINE)
                 
                 # Some documentation blocks may contain comments inside the @code
                 # blocks, this avoids closing the documentation early.
                 string = string.replace("*/", f"*{FAKE_SLASH_CHAR}")
+                string = string.replace("/*", f"{FAKE_SLASH_CHAR}*")
                 
                 prefix: str = f"{self.__INDENT_LEVEL * "    "}/**\n"
                 suffix: str = f"{self.__INDENT_LEVEL * "    "}*/\n"
@@ -521,6 +517,8 @@ class DocumentationBlock:
                 if string[-3:] == "* \n":
                         string = string[:-2] + "/\n"
                 else:
+                        if string[-1] != '\n':
+                                string += '\n'
                         string += suffix
                 
                 return prefix + string
@@ -650,7 +648,7 @@ def generate_documentations(style: Style, useNamespace: bool) -> dict[str, str]:
         return docs
 
 
-def write_file_documentation(outputPath: str, path: str, docs: dict[str, str], useNamespace: bool) -> None:
+def write_file_documentation(outputPath: str, path: str, docs: dict[str, str], style: Style, useNamespace: bool) -> None:
         with open(path, 'r', encoding="utf-8") as f:
                 data: str = f.read()
         
@@ -678,8 +676,10 @@ def write_file_documentation(outputPath: str, path: str, docs: dict[str, str], u
                         text: str = f"auto constexpr {camel_case(name[2:])}" if function else f"using {name[2:]}"
                         return match.group(0) + f"namespace vk {{\n{docs[name]}    {text} = {name};\n}}\n"
         
-        # Add all the elements documentations
-        data = re.sub(DEFINITION_REGEX, lambda match: add_documentation(match, match.group(1), macro=True), data)
+        # TODO fix macros in TXT mode.
+        if style != Style.TXT:
+                data = re.sub(DEFINITION_REGEX, lambda match: add_documentation(match, match.group(1), macro=True), data)
+        
         data = re.sub(HANDLE_REGEX, lambda match: add_documentation(match, match.group(3) or match.group(5)), data)
         data = re.sub(FUNCTION_REGEX, lambda match: add_documentation(match, match.group(2), function=True), data)
         data = re.sub(TYPEDEF_REGEX, lambda match: add_documentation(match, match.group(2)), data)
@@ -693,15 +693,15 @@ def write_file_documentation(outputPath: str, path: str, docs: dict[str, str], u
         os.rename(path, f"{outputPath}/vulkan/{os.path.basename(path)}")
 
 
-def __call_write(args: tuple[str, str, dict, bool]) -> None:
+def __call_write(args: tuple[str, str, dict, Style, bool]) -> None:
         write_file_documentation(*args)
 
 
-def write_documentation(outputPath: str, docs: dict[str, str], useNamespace: bool) -> None:
+def write_documentation(outputPath: str, docs: dict[str, str], style: Style, useNamespace: bool) -> None:
         base: str = f"{HEADERS_REPO_PATH}/include/vulkan"
         
         def make_arg(path: str) -> tuple[str, str, dict, bool]:
-                return outputPath, f"{base}/{path}", docs, useNamespace
+                return outputPath, f"{base}/{path}", docs, style, useNamespace
                 
         args: list = [make_arg(path) for path in os.listdir(base) if path.endswith(".h")]
         with ProcessPoolExecutor() as executor:
@@ -727,8 +727,8 @@ def main(outputPath: str, style: Style, useNamespace: bool) -> None:
         prepare_environment(outputPath)
 
         print("Generating the documentation and headers...")
-        DOCS: Final = generate_documentations(style, useNamespace)
-        write_documentation(outputPath, DOCS, useNamespace)
+        docs: dict = generate_documentations(style, useNamespace)
+        write_documentation(outputPath, docs, style, useNamespace)
         
         print("Clearing downloaded content...")
         shutil.rmtree(HEADERS_REPO_PATH, onexc=onerror)
