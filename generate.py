@@ -236,13 +236,13 @@ class DocumentationBlock:
 
     def __add_children(self, e: Tag | NavigableString, line: bool = False, level: int = 0) -> None:
         if isinstance(e, NavigableString):
-            if e.strip() != "":
-                # Remove the whitespace at the begin of the string only
-                # if it's not already empty
-                pref: str = ' ' if not self.empty() and self.__value[-1] not in [' ', BLANK_CHAR] else ''
-                text: str = pref.lstrip(" \n").replace('\n', ' ')
-                self.__value += re.sub(r"  +", ' ', text)
+            if e.strip() == "":
+                return
 
+            pref: str = ' ' if not self.empty() and self.__value[-1] not in [' ', BLANK_CHAR] else ''
+            text: str = re.sub(r"^[ \n]+", pref, e.string)
+            text      = text.replace('\n', ' ')
+            self.__value += re.sub(r"  +", ' ', text)
             return
 
         # If not we cycle through all of its children
@@ -400,7 +400,7 @@ class DocumentationBlock:
             self.__value += f"\n{self.__prefix}\n"
 
     def __add_sidebarblock(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
-        self.__add_children(e.find('div', attrs={"content": True}))
+        self.__add_children(e.find('div', class_="content"))
 
     def __add_span(self, e: Tag, line: bool = False, level: int = 0) -> None:
         text: str = e.get_text(strip=True)
@@ -479,7 +479,7 @@ class DocumentationBlock:
         if self.style not in [Style.CL, Style.VSC, Style.TXT]:
             return
 
-        term: str    = '\n' if self.style == Style.TXT else "<br>"
+        term: str    = '' if self.style == Style.TXT else "<br>"
         trs: list    = e.find_all("tr")
         rows: list   = []  # A row is a list of cells (list[str])
         columns: int = 0
@@ -545,7 +545,7 @@ class DocumentationBlock:
         self.__value += f"\n{self.__prefix}\n"
 
 
-def parse_args() -> tuple[str, Style, bool]:
+def parse_args() -> tuple[str, Style, bool, bool]:
     assert sys.version_info >= (3, 12), "Script requires Python 3.12 or newer."
 
     parser = ArgumentParser(
@@ -554,7 +554,7 @@ def parse_args() -> tuple[str, Style, bool]:
 
     parser.add_argument(
         "output_path",
-        help="Where the vulkan/ directory will be generated.")
+        help="Where the vulkan/ directory will be generated")
     parser.add_argument(
         "-S", "--style",
         choices=["TXT", "CL", "RS", "VSC"],
@@ -564,10 +564,15 @@ def parse_args() -> tuple[str, Style, bool]:
         "-N", "--namespace",
         action="store_true",
         default=False,
-        help="Put a alias in the vk:: namespace.")
+        help="Put a alias in the vk:: namespace")
+    parser.add_argument(
+        "-F", "--force",
+        action="store_true",
+        default=False,
+        help="Force the generation even if the version matches the current one")
 
     args = parser.parse_args()
-    return args.output_path, args.style, args.namespace
+    return args.output_path, Style[args.style], args.namespace, args.force
 
 
 def should_regenerate(output_path: str, style: Style, namespace: bool) -> tuple[bool, str]:
@@ -624,7 +629,9 @@ def prepare_environment(output: str) -> None:
     os.rename(src, dst)
 
 
-def get_element_documentation(name: str, style: Style, namespace: bool) -> tuple[str, str]:
+def get_element_documentation(args: tuple[str, Style, bool]) -> tuple[str, str]:
+    name, style, namespace = args
+
     def get_html(name: str) -> str:
         registry: str = f"{REGISTRY_REPO_PATH}/specs/latest/man/html/{name}.html"
         if not path.exists(registry):
@@ -653,18 +660,15 @@ def get_element_documentation(name: str, style: Style, namespace: bool) -> tuple
     if not all([content, header, paragraph]):
         return name, ""
 
-    try:
-        documentation = DocumentationBlock(name, style, indent)
-        documentation.add(header)
-        documentation.add(paragraph, name="paragraph")
+    documentation = DocumentationBlock(name, style, indent)
+    documentation.add(header)
+    documentation.add(paragraph, name="paragraph")
 
-        def should_print(e: Tag) -> bool:
-            return e.find('h2').get_text(strip=True) not in NOT_PRINTED_DIVS
+    def should_print(e: Tag) -> bool:
+        return e.find('h2').get_text(strip=True) not in NOT_PRINTED_DIVS
 
-        for section in filter(should_print, content.find_all('div', class_="sect1")):
-            documentation.add(section)
-    except Exception as e:
-        raise RuntimeError(f"{e}\n\nError generating documentation for '{name}'.")
+    for section in filter(should_print, content.find_all('div', class_="sect1")):
+        documentation.add(section)
 
     # The name is returned to easily construct a dictionary later
     return name, documentation.value
@@ -682,12 +686,14 @@ def generate_documentations(style: Style, namespace: bool) -> dict[str, str]:
     args = filter(can_generate, os.listdir(base))
     args = map(make_arg, args)
     with ProcessPoolExecutor() as executor:
-        docs = dict(executor.map(lambda args: get_element_documentation(*args), args))
+        docs = dict(executor.map(get_element_documentation, args))
 
     return docs
 
 
-def write_file_documentation(output: str, input: str, docs: dict[str, str], style: Style, namespace: bool) -> None:
+def write_file_documentation(args: tuple[str, str, dict[str, str], Style, bool]) -> None:
+    output, input, docs, style, namespace = args
+
     def add_documentation(match: Match[str], name: str, function: bool = False, macro: bool = False) -> str:
         def camel_case(string: str) -> str:
             return string[0].lower() + string[1:]
@@ -737,7 +743,7 @@ def write_documentation(output: str, docs: dict[str, str], style: Style, namespa
     args = filter(is_header, os.listdir(base))
     args = map(make_arg, args)
     with ProcessPoolExecutor() as executor:
-        executor.map(lambda args: write_file_documentation(*args), args)
+        executor.map(write_file_documentation, args)
 
 
 def main() -> None:
@@ -746,9 +752,11 @@ def main() -> None:
 
     start: float = time()
 
-    output_path, style, namespace = parse_args()
-    regen, output                 = should_regenerate(output_path, style, namespace)
+    output_path, style, namespace, force = parse_args()
+    if force:
+        os.remove(VERSION_FILE)
 
+    regen, output = should_regenerate(output_path, style, namespace)
     if not regen:
         print(f"Action completed in {time() - start}s.")
         return
@@ -757,16 +765,21 @@ def main() -> None:
     clone("https://github.com/KhronosGroup/Vulkan-Headers.git", HEADERS_REPO_PATH)
     clone("https://github.com/KhronosGroup/Vulkan-Registry.git", REGISTRY_REPO_PATH)
 
-    print("Generating the documentation and headers...")
-    prepare_environment(output_path)
-    docs: dict = generate_documentations(style, namespace)
+    try:
+        print("Generating the documentation and headers...")
+        prepare_environment(output_path)
+        docs: dict = generate_documentations(style, namespace)
 
-    print("Writing documentation...")
-    write_documentation(output_path, docs, style, namespace)
-
-    print("Clearing downloaded content...")
-    shutil.rmtree(HEADERS_REPO_PATH,  onexc=onerror)
-    shutil.rmtree(REGISTRY_REPO_PATH, onexc=onerror)
+        print("Writing documentation...")
+        write_documentation(output_path, docs, style, namespace)
+    except Exception as e:
+        print("An error occurred. Deleting malformed output...")
+        shutil.rmtree(output_path, onexc=onerror)
+        raise e
+    finally:
+        print("Clearing downloaded content...")
+        shutil.rmtree(HEADERS_REPO_PATH,  onexc=onerror)
+        shutil.rmtree(REGISTRY_REPO_PATH, onexc=onerror)
 
     with open(VERSION_FILE, 'w', encoding="utf-8") as f:
         f.write(output)
