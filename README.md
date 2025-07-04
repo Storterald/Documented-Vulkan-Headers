@@ -1,8 +1,7 @@
 # Documented Vulkan Headers
 
 > 🔴**IMPORTANT**🔴<br>
-> **Python** `3.12` is **required** as the script uses string manipulations that error on
-> older python versions.
+> **Python** `3.12` is **required** (mainly due to [**PEP 701**](https://docs.python.org/3/whatsnew/3.12.html#whatsnew312-pep701)).
 
 Automatically generated headers meant to *replace* the original Vulkan headers with
 ***documentation*** added to every `definition`, `function`, `struct`, `enum`, `flag`,
@@ -12,10 +11,6 @@ Automatically generated headers meant to *replace* the original Vulkan headers w
 Everything has the original Vulkan generated signature and can be used with the ***default*** vulkan library.
 The script fetches the [Vulkan Headers](https://github.com/KhronosGroup/Vulkan-Headers) and the
 [Vulkan Registry](https://github.com/KhronosGroup/Vulkan-Registry) using **git**.
-
-> 🔵**INFO**🔵<br>
-> `Visual Studio` is only supported with the **-RS** flag with **ReSharper** extension
-> or with the `-TXT` flag.
 
 The `generate.py` script can be run with the `-N` **flag** to generate an alias in the namespace `vk`. 
 This is what an alias may look like:
@@ -32,18 +27,19 @@ namespace vk {
 ## Script arguments
 
 #### Required Arguments
- - `output path` The first script argument **must** be the output directory where the `vulkan` and `vk_video` folder
-   will be generated.
+ - `output_path` Where the **vulkan/** and **vk_video/** directories will be put.
 
-#### Style Flags
- - `-CL` **CLion** styled documentation.
- - `-RS` **ReSharper** *(Visual Studio Extension)* styled documentation.
- - `-VSC` **Visual Studio Code** styled documentation.
- - `-TXT` **Plain text** documentation
+#### Style Flag
+
+`-S`, `--style` Flag options:
+ - `CL` **CLion** styled documentation.
+ - `RS` **ReSharper** *(Visual Studio Extension)* styled documentation.
+ - `VSC` **Visual Studio Code** styled documentation.
+ - `TXT` **Plain text** documentation
 
 #### Boolean Flags
- - `-N` If the script should generate a *namespace* alias, like shown above.
- - `--force` Forces the script to **regenerate** the headers.
+ - `-N`, `--namespace` If the script should generate a *namespace* alias, like shown above.
+ - `-F`, `--force` Forces the script to **regenerate** the headers.
 
 ## CMake integration
 

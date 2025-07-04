@@ -57,9 +57,9 @@ class Style(Enum):
         return text
 
     def make_bold_italic(self, text: str) -> str:
-        if self in [Style.CL]:
+        if self == Style.CL:
             return f"<b><i>{text}</i></b>"
-        if self in [Style.RS]:
+        if self == Style.RS:
             return f"<b>{text}</b>"
         return text
 
@@ -69,7 +69,7 @@ class Style(Enum):
         return text
 
     def make_ref(self, text: str, url: str) -> str:
-        if self in [Style.CL]:
+        if self == Style.CL:
             return f"<a href=\"{url}\">{text}</a>"
 
         text = text if text != "" else "↖ "
@@ -91,6 +91,7 @@ class Style(Enum):
         if self == Style.RS:
             return f"{level * "  "}- "
         return f"- {level * BLANK_CHAR * 4}"
+
 
 class DocumentationBlock:
     def __init__(self, name: str, style: Style, indent: int) -> None:
@@ -344,7 +345,7 @@ class DocumentationBlock:
 
                 if self.__value[-start:-end] == "</ul>" or self.__value[-start:-end] == "</dl>":
                     self.__value = self.__value[:-9] + f"<br>\n{self.__prefix}\n{self.__prefix}"
-            elif self.__value[-3:] != "* \n" and self.__value[-3:] != "**\n":
+            elif not self.__value.endswith("* \n") and not self.__value.endswith("**\n"):
                 # If there is not an empty line add one
                 self.__add(f"{self.__prefix}\n")
 
@@ -397,7 +398,7 @@ class DocumentationBlock:
     def __add_paragraph(self, e: Tag, line: bool = False, level: int = 0) -> None:
         # Some styles require a safety check to ensure that
         # the paragraph has something at its left
-        if not line or self.__value[-1] == '\n':
+        if not line or self.__value.endswith('\n'):
             self.__add(self.__get_base(level))
 
         self.__add_children(e, line=True)
@@ -433,8 +434,8 @@ class DocumentationBlock:
 
     def __add_strong(self, e: Tag, line: bool = False, level: int = 0) -> None:
         # Sometimes there is not a space between text and a <strong>
-        if not self.empty() and self.__value[-1] != ' ':
-            self.__add(' ')
+        if not self.empty():
+            self.__suffix(' ')
 
         text: str = e.get_text(strip=True).replace('\n', ' ')
         self.__add_formatted(self.style.make_bold_italic(text), line, level)
