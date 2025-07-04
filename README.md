@@ -29,17 +29,21 @@ namespace vk {
 #### Required Arguments
  - `output_path` Where the **vulkan/** and **vk_video/** directories will be put.
 
-#### Style Flag
+#### Optional Arguments
+ - `-S`, `--style` The documentation style.
+ - `-V`, `--version` The vulkan headers version to clone (must be a **valid git tag**).
+
+#### Boolean Flags
+ - `-N`, `--namespace` If the script should generate a *namespace* alias, like shown above.
+ - `-F`, `--force` Forces the script to **regenerate** the headers.
+
+#### Style Flags
 
 `-S`, `--style` Flag options:
  - `CL` **CLion** styled documentation.
  - `RS` **ReSharper** *(Visual Studio Extension)* styled documentation.
  - `VSC` **Visual Studio Code** styled documentation.
- - `TXT` **Plain text** documentation
-
-#### Boolean Flags
- - `-N`, `--namespace` If the script should generate a *namespace* alias, like shown above.
- - `-F`, `--force` Forces the script to **regenerate** the headers.
+ - `TXT` **Plain text** documentation.
 
 ## CMake integration
 

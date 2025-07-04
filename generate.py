@@ -20,13 +20,11 @@ from concurrent.futures import ProcessPoolExecutor
 from bs4.element import NavigableString, PageElement, AttributeValueList
 
 
-# Constants
 VULKAN_VALID_USAGE: Final = "https://raw.githubusercontent.com/KhronosGroup/Vulkan-Registry/refs/heads/main/specs/latest/validation/validusage.json"
 VULKAN_REGISTRY: Final    = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/"
 VERSION_FILE: Final       = "./.version.txt"
 NOT_PRINTED_DIVS: Final   = ["Document Notes", "See Also", "Copyright"]
-CLONE_ARGS: Final         = ["--branch", "main", "--single-branch", "--depth", "1", "--quiet"]
-THREADS: Final            = os.cpu_count()
+CLONE_ARGS: Final         = ["--depth", "1", "--quiet"]
 CHAR_FIX_MAP: Final       = {"\\rfloor": '⌋', "\\lfloor": '⌊', "\\times": '\u00D7', "\\(": '', "\\)": ''}
 HEADERS_REPO_PATH: Final  = "./.hds"
 REGISTRY_REPO_PATH: Final = "./.rex"
@@ -559,16 +557,23 @@ class DocumentationBlock:
             self.__add(f"\n{self.__prefix}\n")
 
 
-def parse_args() -> tuple[str, Style, bool, bool]:
-    assert sys.version_info >= (3, 12), "Script requires Python 3.12 or newer."
+def parse_args() -> tuple[str, Style, bool, bool, str]:
+    def get_version() -> str:
+        request: Response = requests.get(VULKAN_VALID_USAGE)
+        data: dict        = request.json()
+        version: str      = data["version info"]["api version"]
+        return version
 
     parser = ArgumentParser(
         prog="Vulkan Documented Headers Generator",
         description="Generate the Vulkan headers with code documentation")
-
     parser.add_argument(
         "output_path",
         help="Where the vulkan/ directory will be generated")
+    parser.add_argument(
+        "-V", "--version",
+        help="Vulkan headers version to clone and edit, latest available if not " +
+             "provided. Example: v1.2.131")
     parser.add_argument(
         "-S", "--style",
         choices=["TXT", "CL", "RS", "VSC"],
@@ -586,18 +591,13 @@ def parse_args() -> tuple[str, Style, bool, bool]:
         help="Force the generation even if the version matches the current one")
 
     args = parser.parse_args()
-    return args.output_path, Style[args.style], args.namespace, args.force
+    if not args.version:
+        args.version = get_version()
+
+    return args.output_path, Style[args.style], args.namespace, args.force, args.version
 
 
-def should_regenerate(output_path: str, style: Style, namespace: bool) -> tuple[bool, str]:
-    def get_version() -> str:
-        request: Response = requests.get(VULKAN_VALID_USAGE)
-        data: dict = request.json()
-        version: str = data["version info"]["api version"]
-
-        return version
-
-    version: str = get_version()
+def should_regenerate(output_path: str, style: Style, namespace: bool, version: str) -> tuple[bool, str]:
     current: str = f"{version} {style} {namespace}"
 
     if path.exists(VERSION_FILE) and path.exists(output_path):
@@ -640,7 +640,8 @@ def prepare_environment(output: str) -> None:
 
     src: str = path.join(HEADERS_REPO_PATH, "include", "vk_video")
     dst: str = path.join(output, "vk_video")
-    os.rename(src, dst)
+    if path.exists(src):  # Old vulkan versions don't have vk_video
+        os.rename(src, dst)
 
 
 def get_element_documentation(args: tuple[str, Style, bool]) -> tuple[str, str]:
@@ -733,9 +734,9 @@ def write_file_documentation(args: tuple[str, str, dict[str, str], Style, bool])
     if style != Style.TXT:
         data = re.sub(DEFINITION_REGEX, lambda match: add_documentation(match, match.group(1), macro=True), data)
 
-    data = re.sub(HANDLE_REGEX, lambda match: add_documentation(match, match.group(3) or match.group(5)), data)
+    data = re.sub(HANDLE_REGEX,   lambda match: add_documentation(match, match.group(3) or match.group(5)), data)
     data = re.sub(FUNCTION_REGEX, lambda match: add_documentation(match, match.group(2), function=True), data)
-    data = re.sub(TYPEDEF_REGEX, lambda match: add_documentation(match, match.group(2)), data)
+    data = re.sub(TYPEDEF_REGEX,  lambda match: add_documentation(match, match.group(2)), data)
     data = re.sub(r"\n\n+", "\n\n", data)
 
     with open(input, 'w', encoding="utf-8") as f:
@@ -761,27 +762,32 @@ def write_documentation(output: str, docs: dict[str, str], style: Style, namespa
 
 
 def main() -> None:
-    def clone(url: str, out: str) -> None:
-        subprocess.run(["git", "clone", url, *CLONE_ARGS, out], check=True)
+    def clone(url: str, out: str, version: str | None = None) -> None:
+        branch: str = version if version else "main"
+        subprocess.run(["git", "clone", url, "--branch", branch, *CLONE_ARGS, out], check=True)
+
+    if sys.version_info < (3, 12):
+        raise EnvironmentError("Script requires Python 3.12 or newer.")
 
     start: float = time()
 
-    output_path, style, namespace, force = parse_args()
+    output_path, style, namespace, force, version = parse_args()
     if force and path.exists(VERSION_FILE):
         os.remove(VERSION_FILE)
 
-    regen, output = should_regenerate(output_path, style, namespace)
+    regen, output = should_regenerate(output_path, style, namespace, version)
     if not regen:
         print(f"Action completed in {time() - start}s.")
         return
 
     print("Downloading headers and registry...")
-    clone("https://github.com/KhronosGroup/Vulkan-Headers.git", HEADERS_REPO_PATH)
+    clone("https://github.com/KhronosGroup/Vulkan-Headers.git", HEADERS_REPO_PATH, version)
     clone("https://github.com/KhronosGroup/Vulkan-Registry.git", REGISTRY_REPO_PATH)
 
     try:
-        print("Generating the documentation and headers...")
         prepare_environment(output_path)
+
+        print("Generating the documentation and headers...")
         docs: dict = generate_documentations(style, namespace)
 
         print("Writing documentation...")
