@@ -76,10 +76,21 @@ class Style(Enum):
         return f"[{text}]({url})"
 
     def make_header(self, text: str) -> str:
-        if self in [Style.CL, Style.RS]:
+        if self == Style.CL:
             return f"<b>{text}</b><hr>"
+        if self == Style.RS:
+            return f"<b>{text}</b>"
         return text
 
+    def has_html_lists(self) -> bool:
+        return self in [Style.CL]
+
+    def make_list_entry(self, name: str, level: int) -> str:
+        if self == Style.CL:
+            return f"{level * "    "}<{name}>"
+        if self == Style.RS:
+            return f"{level * "  "}- "
+        return f"- {level * BLANK_CHAR * 4}"
 
 class DocumentationBlock:
     def __init__(self, name: str, style: Style, indent: int) -> None:
@@ -216,6 +227,13 @@ class DocumentationBlock:
         raise AttributeError("You can not assign a new value to indentation_level " +
                              "after initialization.")
 
+    def __add(self, text: str) -> None:
+        self.__value += text
+
+    def __suffix(self, text: str) -> None:
+        if not self.__value.endswith(text):
+            self.__add(text)
+
     def __get_base(self, level: int) -> str:
         match self.style:
             case Style.CL:
@@ -227,31 +245,43 @@ class DocumentationBlock:
 
     def __add_formatted(self, string: str, line: bool, level: int) -> None:
         if not line:
-            self.__value += self.__get_base(level)
+            self.__add(self.__get_base(level))
 
-        self.__value += string
+        self.__add(string)
 
         if not line and self.style == Style.TXT:
-            self.__value += '\n'
+            self.__add('\n')
 
     def __add_children(self, e: Tag | NavigableString, line: bool = False, level: int = 0) -> None:
         if isinstance(e, NavigableString):
             if e.strip() == "":
                 return
 
+            if self.__value.endswith('\n'):
+                self.__add(self.__prefix)
+
             pref: str = ' ' if not self.empty() and self.__value[-1] not in [' ', BLANK_CHAR] else ''
             text: str = re.sub(r"^[ \n]+", pref, e.string)
             text      = text.replace('\n', ' ')
-            self.__value += re.sub(r"  +", ' ', text)
+            self.__add(re.sub(r"  +", ' ', text))
             return
 
         # If not we cycle through all of its children
         for child in e.contents:
             self.add(child, line, level)
 
+    def __add_generic_header(self, e: Tag) -> None:
+        if e.find('a'):
+            self.__add_a(e.find('a'), line=True)
+
+        text: str = e.get_text(strip=True).replace('\n', ' ')
+        self.__add(f"{self.style.make_header(text)}\n" +
+                   f"{self.__prefix}\n")
+
+
     def __add_a(self, e: Tag, line: bool = False, level: int = 0) -> None:
         if not line:
-            self.__value += self.__get_base(level)
+            self.__add(self.__get_base(level))
 
         repl: str = f"{"<br>\n" if self.style == Style.CL else '\n'}" if not line else ''
         text: str = e.get_text(strip=True).replace('\n', repl)
@@ -266,19 +296,19 @@ class DocumentationBlock:
             else:
                 return
 
-            self.__value += self.style.make_ref(text, link)
+            self.__add(self.style.make_ref(text, link))
         else:
             # Anchor without link should be treated as text
-            self.__value += text
+            self.__add(text)
 
         if not line and self.style == Style.TXT:
-            self.__value += '\n'
+            self.__add('\n')
 
     def __add_br(self, _1: Tag = None, _2: bool = False, level: int = 0) -> None:
         if self.style == Style.CL:
-            self.__value += "<br>"
+            self.__add("<br>")
 
-        self.__value += "\n" + self.__get_base(level)
+        self.__add("\n" + self.__get_base(level))
 
     def __add_code(self, e: Tag, line: bool = False, level: int = 0) -> None:
         text: str = e.get_text(strip=True).replace('\n', '')
@@ -290,17 +320,16 @@ class DocumentationBlock:
             return
 
         if self.style == Style.CL:
-            self.__value += f"{self.__prefix}{level * "    "}<dt><b>{text}</b>\n"
+            self.__add(f"{self.__prefix}{level * "    "}<dt><b>{text}</b>\n")
             return
 
-        if self.__value[-3:] != "* \n":
-            self.__value += f"{self.__prefix}\n"
+        self.__suffix(f"{self.__prefix}\n")
 
         if self.style in [Style.RS, Style.TXT]:
-            self.__value += f"{self.__prefix}{level * "  "}{text}\n"
+            self.__add(f"{self.__prefix}{level * "  "}{text}\n")
         else:
-            self.__value += f"{self.__prefix}{level * BLANK_CHAR * 2}#### {BLANK_CHAR}{text}\n" + \
-                            f"{self.__prefix}\n"
+            self.__add(f"{self.__prefix}{level * BLANK_CHAR * 2}#### {BLANK_CHAR}{text}\n" +
+                       f"{self.__prefix}\n")
 
     def __add_em(self, e: Tag, line: bool = False, level: int = 0) -> None:
         text: str = e.get_text(strip=True).replace('\n', '')
@@ -317,87 +346,70 @@ class DocumentationBlock:
                     self.__value = self.__value[:-9] + f"<br>\n{self.__prefix}\n{self.__prefix}"
             elif self.__value[-3:] != "* \n" and self.__value[-3:] != "**\n":
                 # If there is not an empty line add one
-                self.__value += f"{self.__prefix}\n"
+                self.__add(f"{self.__prefix}\n")
 
-        self.__value += self.__prefix
+        self.__add(self.__prefix)
         if self.style == Style.VSC:
-            self.__value += "## "
+            self.__add("## ")
 
-        if e.find('a'):
-            self.__add_a(e.find('a'), line=True)
-
-        text: str = e.get_text(strip=True).replace('\n', ' ')
-        self.__value += f"{self.style.make_header(text)}\n" +   \
-                        f"{self.__prefix}\n"
+        self.__add_generic_header(e)
 
     def __add_h3(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
-        self.__value += self.__prefix
+        self.__add(self.__prefix)
         if self.style == Style.VSC:
-            self.__value += "### "
+            self.__add("### ")
 
-        if e.find('a'):
-            self.__add_a(e.find('a'), line=True)
-
-        text: str = e.get_text(strip=True).replace('\n', ' ')
-        self.__value += f"{self.style.make_header(text)}\n" +   \
-                        f"{self.__prefix}\n"
+        self.__add_generic_header(e)
 
     def __add_li(self, e: Tag, _1: bool = False, level: int = 0) -> None:
-        self.__value += self.__prefix
-        match self.style:
-            case Style.CL:
-                self.__value += f"{level * "    "}<{e.name}>"
-            case Style.RS:
-                self.__value += f"{level * "  "}- "
-            case _:
-                self.__value += f"- {level * BLANK_CHAR * 4}"
-
+        self.__add(self.__prefix)
+        self.__add(self.style.make_list_entry(e.name, level))
         self.__add_children(e, True, level + 1)
-
-        if self.__value[-1] != '\n':
-            # If the last element added by 'addSubElements' didn't add a
-            # return, add it here
-            self.__value += '\n'
+        self.__suffix('\n')
 
     def __add_listingblock(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         text: str = e.find("pre").get_text(strip=True)
 
+        if self.style == Style.RS:
+            self.__value = self.__value.removesuffix(self.__prefix + '\n')
+            self.__value = self.__value.removesuffix("<br>\n")
+            self.__suffix('\n')
+
         match self.style:
             case Style.CL | Style.RS:
-                self.__value += f"{self.__prefix}@code\n"
-                self.__value += f"{self.__prefix}{text.replace('\n', f"\n{self.__prefix}")}\n"
-                self.__value += f"{self.__prefix}@endcode\n{self.__prefix}\n"
+                self.__add(f"{self.__prefix}@code\n")
+                self.__add(f"{self.__prefix}{text.replace('\n', f"\n{self.__prefix}")}\n")
+                self.__add(f"{self.__prefix}@endcode\n{self.__prefix}\n")
             case Style.VSC:
                 spaces: str = self.indentation_level * "    "
-                self.__value += f"```cpp\n"
-                self.__value += f"{spaces}{text.replace('\n', f"\n{spaces}")}\n"
-                self.__value += f"```\n{self.__prefix}\n"
+                self.__add(f"```cpp\n")
+                self.__add(f"{spaces}{text.replace('\n', f"\n{spaces}")}\n")
+                self.__add(f"```\n{self.__prefix}\n")
             case _:
-                self.__value += f"{self.__prefix}\n"
-                self.__value += f"{self.__prefix}{text.replace('\n', f"\n{self.__prefix}")}\n"
-                self.__value += f"{self.__prefix}\n"
+                self.__add(f"{self.__prefix}\n")
+                self.__add(f"{self.__prefix}{text.replace('\n', f"\n{self.__prefix}")}\n")
+                self.__add(f"{self.__prefix}\n")
 
     def __optional_add_p(self, e: Tag, line: bool = False, level: int = 0) -> None:
         self.__add_children(e, line, level)
-        if self.__value[-1] != '\n':
-            self.__value += '\n'
+        self.__suffix('\n')
 
     def __add_paragraph(self, e: Tag, line: bool = False, level: int = 0) -> None:
         # Some styles require a safety check to ensure that
         # the paragraph has something at its left
         if not line or self.__value[-1] == '\n':
-            self.__value += self.__get_base(level)
+            self.__add(self.__get_base(level))
 
         self.__add_children(e, line=True)
 
         match self.style:
             case Style.CL:
-                self.__value += "<br><br>"
+                self.__add("<br><br>")
             case Style.RS:
-                self.__value += "<br>"
+                self.__add("<br>")
 
         if not line:
-            self.__value += f"\n{self.__prefix}\n"
+            self.__add(f"\n{self.__prefix}\n")
 
     def __add_sidebarblock(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         self.__add_children(e.find('div', class_="content"))
@@ -414,15 +426,15 @@ class DocumentationBlock:
             return
 
         if line:
-            self.__value += f"{text.replace('\n', ' ')}"
+            self.__add(f"{text.replace('\n', ' ')}")
             return
 
-        self.__value += self.__get_base(level) + f"{text.replace('\n', ' ')}"
+        self.__add(self.__get_base(level) + f"{text.replace('\n', ' ')}")
 
     def __add_strong(self, e: Tag, line: bool = False, level: int = 0) -> None:
         # Sometimes there is not a space between text and a <strong>
         if not self.empty() and self.__value[-1] != ' ':
-            self.__value += ' '
+            self.__add(' ')
 
         text: str = e.get_text(strip=True).replace('\n', ' ')
         self.__add_formatted(self.style.make_bold_italic(text), line, level)
@@ -430,12 +442,12 @@ class DocumentationBlock:
     def __add_sub(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         tmp = DocumentationBlock(self.url, self.style, self.indentation_level)
         tmp.__add_children(e, line=True)
-        self.__value += self.style.make_sub(tmp.__value)
+        self.__add(self.style.make_sub(tmp.__value))
 
     def __add_table(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         def fix_html(item: Tag) -> str:
             for br in item.find_all("br"):
-                br.replace_with('\n')
+                br.replace_with(NavigableString('\n'))
 
             text: str = ''.join(str(content) for content in item.contents)
 
@@ -470,9 +482,9 @@ class DocumentationBlock:
                 return line + '|'
 
         def format_row(row: list[str | None]) -> list[str]:
-            # lines[cellIdx][lineIdx], contains all the lines for each cell.
+            # lines[cell_idx][line_idx], contains all the lines for each cell.
             lines: list = [str(cell).split("\n") if cell is not None else [None] for cell in row]
-            indexes     = range(max(len(cellLines) for cellLines in lines))
+            indexes     = range(max(len(cell_lines) for cell_lines in lines))
 
             return [format_line(lines, idx) for idx in indexes]
 
@@ -487,8 +499,8 @@ class DocumentationBlock:
         for tr in trs:
             row: list = []
             for cell in tr.find_all(["th", "td"]):
-                text    = fix_html(cell)
-                colspan = int(cell.get("colspan", 1))
+                text: str = fix_html(cell)
+                colspan   = int(cell.get("colspan", 1))
 
                 row.append(text)
                 for _ in range(colspan - 1):
@@ -498,51 +510,52 @@ class DocumentationBlock:
             rows.append(row)
 
         for row in rows:
-            while len(row) < columns:
-                row.append('')
+            row.extend([''] * (columns - len(row)))
 
         widths: list = [max(len(line) for cell in col if cell is not None for line in str(cell).split("\n")) + 2 for col in zip(*rows)]
 
+        table: list = []
         if self.style in [Style.CL, Style.TXT]:
-            line: str   = self.__prefix + '-' * (sum(widths) + 3 * len(widths) + 1) + term
-            table: list = [line]
-        else:
-            line: str   = self.__prefix + "| :-- " * (columns + 1) + '|'
-            table: list = [*format_row(rows[0]), line]
+            line_sep: str = self.__prefix + '-' * (sum(widths) + 3 * len(widths) + 1) + term
+            table.append(line_sep)
 
-        for row in rows[(0 if self.style in [Style.CL, Style.TXT] else 1):]:
+        for row in rows:
             table.extend(format_row(row))
             if self.style in [Style.CL, Style.TXT]:
-                table.append(line)
+                table.append(line_sep)
 
-        # Saves the table
-        if self.style == Style.CL:
-            self.__value += f"{self.__prefix}<pre>\n"
-
-        self.__value += '\n'.join(table) + '\n'
+        if self.style == Style.VSC:
+            table_align: str = self.__prefix + "| :-- " * (columns + 1) + '|'
+            table.insert(1, table_align)
 
         if self.style == Style.CL:
-            self.__value += f"{self.__prefix}</pre><br>\n{self.__prefix}\n"
+            self.__add(f"{self.__prefix}<pre>\n")
+
+        self.__add('\n'.join(table) + '\n')
+
+        if self.style == Style.VSC:
+            self.__add(f"{self.__prefix}\n")
+
+        if self.style == Style.CL:
+            self.__add(f"{self.__prefix}</pre><br>\n{self.__prefix}\n")
 
     def __add_ul(self, e: Tag, line: bool = False, level: int = 0) -> None:
         type: str = f"{e.name[0]}l"
 
         if line:
-            self.__value += '\n'
+            self.__add('\n')
 
-        if self.style == Style.CL:
-            self.__value += f"{self.__prefix}{level * "    "}<{type}>\n"
-            self.__add_children(e, level=level + 1)
-        else:
+        if not self.style.has_html_lists():
             self.__add_children(e, level=level)
+            self.__suffix(f"\n{self.__prefix}\n")
             return
 
-        self.__value += f"{self.__prefix}{level * "    "}</{type}>"
+        self.__add(f"{self.__prefix}{level * "    "}<{type}>\n")
+        self.__add_children(e, level=level + 1)
+        self.__add(f"{self.__prefix}{level * "    "}</{type}>")
 
-        if line:
-            return
-
-        self.__value += f"\n{self.__prefix}\n"
+        if not line:
+            self.__add(f"\n{self.__prefix}\n")
 
 
 def parse_args() -> tuple[str, Style, bool, bool]:
@@ -753,7 +766,7 @@ def main() -> None:
     start: float = time()
 
     output_path, style, namespace, force = parse_args()
-    if force:
+    if force and path.exists(VERSION_FILE):
         os.remove(VERSION_FILE)
 
     regen, output = should_regenerate(output_path, style, namespace)
