@@ -24,7 +24,7 @@ VULKAN_VALID_USAGE: Final = "https://raw.githubusercontent.com/KhronosGroup/Vulk
 VULKAN_REGISTRY: Final    = "https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/"
 VERSION_FILE: Final       = "./.version.txt"
 NOT_PRINTED_DIVS: Final   = ["Document Notes", "See Also", "Copyright"]
-CLONE_ARGS: Final         = ["--depth", "1", "--quiet"]
+CLONE_ARGS: Final         = ["--depth", "1", "--quiet", "-c", "advice.detachedHead=false"]
 CHAR_FIX_MAP: Final       = {"\\rfloor": '⌋', "\\lfloor": '⌊', "\\times": '\u00D7', "\\(": '', "\\)": ''}
 HEADERS_REPO_PATH: Final  = "./.hds"
 REGISTRY_REPO_PATH: Final = "./.rex"
