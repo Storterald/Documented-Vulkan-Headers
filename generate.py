@@ -154,12 +154,12 @@ class Style(IntEnum):
 
     def make_header2(self, text: str) -> str:
         if t := self.__edits["h2"][self.__idx(HEADER)]:
-            return f"{t[0]}{text}{t[1]}"
+            return f"{t[0]}{text}{t[1]}\n"
         return self.make_bold(text)
 
     def make_header3(self, text: str) -> str:
         if t := self.__edits["h3"][self.__idx(HEADER)]:
-            return f"{t[0]}{text}{t[1]}"
+            return f"{t[0]}{text}{t[1]}\n"
         return self.make_bold(text)
 
     def make_break(self) -> str:
@@ -190,7 +190,7 @@ class Style(IntEnum):
             spaces: str = self.space * 4 * level
             return f"```c\n{spaces}{text.replace('\n', f"\n{spaces}")}\n```"
         if self.__check(CODE, DOXYGEN):
-            return f"@code{{.c}}\n{prefix}{text.replace('\n', f"\n{prefix}")}\n@endcode"
+            return f"{prefix}@code{{.c}}\n{prefix}{text.replace('\n', f"\n{prefix}")}\n@endcode"
         return f"\n{prefix}{text.replace('\n', f"\n{prefix}")}\n{prefix}\n"
 
     def make_dt(self, text: str, prefix: str, level: int) -> str:
