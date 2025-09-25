@@ -188,9 +188,9 @@ class Style(IntEnum):
             raise Warning(f"Invalid flag CODE[HTML] used in style '{self.name}'.")
         if self.__check(CODE, MARKDOWN):
             spaces: str = self.space * 4 * level
-            return f"```c\n{spaces}{text.replace('\n', f"\n{spaces}")}\n```"
+            return f"```c\n{spaces}{text.replace('\n', f"\n{spaces}")}\n```\n"
         if self.__check(CODE, DOXYGEN):
-            return f"{prefix}@code{{.c}}\n{prefix}{text.replace('\n', f"\n{prefix}")}\n@endcode"
+            return f"{prefix}@code{{.c}}\n{prefix}{text.replace('\n', f"\n{prefix}")}\n{prefix}@endcode\n"
         return f"\n{prefix}{text.replace('\n', f"\n{prefix}")}\n{prefix}\n"
 
     def make_dt(self, text: str, prefix: str, level: int) -> str:
