@@ -40,10 +40,11 @@ namespace vk {
 #### Style Flags
 
 `-S`, `--style` Flag options:
- - `CL` **CLion** styled documentation.
- - `RS` **ReSharper** *(Visual Studio Extension)* styled documentation.
- - `VSC` **Visual Studio Code** styled documentation.
- - `TXT` **Plain text** documentation.
+ - `CL` **CLion**.
+ - `CL_NV` **CLion Nova**.
+ - `RS` **Visual Studio ReSharper**.
+ - `VSC` **Visual Studio Code**.
+ - `TXT` **Plain text**.
 
 ## CMake integration
 

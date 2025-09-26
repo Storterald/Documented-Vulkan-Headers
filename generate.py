@@ -67,23 +67,27 @@ BREAK       = StyleFlag(9)
 CODE        = StyleFlag(10)
 DT          = StyleFlag(11)
 
-REQUIRES_FAKE_BAR    = StyleInfoFlags(0x100000000000)
-REQUIRES_FAKE_SPACES = StyleInfoFlags(0x200000000000)
+REQUIRES_FAKE_BAR                  = StyleInfoFlags(0x1000_0000_0000_0000)
+REQUIRES_FAKE_SPACES               = StyleInfoFlags(0x2000_0000_0000_0000)
+REQUIRES_BREAK_IN_PRE              = StyleInfoFlags(0x4000_0000_0000_0000)
+REQUIRES_FAKE_SPACES_BETWEEN_CHARS = StyleInfoFlags(0x8000_0000_0000_0000)
 
 
 class Style(IntEnum):
-    TXT = REQUIRES_FAKE_SPACES
+    TXT = REQUIRES_FAKE_SPACES      \
+          | REQUIRES_FAKE_SPACES_BETWEEN_CHARS
     CL  = BOLD[HTML]                \
           | ITALIC[HTML]            \
           | ITALIC_BOLD[HTML]       \
           | SUBTEXT[HTML]           \
           | REFERENCE[HTML]         \
           | LIST[HTML]              \
-          | PRE[HTML]               \
           | BREAK[HTML]             \
           | CODE[DOXYGEN]           \
           | HEADER[HTML]            \
-          | DT[HTML]
+          | DT[HTML]                \
+          | PRE[HTML]               \
+          | REQUIRES_BREAK_IN_PRE
     RS  = BOLD[HTML]                \
           | ITALIC[HTML]            \
           | SUBTEXT[HTML]           \
@@ -94,9 +98,16 @@ class Style(IntEnum):
           | TABLE[MARKDOWN]         \
           | CODE[MARKDOWN]          \
           | HEADER[MARKDOWN]        \
-          | REQUIRES_FAKE_BAR       \
-          | REQUIRES_FAKE_SPACES
-          # VSC supports BREAK[HTML] but it's not required ('\n' is shown in view)
+          | BREAK[HTML]             \
+          | REQUIRES_FAKE_BAR
+    CL_NV = BOLD[HTML]              \
+          | ITALIC[HTML]            \
+          | SUBTEXT[HTML]           \
+          | REFERENCE[HTML]         \
+          | LIST[MARKDOWN]          \
+          | PRE[HTML]               \
+          | BREAK[HTML]             \
+          | CODE[DOXYGEN]
 
     __edits: dict = {
         "bold": [None, ("<b>", "</b>"), ("**", "**"), None],
@@ -104,18 +115,25 @@ class Style(IntEnum):
         "italic_bold": [None, ("<b><i>", "</i></b>"), ("***", "***"), None],
         "pre": [None, ("<pre>", "</pre>"), None, ("@verbatim ", "@endverbatim")],
         "sub": [None, ("<sub>", "</sub>"), None, None],
-        "h2": [None, ("<b>", "</b><hr>"), "## ", None],
-        "h3": [None, ("<b>", "</b>"), "### ", None]
+        "h2": [None, ("<b>", "</b><hr>"), None, None],
+        "h3": [None, ("<b>", "</b>"), None, None]
     }
 
     @property
     def space(self) -> str:
-        return BLANK_CHAR if self & REQUIRES_FAKE_SPACES else ' '
+        return BLANK_CHAR if self.check(REQUIRES_FAKE_SPACES) else ' '
 
-    def __and__(self, other: Any) -> int:
-        if isinstance(other, StyleFlag):
-            return int(self) & (0x3 << other)
-        return int(self) & int(other)
+    @property
+    def tab(self) -> str:
+        size: int = 4 if self.check(LIST, HTML) else 2
+        return self.space * size
+
+    def check(self, flag: StyleFlag | StyleInfoFlags, mod: StyleFormatFlag | None = None) -> bool:
+        if isinstance(flag, StyleInfoFlags):
+            return bool((int(self) & flag) == flag)
+        if mod is not None:
+            return self.__idx(flag) == mod
+        return bool(int(self) & flag[StyleFormatFlag(0b11)])
 
     def make_bold(self, text: str) -> str:
         if t := self.__edits["bold"][self.__idx(BOLD)]:
@@ -143,94 +161,89 @@ class Style(IntEnum):
         return text
 
     def make_ref(self, text: str, url: str) -> str:
-        if self.__check(REFERENCE, HTML):
+        if self.check(REFERENCE, HTML):
             return f"<a href=\"{url}\">{text}</a>"
-        if self.__check(REFERENCE, MARKDOWN):
+        if self.check(REFERENCE, MARKDOWN):
             text = text if text != "" else "↖ "
             return f"[{text}]({url})"
-        if self.__check(REFERENCE, DOXYGEN):
+        if self.check(REFERENCE, DOXYGEN):
             raise Warning(f"Invalid flag REFERENCE[DOXYGEN] used in style '{self.name}'.")
         return text
 
     def make_header2(self, text: str) -> str:
         if t := self.__edits["h2"][self.__idx(HEADER)]:
             return f"{t[0]}{text}{t[1]}\n"
-        return self.make_bold(text)
+        return self.make_bold(text) + '\n'
 
     def make_header3(self, text: str) -> str:
         if t := self.__edits["h3"][self.__idx(HEADER)]:
             return f"{t[0]}{text}{t[1]}\n"
-        return self.make_bold(text)
+        return self.make_bold(text) + '\n'
 
     def make_break(self) -> str:
-        if self.__check(BREAK, HTML):
+        if self.check(BREAK, HTML):
             return f"<br>\n"
-        if self.__check(BREAK, MARKDOWN):
+        if self.check(BREAK, MARKDOWN):
             raise Warning(f"Invalid flag BREAK[MARKDOWN] used in style '{self.name}'.")
-        if self.__check(BREAK, DOXYGEN):
+        if self.check(BREAK, DOXYGEN):
             raise Warning(f"Invalid flag BREAK[DOXYGEN] used in style '{self.name}'.")
         return f"\n"
 
-    def has_html_lists(self) -> bool:
-        return self.__check(LIST, HTML)
-
     def make_list_entry(self, name: str, level: int) -> str:
-        if self.__check(LIST, HTML):
+        space: str = BLANK_CHAR if not self.check(REQUIRES_FAKE_SPACES_BETWEEN_CHARS) else ' '
+        if self.check(LIST, HTML):
             return f"{level * "    "}<{name}>"
-        if self.__check(LIST, MARKDOWN):
+        if self.check(LIST, MARKDOWN):
             return f"{level * "  "}- "
-        if self.__check(LIST, DOXYGEN):
+        if self.check(LIST, DOXYGEN):
             raise Warning(f"Invalid flag LIST[DOXYGEN] used in style '{self.name}'.")
-        return f"- {level * self.space * 4}"
+        return f"- {level * space * 4}"
 
     def make_codeblock(self, prefix: str, level: int, text: str) -> str:
-        if self.__check(CODE, HTML):
+        if self.check(CODE, HTML):
             raise Warning(f"Invalid flag CODE[HTML] used in style '{self.name}'.")
-        if self.__check(CODE, MARKDOWN):
+        if self.check(CODE, MARKDOWN):
             spaces: str = self.space * 4 * level
             return f"```c\n{spaces}{text.replace('\n', f"\n{spaces}")}\n```\n"
-        if self.__check(CODE, DOXYGEN):
+        if self.check(CODE, DOXYGEN):
             return f"{prefix}@code{{.c}}\n{prefix}{text.replace('\n', f"\n{prefix}")}\n{prefix}@endcode\n"
         return f"\n{prefix}{text.replace('\n', f"\n{prefix}")}\n{prefix}\n"
 
     def make_dt(self, text: str, prefix: str, level: int) -> str:
-        if self.__check(DT, HTML):
+        if self.check(DT, HTML):
             return f"{level * "    "}<dt><b>{text}</b>\n"
-        if self.__check(DT, MARKDOWN):
+        if self.check(DT, MARKDOWN):
             raise Warning(f"Invalid flag DT[MARKDOWN] used in style '{self.name}'.")
-        if self.__check(DT, DOXYGEN):
+        if self.check(DT, DOXYGEN):
             raise Warning(f"Invalid flag DT[DOXYGEN] used in style '{self.name}'.")
-        if self.__check(HEADER, MARKDOWN):
+        if self.check(HEADER, MARKDOWN):
             return f"{level * self.space * 2}#### {self.space}{text}\n" + \
                     f"{prefix}\n"
         return f"{level * self.space}{text}\n"
 
     def make_table(self, prefix: str, rows: list[list[str | None]], widths: list[int], columns: int) -> str:
-        def format_line(lines: list[list[str]], line_idx: int, term) -> str:
-            if self.__check(TABLE, HTML):
+        def format_line(lines: list[list[str]], line_idx: int, term: str) -> str:
+            if self.check(TABLE, HTML):
                 raise Warning(f"Invalid flag TABLE[HTML] used in style '{self.name}'.")
-            elif self.__check(TABLE, MARKDOWN):
-                pipe: str = FAKE_PIPE_CHAR if self & REQUIRES_FAKE_BAR else ''
+            elif self.check(TABLE, MARKDOWN):
+                pipe: str = FAKE_PIPE_CHAR if self.check(REQUIRES_FAKE_BAR) else ''
                 line: str = f"{prefix}|{pipe} "
 
                 for cell_idx, cell_lines in enumerate(lines):
                     text: str = (cell_lines[line_idx] if cell_lines[line_idx] is not None else '') if line_idx < len(cell_lines) else ''
-                    sep: str  = FAKE_PIPE_CHAR if not cell_idx < len(lines) - 1 or (line_idx < len(lines[cell_idx + 1]) and lines[cell_idx + 1][line_idx] is not None) else ''
-                    sep       = sep if self & REQUIRES_FAKE_BAR else ''
-                    line     += f"{text} |{sep} "
+                    line     += f"{text} |{pipe} "
 
                 return line + '|'
-            elif self.__check(TABLE, DOXYGEN):
+            elif self.check(TABLE, DOXYGEN):
                 raise Warning(f"Invalid flag TABLE[DOXYGEN] used in style '{self.name}'.")
 
             line: str = f"{prefix}|  "
 
             for cell_idx, cell_lines in enumerate(lines):
                 text: str = (cell_lines[line_idx] if cell_lines[line_idx] is not None else '') if line_idx < len(cell_lines) else ''
-                sep: str  = '|' if not cell_idx < len(lines) - 1 or (line_idx < len(lines[cell_idx + 1]) and lines[cell_idx + 1][line_idx] is not None) else ' '
-                line     += f"{text:<{widths[cell_idx] - 2}}  {sep}  "
+                line     += f"{text:<{widths[cell_idx] - 2}}  |  "
 
-            if self & REQUIRES_FAKE_SPACES:
+            if self.check(REQUIRES_FAKE_SPACES):
                 line = line.replace(' ', BLANK_CHAR)
 
             return line[:-2] + term
@@ -239,51 +252,50 @@ class Style(IntEnum):
             # lines[cell_idx][line_idx], contains all the lines for each cell.
             lines: list = [str(cell).split("\n") if cell is not None else [None] for cell in row]
             indexes     = range(max(len(cell_lines) for cell_lines in lines))
-
             return [format_line(lines, idx, term) for idx in indexes]
 
         table: list   = []
-        term: str     = ""
         line_sep: str = ""
-        if not (self & TABLE):
-            term     = "<br>" if self & BREAK[HTML] else ''
+        term: str     = ""
+        if not self.check(TABLE):
+            term     = "<br>" if self.check(REQUIRES_BREAK_IN_PRE) else ""
             line_sep = prefix + '-' * (sum(widths) + 3 * len(widths) + 1) + term
             table.append(line_sep)
 
         for row in rows:
             table.extend(format_row(row, term))
-            if not (self & TABLE):
+            if not self.check(TABLE):
                 table.append(line_sep)
 
-        if self.__check(TABLE, MARKDOWN):
+        if self.check(TABLE, MARKDOWN):
             table_align: str = prefix + "| :-- " * (columns + 1) + '|'
             table.insert(1, table_align)
 
-        string: str = f"{'\n'.join(table)}\n{prefix}"
-        return self.make_pre(string) + self.make_break() + prefix + '\n'
+        string: str = '\n'.join(table)
+        if self.check(PRE):
+            string = prefix + self.make_pre(f"\n{string}\n{prefix}")
+        return string + f"\n{prefix}\n"
 
     def __idx(self, flag: StyleFlag) -> int:
         return (self & (0b11 << (flag * 0x4))) >> (flag * 0x4)
 
-    def __check(self, flag: StyleFlag, mod: StyleFormatFlag) -> bool:
-        return self.__idx(flag) == mod
-
 
 class DocumentationBlock:
     def __init__(self, name: str, style: Style, indent: int) -> None:
-        self.__value             = ""
-        self.__style             = style
-        self.__url               = f"{VULKAN_REGISTRY}{name}.html"
-        self.__indentation_level = indent
-        self.__prefix            = indent * "    " + " * " if style != Style.TXT else ''
+        self.__url: str               = f"{VULKAN_REGISTRY}{name}.html"
+        self.__style: Style           = style
+        self.__indentation_level: int = indent
 
-        self.__add_dd          = self.__add_li if self.__style == Style.CL else self.__add_children
-        self.__add_sectionbody = self.__add_children
-        self.__add_dl          = self.__add_ul
-        self.__add_title       = self.__add_h2
+        self.__prefix: str = indent * "    " + " * " if style != Style.TXT else ''
+        self.__value: str  = ""
+        self.__prev: str   = ""
+
+        self.__add_dd    = self.__add_li if self.style.check(DT, HTML) else self.__add_children
+        self.__add_dl    = self.__add_ul
+        self.__add_title = self.__add_h2
 
         if style == Style.TXT:
-            self.__add_p = self.__optional_add_p
+            self.__add_p = self.__add_children
 
     def add(self, e: PageElement, line: bool = False, level: int = 0, name: str | None = None) -> None:
         def getprivattr(name: str) -> Callable[[Tag, bool, int], None] | None:
@@ -297,19 +309,21 @@ class DocumentationBlock:
             raise TypeError("Invalid element type.")
 
         if name:
-            converter = getprivattr(name)
-            if not converter:
+            adder: Callable[[Tag, bool, int], None] | None = getprivattr(name)
+            if not adder:
                 raise ValueError("Unsupported HTML element name.")
 
-            converter(e, line, level)
+            adder(e, line, level)
+            self.__prev = name
             return
 
         name = e.name if e.name != "div" else ' '.join(e.get("class", AttributeValueList()))
         name = re.sub(r"[^a-zA-Z0-9_]", '_', name)
 
-        converter = getprivattr(name)
-        if converter:
-            converter(e, line, level)
+        adder: Callable[[Tag, bool, int], None] | None = getprivattr(name)
+        if adder:
+            adder(e, line, level)
+            self.__prev = name
         else:
             self.__add_children(e, line, level)
 
@@ -319,44 +333,18 @@ class DocumentationBlock:
     @property
     def value(self) -> str:
         string: str = self.__value
-        indent: int = self.indentation_level * 4
-        empty: str  = rf" {{{indent + 1}}}\* "
 
         # Fix invalid chars
         for old, new in CHAR_FIX_MAP.items():
             string = string.replace(old, new)
 
-        if self.style in [Style.CL, Style.RS]:
-            # Remove break before code block
-            string = re.sub(rf"(<br>)+(\n{empty}\n {{{indent + 1}}}\* @code)", r"\2", string)
-
-            # Fix sub-text
-            string = re.sub(r"(?<=[\s,.=])([a-zA-Z])_([a-zA-Z]+)(?=[\s,.=])", r"\1<sub>\2</sub>", string)
-        else:
-            def sub_text(match: Match[str]) -> str:
-                return match.group(1).upper() + match.group(2)
-
-            # Fix sub-text
-            string = re.sub(r"(?<=[\s,.=])([a-zA-Z])_([a-zA-Z]+)(?=[\s,.=])", sub_text, string)
-
-        if self.style.has_html_lists():
-            string = string.replace("<li> ", "<li>")
-            string = string.replace(f"{self.__prefix}</ul>\n{self.__prefix}\n{self.__prefix}<ul>\n", "")
-            string = string.replace(f"{self.__prefix}</dl>\n{self.__prefix}\n{self.__prefix}<dl>\n", "")
-
-        # Remove extra whitespace
-        string = re.sub(rf"{empty}\n( {{{indent + 1}}}\* \n)", r"\1", string)
-        string = re.sub(rf"(({empty})( {{4}})+)( +)?", r"\1", string)
-
-        if self.style == Style.RS:
-            string = re.sub(r"(@endcode[ \n*]+)<br>", r"\1", string)
-
-        if self.style == Style.TXT:
-            string = re.sub(rf"^ {{{indent}}} \* ", '', string, flags=re.MULTILINE)
-
-        # Some documentation blocks may contain comments inside the @code blocks.
+        # Some documentation blocks may contain comments inside the codeblocks.
         string = string.replace("*/", f"*{FAKE_SLASH_CHAR}")
         string = string.replace("/*", f"{FAKE_SLASH_CHAR}*")
+
+        # Remove all <br> elements and empty lines before a doxygen code element.
+        if self.style.check(CODE, DOXYGEN):
+            string = re.sub(r"((<br>)*\n)?( +\* (<br>)?\n?)*(\n +\* @code)", r"\5", string)
 
         prefix: str = f"{self.indentation_level * "    "}/**\n"
         suffix: str = f"{self.indentation_level * "    "}*/\n"
@@ -390,10 +378,12 @@ class DocumentationBlock:
         if not self.__value.endswith(text):
             self.__add(text)
 
+    def __insert_after(self, target: str, text: str) -> None:
+        idx: int     = self.__value.rfind(target)
+        self.__value = self.__value[:idx + len(target)] + text + self.__value[idx + len(target):]
+
     def __get_base(self, level: int) -> str:
-        if self.style & REQUIRES_FAKE_SPACES:
-            return f"{self.__prefix}{level * BLANK_CHAR * 2}"
-        return f"{self.__prefix}{level * "    "}"
+        return f"{self.__prefix}{level * self.style.tab}"
 
     def __add_formatted(self, string: str, line: bool, level: int) -> None:
         if not line:
@@ -401,7 +391,7 @@ class DocumentationBlock:
 
         self.__add(string)
 
-        if not line and self.style == Style.TXT:
+        if not line:
             self.__add('\n')
 
     def __add_children(self, e: Tag | NavigableString, line: bool = False, level: int = 0) -> None:
@@ -421,7 +411,11 @@ class DocumentationBlock:
         for child in e.contents:
             self.add(child, line, level)
 
-    def __add_generic_header(self, e: Tag, make_header: Callable[[str], str]) -> None:
+    def __add_generic_header(self, e: Tag, size: int, make_header: Callable[[str], str]) -> None:
+        self.__add(self.__prefix)
+        if self.style.check(HEADER, MARKDOWN):
+            self.__add('#' * size + ' ')
+
         if e.find('a'):
             self.__add_a(e.find('a'), line=True)
 
@@ -451,12 +445,13 @@ class DocumentationBlock:
             # Anchor without link should be treated as text
             self.__add(text)
 
-        if not line and self.style == Style.TXT:
+        if not line:
             self.__add('\n')
 
-    def __add_br(self, _1: Tag = None, _2: bool = False, level: int = 0) -> None:
+    def __add_br(self, _1: Tag = None, line: bool = False, level: int = 0) -> None:
         self.__add(self.style.make_break())
-        self.__add(self.__get_base(level))
+        if line:
+            self.__add(self.__get_base(level))
 
     def __add_code(self, e: Tag, line: bool = False, level: int = 0) -> None:
         text: str = e.get_text(strip=True).replace('\n', '')
@@ -475,52 +470,33 @@ class DocumentationBlock:
 
     def __add_h2(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         if not self.empty():
-            if self.style.has_html_lists():
-                # Add a <br> after lists if before a title
-                start: int = len("</ul>\n * \n") + self.indentation_level * 4
-                end: int   = start + len("</ul>")
-
-                if self.__value[-start:-end] == "</ul>" or self.__value[-start:-end] == "</dl>":
-                    self.__value = self.__value[:-9] + f"<br>\n{self.__prefix}\n{self.__prefix}"
+            if self.style.check(LIST, HTML) and self.style.check(BREAK, HTML):
+                if self.__prev in ["ul", "dl"]:
+                    self.__insert_after(f"</{self.__prev}>", "<br>")
             elif not self.__value.endswith("* \n") and not self.__value.endswith("**\n"):
                 # If there is not an empty line add one
                 self.__add(f"{self.__prefix}\n")
 
-        self.__add(self.__prefix)
-        self.__add_generic_header(e, self.style.make_header2)
+        self.__add_generic_header(e, 2, self.style.make_header2)
 
     def __add_h3(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
-        self.__add(self.__prefix)
-        self.__add_generic_header(e, self.style.make_header3)
+        self.__add_generic_header(e, 3, self.style.make_header3)
 
     def __add_li(self, e: Tag, _1: bool = False, level: int = 0) -> None:
         self.__add(self.__prefix)
         self.__add(self.style.make_list_entry(e.name, level))
-        self.__add_children(e, True, level + 1)
-        self.__suffix('\n')
+        self.__add_children(e, line=True, level=level + 1)
+        self.__suffix('\n')  # Required due to the line=True in self.__add_children
 
     def __add_listingblock(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         text: str = e.find("pre").get_text(strip=True)
-
-        if self.style == Style.RS:
-            self.__value = self.__value.removesuffix(self.__prefix + '\n')
-            self.__value = self.__value.removesuffix("<br>\n")
-            self.__suffix('\n')
-
         self.__add(self.style.make_codeblock(self.__prefix, self.__indentation_level, text))
 
-    def __optional_add_p(self, e: Tag, line: bool = False, level: int = 0) -> None:
-        self.__add_children(e, line, level)
-        self.__suffix('\n')
-
     def __add_paragraph(self, e: Tag, line: bool = False, level: int = 0) -> None:
-        # Some styles require a safety check to ensure that
-        # the paragraph has something at its left
-        if not line or self.__value.endswith('\n'):
+        if not line:
             self.__add(self.__get_base(level))
 
         self.__add_children(e, line=True)
-
         match self.style:
             case Style.CL:
                 self.__add("<br><br>")
@@ -535,7 +511,7 @@ class DocumentationBlock:
 
     def __add_span(self, e: Tag, line: bool = False, level: int = 0) -> None:
         text: str = e.get_text(strip=True)
-        if e.get('class') and e.get('class') == ['eq']:
+        if e.get("class") and e.get("class") == ['eq']:
             # eq class span are math expressions
             tmp = DocumentationBlock(self.url, self.style, self.indentation_level)
             tmp.__add_children(e, line=True)
@@ -558,10 +534,12 @@ class DocumentationBlock:
         text: str = e.get_text(strip=True).replace('\n', ' ')
         self.__add_formatted(self.style.make_bold_italic(text), line, level)
 
-    def __add_sub(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
+    def __add_sub(self, e: Tag, line: bool = False, _2: int = 0) -> None:
         tmp = DocumentationBlock(self.url, self.style, self.indentation_level)
         tmp.__add_children(e, line=True)
         self.__add(self.style.make_sub(tmp.__value))
+        if not line:
+            self.__value += '\n'
 
     def __add_table(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         def fix_html(item: Tag) -> str:
@@ -603,20 +581,21 @@ class DocumentationBlock:
     def __add_ul(self, e: Tag, line: bool = False, level: int = 0) -> None:
         type: str = f"{e.name[0]}l"
 
+        # if line=True, the <ul> is inside another <ul>.
         if line:
             self.__add('\n')
 
-        if not self.style.has_html_lists():
+        if not self.style.check(LIST, HTML):
             self.__add_children(e, level=level)
-            self.__suffix(f"\n{self.__prefix}\n")
+            self.__suffix(f"{self.__prefix}\n")
             return
 
         self.__add(f"{self.__prefix}{level * "    "}<{type}>\n")
         self.__add_children(e, level=level + 1)
-        self.__add(f"{self.__prefix}{level * "    "}</{type}>")
+        self.__add(f"{self.__prefix}{level * "    "}</{type}>\n")
 
         if not line:
-            self.__add(f"\n{self.__prefix}\n")
+            self.__add(f"{self.__prefix}\n")
 
 
 class Clock:
@@ -629,7 +608,7 @@ class Clock:
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         if exc_type is None:
-            print(f"{self.__action} completed in {time() - self.__start}s.")
+            print(f"{self.__action} completed in {time() - self.__start:.2f}s.")
 
 
 def _pool_executor_helper(args: tuple) -> Any:
@@ -665,7 +644,7 @@ def parse_args() -> tuple[str, Style, bool, bool, str | None]:
              "provided. Example: v1.2.131")
     parser.add_argument(
         "-S", "--style",
-        choices=["TXT", "CL", "RS", "VSC"],
+        choices=[e.name for e in Style],
         default="TXT",
         help="Documentation style, plain text or IDE/Editor specific")
     parser.add_argument(
