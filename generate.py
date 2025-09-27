@@ -11,6 +11,7 @@ from re import Match
 from time import time
 from enum import IntEnum
 from pathlib import Path
+from itertools import groupby
 from requests import Response
 from bs4 import BeautifulSoup, Tag
 from argparse import ArgumentParser
@@ -67,46 +68,52 @@ BREAK       = StyleFlag(9)
 CODE        = StyleFlag(10)
 DT          = StyleFlag(11)
 
-REQUIRES_FAKE_BAR                  = StyleInfoFlags(0x1000_0000_0000_0000)
-REQUIRES_FAKE_SPACES               = StyleInfoFlags(0x2000_0000_0000_0000)
-REQUIRES_BREAK_IN_PRE              = StyleInfoFlags(0x4000_0000_0000_0000)
-REQUIRES_FAKE_SPACES_BETWEEN_CHARS = StyleInfoFlags(0x8000_0000_0000_0000)
+REQUIRES_FAKE_BAR                  = StyleInfoFlags(0x0100_0000_0000_0000)
+REQUIRES_FAKE_SPACES               = StyleInfoFlags(0x0200_0000_0000_0000)
+REQUIRES_BREAK_IN_PRE              = StyleInfoFlags(0x0400_0000_0000_0000)
+REQUIRES_FAKE_SPACES_BETWEEN_CHARS = StyleInfoFlags(0x0800_0000_0000_0000)
+NEWLINE_NOT_RENDERED               = StyleInfoFlags(0x1000_0000_0000_0000)
+REQUIRES_BREAK_AFTER_LIST          = StyleInfoFlags(0x2000_0000_0000_0000)
 
 
 class Style(IntEnum):
-    TXT = REQUIRES_FAKE_SPACES      \
+    TXT = REQUIRES_FAKE_SPACES                  \
           | REQUIRES_FAKE_SPACES_BETWEEN_CHARS
-    CL  = BOLD[HTML]                \
-          | ITALIC[HTML]            \
-          | ITALIC_BOLD[HTML]       \
-          | SUBTEXT[HTML]           \
-          | REFERENCE[HTML]         \
-          | LIST[HTML]              \
-          | BREAK[HTML]             \
-          | CODE[DOXYGEN]           \
-          | HEADER[HTML]            \
-          | DT[HTML]                \
-          | PRE[HTML]               \
-          | REQUIRES_BREAK_IN_PRE
-    RS  = BOLD[HTML]                \
-          | ITALIC[HTML]            \
-          | SUBTEXT[HTML]           \
-          | REFERENCE[MARKDOWN]     \
-          | LIST[MARKDOWN]          \
-          | CODE[DOXYGEN]
-    VSC = REFERENCE[MARKDOWN]       \
-          | TABLE[MARKDOWN]         \
-          | CODE[MARKDOWN]          \
-          | HEADER[MARKDOWN]        \
-          | BREAK[HTML]             \
+    CL  = BOLD[HTML]                            \
+          | ITALIC[HTML]                        \
+          | ITALIC_BOLD[HTML]                   \
+          | SUBTEXT[HTML]                       \
+          | REFERENCE[HTML]                     \
+          | LIST[HTML]                          \
+          | BREAK[HTML]                         \
+          | CODE[DOXYGEN]                       \
+          | HEADER[HTML]                        \
+          | DT[HTML]                            \
+          | PRE[HTML]                           \
+          | REQUIRES_BREAK_IN_PRE               \
+          | NEWLINE_NOT_RENDERED
+    RS  = BOLD[HTML]                            \
+          | ITALIC[HTML]                        \
+          | SUBTEXT[HTML]                       \
+          | REFERENCE[MARKDOWN]                 \
+          | LIST[MARKDOWN]                      \
+          | BREAK[HTML]                         \
+          | PRE[HTML]                           \
+          | CODE[DOXYGEN]                       \
+          | REQUIRES_BREAK_AFTER_LIST
+    VSC = REFERENCE[MARKDOWN]                   \
+          | TABLE[MARKDOWN]                     \
+          | CODE[MARKDOWN]                      \
+          | HEADER[MARKDOWN]                    \
+          | BREAK[HTML]                         \
           | REQUIRES_FAKE_BAR
-    CL_NV = BOLD[HTML]              \
-          | ITALIC[HTML]            \
-          | SUBTEXT[HTML]           \
-          | REFERENCE[HTML]         \
-          | LIST[MARKDOWN]          \
-          | PRE[HTML]               \
-          | BREAK[HTML]             \
+    CL_NV = BOLD[HTML]                          \
+          | ITALIC[HTML]                        \
+          | SUBTEXT[HTML]                       \
+          | REFERENCE[HTML]                     \
+          | LIST[MARKDOWN]                      \
+          | PRE[HTML]                           \
+          | BREAK[HTML]                         \
           | CODE[DOXYGEN]
 
     __edits: dict = {
@@ -180,9 +187,9 @@ class Style(IntEnum):
             return f"{t[0]}{text}{t[1]}\n"
         return self.make_bold(text) + '\n'
 
-    def make_break(self) -> str:
+    def make_break(self, count: int = 1) -> str:
         if self.check(BREAK, HTML):
-            return f"<br>\n"
+            return f"{"<br>" * count}\n"
         if self.check(BREAK, MARKDOWN):
             raise Warning(f"Invalid flag BREAK[MARKDOWN] used in style '{self.name}'.")
         if self.check(BREAK, DOXYGEN):
@@ -251,6 +258,7 @@ class Style(IntEnum):
         def format_row(row: list[str | None], term: str) -> list[str]:
             # lines[cell_idx][line_idx], contains all the lines for each cell.
             lines: list = [str(cell).split("\n") if cell is not None else [None] for cell in row]
+            lines       = [[k for k, _ in groupby(line)] for line in lines]
             indexes     = range(max(len(cell_lines) for cell_lines in lines))
             return [format_line(lines, idx, term) for idx in indexes]
 
@@ -290,12 +298,10 @@ class DocumentationBlock:
         self.__value: str  = ""
         self.__prev: str   = ""
 
-        self.__add_dd    = self.__add_li if self.style.check(DT, HTML) else self.__add_children
-        self.__add_dl    = self.__add_ul
+        if self.style.check(DT):
+            self.__add_dd = self.__add_li
+            self.__add_dl = self.__add_ul
         self.__add_title = self.__add_h2
-
-        if style == Style.TXT:
-            self.__add_p = self.__add_children
 
     def add(self, e: PageElement, line: bool = False, level: int = 0, name: str | None = None) -> None:
         def getprivattr(name: str) -> Callable[[Tag, bool, int], None] | None:
@@ -429,7 +435,7 @@ class DocumentationBlock:
 
         repl: str = self.style.make_break() if not line else ''
         text: str = e.get_text(strip=True).replace('\n', repl)
-        if e.has_attr("href") and self.style not in [Style.RS, Style.TXT]:
+        if e.has_attr("href") and self.style.check(REFERENCE):
             content: str = e["href"].strip()
             if content.startswith("http"):   # Direct link
                 link: str = content
@@ -497,14 +503,10 @@ class DocumentationBlock:
             self.__add(self.__get_base(level))
 
         self.__add_children(e, line=True)
-        match self.style:
-            case Style.CL:
-                self.__add("<br><br>")
-            case Style.RS:
-                self.__add("<br>")
 
         if not line:
-            self.__add(f"\n{self.__prefix}\n")
+            br_count: int = 1 if not self.style.check(NEWLINE_NOT_RENDERED) else 2
+            self.__add(f"{self.style.make_break(br_count)}{self.__prefix}\n")
 
     def __add_sidebarblock(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         self.__add_children(e.find('div', class_="content"))
@@ -543,6 +545,9 @@ class DocumentationBlock:
 
     def __add_table(self, e: Tag, _1: bool = False, _2: int = 0) -> None:
         def fix_html(item: Tag) -> str:
+            if item.find("svg"):
+                return ""
+
             for br in item.find_all("br"):
                 br.replace_with(NavigableString('\n'))
 
@@ -556,7 +561,7 @@ class DocumentationBlock:
             return html.unescape(text)
 
         trs: list    = e.find_all("tr")
-        rows: list   = []  # A row is a list of cells (list[str])
+        rows: list   = []
         columns: int = 0
 
         for tr in trs:
@@ -575,6 +580,10 @@ class DocumentationBlock:
         for row in rows:
             row.extend([''] * (columns - len(row)))
 
+        rows = list(map(list, zip(*[
+            col for col in zip(*rows) if any(col)
+        ])))
+
         widths: list = [max(len(line) for cell in col if cell is not None for line in str(cell).split("\n")) + 2 for col in zip(*rows)]
         self.__add(self.style.make_table(self.__prefix, rows, widths, columns))
 
@@ -587,12 +596,15 @@ class DocumentationBlock:
 
         if not self.style.check(LIST, HTML):
             self.__add_children(e, level=level)
+            if self.style.check(REQUIRES_BREAK_AFTER_LIST):
+                self.__add(f"{self.__prefix}<br>\n")
+
             self.__suffix(f"{self.__prefix}\n")
             return
 
-        self.__add(f"{self.__prefix}{level * "    "}<{type}>\n")
+        self.__add(f"{self.__prefix}{level * self.style.tab}<{type}>\n")
         self.__add_children(e, level=level + 1)
-        self.__add(f"{self.__prefix}{level * "    "}</{type}>\n")
+        self.__add(f"{self.__prefix}{level * self.style.tab}</{type}>\n")
 
         if not line:
             self.__add(f"{self.__prefix}\n")
@@ -873,5 +885,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-# TODO fix images https://registry.khronos.org/vulkan/specs/latest/man/html/VkPrimitiveTopology.html
